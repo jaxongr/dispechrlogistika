@@ -96,11 +96,18 @@ async function loadRecentMessages() {
                 ? `<span class="badge bg-info">${(msg.confidence_score * 100).toFixed(0)}%</span>`
                 : '-';
 
+            const userGroupCount = msg.user_group_count || '-';
+
             html += `
                 <tr>
                     <td><small>${formatDate(msg.message_date)}</small></td>
                     <td><small>${msg.group_name || 'N/A'}</small></td>
-                    <td><small>${msg.sender_full_name || msg.sender_username || 'N/A'}</small></td>
+                    <td>
+                        <small>${msg.sender_full_name || msg.sender_username || 'N/A'}</small><br>
+                        <span class="badge bg-secondary" style="font-size: 0.65rem;">
+                            <i class="bi bi-people"></i> ${userGroupCount} guruh
+                        </span>
+                    </td>
                     <td><small>${truncate(msg.message_text, 80)}</small></td>
                     <td>${statusBadge}</td>
                     <td>${confidence}</td>

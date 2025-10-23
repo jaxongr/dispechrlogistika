@@ -84,14 +84,25 @@ class Message {
     // Sort by message_date DESC
     messages.sort((a, b) => new Date(b.message_date) - new Date(a.message_date));
 
-    // Add group info
+    // Add group info and count user's groups
     const groups = db.get('telegram_groups').value();
+    const allMessages = db.get('messages').value();
+
     messages = messages.map(m => {
       const group = groups.find(g => g.id === m.group_id);
+
+      // Count how many unique groups this user has posted in
+      const userGroupIds = new Set(
+        allMessages
+          .filter(msg => msg.sender_user_id === m.sender_user_id)
+          .map(msg => msg.group_id)
+      );
+
       return {
         ...m,
         group_name: group ? group.group_name : null,
-        group_username: group ? group.group_username : null
+        group_username: group ? group.group_username : null,
+        user_group_count: userGroupIds.size // Number of groups user is active in
       };
     });
 
@@ -119,10 +130,19 @@ class Message {
       .find({ id: message.group_id })
       .value();
 
+    // Count user's groups
+    const allMessages = db.get('messages').value();
+    const userGroupIds = new Set(
+      allMessages
+        .filter(msg => msg.sender_user_id === message.sender_user_id)
+        .map(msg => msg.group_id)
+    );
+
     return {
       ...message,
       group_name: group ? group.group_name : null,
-      group_username: group ? group.group_username : null
+      group_username: group ? group.group_username : null,
+      user_group_count: userGroupIds.size
     };
   }
 
