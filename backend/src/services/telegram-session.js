@@ -33,7 +33,16 @@ class TelegramSessionService {
       const sessionString = process.env.TELEGRAM_SESSION_STRING || '';
 
       if (!apiId || !apiHash) {
-        throw new Error('TELEGRAM_API_ID va TELEGRAM_API_HASH .env faylida bo\'lishi kerak');
+        console.log('❌ TELEGRAM_API_ID va TELEGRAM_API_HASH topilmadi');
+        this.isConnected = false;
+        return;
+      }
+
+      if (!sessionString) {
+        console.log('❌ TELEGRAM_SESSION_STRING topilmadi');
+        console.log('💡 Session yaratish uchun: npm run create-session');
+        this.isConnected = false;
+        return;
       }
 
       const stringSession = new StringSession(sessionString);
@@ -42,29 +51,35 @@ class TelegramSessionService {
         connectionRetries: 5,
       });
 
-      console.log('🔄 Telegram ga ulanmoqda...');
+      console.log('🔄 Telegram session ulanyapti...');
 
-      await this.client.start({
-        phoneNumber: async () => await input.text('Telefon raqamingizni kiriting (+998...): '),
-        password: async () => await input.text('2FA parolni kiriting (agar bo\'lsa): '),
-        phoneCode: async () => await input.text('Telegram dan kelgan kodni kiriting: '),
-        onError: (err) => console.log('❌ Xatolik:', err),
-      });
+      // Session string bor bo'lsa, interactive input kerak emas
+      await this.client.connect();
 
-      console.log('✅ Telegram ga muvaffaqiyatli ulandi!');
-      console.log('📝 Session string:', this.client.session.save());
-      console.log('⚠️  Bu session string ni .env fayliga TELEGRAM_SESSION_STRING ga qo\'shing!');
+      // Check if we're connected
+      if (!this.client.connected) {
+        throw new Error('Telegram ulanish amalga oshmadi');
+      }
 
-      this.sessionString = this.client.session.save();
+      const me = await this.client.getMe();
+      console.log('✅ TELEGRAM SESSION ULANDI!');
+      console.log('👤 Account:', me.firstName, me.phone);
+
       this.isConnected = true;
+
+      // Get dialogs
+      const dialogs = await this.client.getDialogs({ limit: 100 });
+      const groups = dialogs.filter(d => d.isGroup || d.isChannel);
+      console.log(`📱 ${groups.length} ta guruh topildi`);
 
       // Xabar tinglovchisini ishga tushirish
       this.startMessageListener();
 
-      return this.sessionString;
+      return true;
     } catch (error) {
-      console.error('❌ Telegram ga ulanishda xatolik:', error);
-      throw error;
+      console.error('❌ Telegram session xatolik:', error.message);
+      this.isConnected = false;
+      return false;
     }
   }
 

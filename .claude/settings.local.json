@@ -28,7 +28,8 @@
       "Bash(git push:*)",
       "Bash(ssh:*)",
       "Bash(curl -v http://5.189.141.151/dispatch/)",
-      "Bash(curl -I http://5.189.141.151/dispatch/)"
+      "Bash(curl -I http://5.189.141.151/dispatch/)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
