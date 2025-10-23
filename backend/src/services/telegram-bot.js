@@ -184,17 +184,18 @@ class TelegramBotService {
 
       // Create clickable sender link
       const senderName = this.escapeHtml(message.sender_full_name || 'Noma\'lum');
-      let senderLink;
+      let senderInfo;
 
-      if (message.sender_username) {
-        // If username exists, link to @username
-        senderLink = `<a href="https://t.me/${message.sender_username}">${senderName}</a>`;
+      if (message.sender_username && message.sender_username.trim()) {
+        // If username exists, create clickable link to @username
+        senderInfo = `<a href="https://t.me/${message.sender_username}">${senderName}</a>`;
       } else {
-        // Otherwise use user ID deep link
-        senderLink = `<a href="tg://user?id=${message.sender_user_id}">${senderName}</a>`;
+        // No username - use text mention format (works in all Telegram clients)
+        // Format: <a href="tg://user?id=USER_ID">Name</a>
+        senderInfo = `<a href="tg://user?id=${message.sender_user_id}">${senderName}</a> (ID: ${message.sender_user_id})`;
       }
 
-      messageText += `\n👤 Yuboruvchi: ${senderLink}`;
+      messageText += `\n👤 Yuboruvchi: ${senderInfo}`;
       messageText += `\n🏷️ Guruh: ${this.escapeHtml(message.group_name || 'Noma\'lum')}`;
 
       // Create inline keyboard with "Bu dispetcher ekan" button
@@ -211,6 +212,7 @@ class TelegramBotService {
         messageText,
         {
           parse_mode: 'HTML',
+          disable_web_page_preview: true,
           reply_markup: keyboard.reply_markup
         }
       );
