@@ -43,6 +43,67 @@ class MessageFilter {
   }
 
   /**
+   * Check if username/fullname is suspicious (too long, spam, unusual characters)
+   * YANGI: Uzun va noodatiy belgilar bilan yozilgan username/fullname'larni aniqlash
+   */
+  isSuspiciousProfile(username, fullName) {
+    const fullText = `${username || ''} ${fullName || ''}`;
+
+    if (!fullText.trim()) return { suspicious: false };
+
+    // 1. Juda uzun username/fullname (100+ belgi)
+    if (fullText.length > 100) {
+      return {
+        suspicious: true,
+        reason: `Juda uzun username/fullname (${fullText.length} belgi)`
+      };
+    }
+
+    // 2. Takrorlanuvchi belgilar (bir xil belgi 10+ marta ketma-ket)
+    const repeatingPattern = /(.)\1{9,}/;
+    if (repeatingPattern.test(fullText)) {
+      return {
+        suspicious: true,
+        reason: 'Takrorlanuvchi belgilar (spam)'
+      };
+    }
+
+    // 3. Noodatiy Unicode belgilar (cuneiform, hieroglyphics, va boshqalar)
+    // Cuneiform: U+12000-U+123FF, U+12400-U+1247F
+    // Egyptian Hieroglyphs: U+13000-U+1342F
+    // Va boshqa noodatiy Unicode bloklar
+    const unusualUnicodePattern = /[\u{12000}-\u{1247F}\u{13000}-\u{1342F}\u{1D000}-\u{1F9FF}]/u;
+    if (unusualUnicodePattern.test(fullText)) {
+      return {
+        suspicious: true,
+        reason: 'Noodatiy Unicode belgilar'
+      };
+    }
+
+    // 4. Ko'p emoji (15+ emoji)
+    const emojiPattern = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu;
+    const emojiMatches = fullText.match(emojiPattern) || [];
+    if (emojiMatches.length > 15) {
+      return {
+        suspicious: true,
+        reason: `Ko'p emoji (${emojiMatches.length}ta)`
+      };
+    }
+
+    // 5. Username faqat emoji va maxsus belgilardan iborat (harf yo'q)
+    const hasLetters = /[a-zA-Zа-яА-ЯёЁўЎқҚғҒҳҲ]/;
+    const hasOnlySpecialChars = !hasLetters.test(fullText) && fullText.length > 10;
+    if (hasOnlySpecialChars) {
+      return {
+        suspicious: true,
+        reason: 'Faqat maxsus belgilar (harf yo\'q)'
+      };
+    }
+
+    return { suspicious: false };
+  }
+
+  /**
    * Telefon raqam bormi tekshirish
    */
   hasPhoneNumber(text) {
@@ -146,6 +207,17 @@ class MessageFilter {
       return {
         shouldBlock: true,
         reason: `Username/Bio'da kalit so'z: "${keywordCheck.keyword}"`,
+        isDispatcher: true,
+        autoBlock: true
+      };
+    }
+
+    // 0.1. YANGI: Shubhali username/fullname tekshiruvi (uzun, spam, noodatiy belgilar)
+    const suspiciousCheck = this.isSuspiciousProfile(sender_username, sender_full_name);
+    if (suspiciousCheck.suspicious) {
+      return {
+        shouldBlock: true,
+        reason: `Shubhali profil: ${suspiciousCheck.reason}`,
         isDispatcher: true,
         autoBlock: true
       };
