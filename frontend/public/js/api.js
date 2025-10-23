@@ -2,7 +2,7 @@
  * API Helper Functions
  */
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = '/dispatch/api';
 
 // Get token from localStorage
 function getToken() {
