@@ -161,23 +161,35 @@ class TelegramBotService {
         }
       }
 
-      // Format message text
-      let messageText = `📦 ${message.message_text}\n\n`;
+      // Format message text with HTML formatting
+      let messageText = `📦 ${this.escapeHtml(message.message_text)}\n\n`;
 
       if (message.contact_phone) {
         messageText += `📞 Telefon: ${message.contact_phone}\n`;
       }
 
       if (message.route_from || message.route_to) {
-        messageText += `🛣️ Yo'nalish: ${message.route_from || '?'} → ${message.route_to || '?'}\n`;
+        messageText += `🛣️ Yo'nalish: ${this.escapeHtml(message.route_from || '?')} → ${this.escapeHtml(message.route_to || '?')}\n`;
       }
 
       if (message.cargo_type) {
-        messageText += `📦 Yuk turi: ${message.cargo_type}\n`;
+        messageText += `📦 Yuk turi: ${this.escapeHtml(message.cargo_type)}\n`;
       }
 
-      messageText += `\n👤 Yuboruvchi: ${message.sender_full_name || 'Noma\'lum'}`;
-      messageText += `\n🏷️ Guruh: ${message.group_name || 'Noma\'lum'}`;
+      // Create clickable sender link
+      const senderName = this.escapeHtml(message.sender_full_name || 'Noma\'lum');
+      let senderLink;
+
+      if (message.sender_username) {
+        // If username exists, link to @username
+        senderLink = `<a href="https://t.me/${message.sender_username}">${senderName}</a>`;
+      } else {
+        // Otherwise use user ID deep link
+        senderLink = `<a href="tg://user?id=${message.sender_user_id}">${senderName}</a>`;
+      }
+
+      messageText += `\n👤 Yuboruvchi: ${senderLink}`;
+      messageText += `\n🏷️ Guruh: ${this.escapeHtml(message.group_name || 'Noma\'lum')}`;
 
       // Create inline keyboard with "Bu dispetcher ekan" button
       const keyboard = Markup.inlineKeyboard([
@@ -187,11 +199,14 @@ class TelegramBotService {
         )
       ]);
 
-      // Send message to target group
+      // Send message to target group with HTML formatting
       const sentMessage = await this.bot.telegram.sendMessage(
         this.targetGroupId,
         messageText,
-        keyboard
+        {
+          parse_mode: 'HTML',
+          reply_markup: keyboard.reply_markup
+        }
       );
 
       console.log(`✅ Message ${messageId} sent to group ${this.targetGroupId}, msg_id=${sentMessage.message_id}`);
@@ -248,6 +263,18 @@ class TelegramBotService {
       console.error('❌ Delete from group error:', error);
       return { success: false, error: error.message };
     }
+  }
+
+  /**
+   * Escape HTML special characters for Telegram HTML parse mode
+   */
+  escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   stop() {
