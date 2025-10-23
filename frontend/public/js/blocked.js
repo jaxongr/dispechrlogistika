@@ -20,14 +20,24 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
     }
 });
 
-// Load blocked users (we need to add this API endpoint)
+// Load blocked users
 async function loadBlockedUsers() {
     try {
-        // For now, show empty state since we need to create the API endpoint
         const container = document.getElementById('blockedUsersContainer');
 
-        // Mock data for demonstration
-        const blockedUsers = [];
+        // Fetch blocked users from API
+        const response = await fetch('/api/blocked-users', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch blocked users');
+        }
+
+        const data = await response.json();
+        const blockedUsers = data.blocked_users || [];
 
         if (blockedUsers.length === 0) {
             container.innerHTML = `
@@ -48,6 +58,7 @@ async function loadBlockedUsers() {
                     <th>Username</th>
                     <th>To'liq ism</th>
                     <th>Sabab</th>
+                    <th>Guruhlar</th>
                     <th>Bloklangan sana</th>
                     <th>Bloklangan xabarlar</th>
                     <th>Amallar</th>
@@ -63,6 +74,11 @@ async function loadBlockedUsers() {
                     <td>@${user.username || 'N/A'}</td>
                     <td>${user.full_name || 'N/A'}</td>
                     <td><small>${user.reason || '-'}</small></td>
+                    <td>
+                        <span class="badge bg-primary">
+                            <i class="bi bi-people"></i> ${user.group_count || 0} ta
+                        </span>
+                    </td>
                     <td><small>${formatDate(user.blocked_at)}</small></td>
                     <td><span class="badge bg-danger">${user.blocked_message_count || 0}</span></td>
                     <td>

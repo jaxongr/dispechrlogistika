@@ -17,6 +17,7 @@ const telegramBot = require('./services/telegram-bot');
 // Routes
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
+const blockedUsersRoutes = require('./routes/blocked-users');
 
 // Initialize Express
 const app = express();
@@ -57,6 +58,7 @@ console.log('📁 Frontend path:', frontendPath);
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/blocked-users', blockedUsersRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -122,6 +124,7 @@ async function startServer() {
       console.log('   Telegram session\'ni ishga tushirish uchun:');
       console.log('   npm run create-session\n');
     }
+
 
     console.log('\n✅ Barcha xizmatlar ishga tushdi!');
     console.log('📊 Dashboard: http://localhost:' + PORT);
