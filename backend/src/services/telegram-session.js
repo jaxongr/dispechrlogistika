@@ -22,6 +22,11 @@ class TelegramSessionService {
     this.isConnected = false;
     this.sessionString = '';
     this.messageHandler = null;
+    this.messageQueue = [];
+    this.processingQueue = false;
+
+    // Process queue every 2 seconds in batch
+    setInterval(() => this.processMessageQueue(), 2000);
   }
 
   /**
@@ -95,110 +100,29 @@ class TelegramSessionService {
     console.log('👂 Xabarlarni tinglash boshlandi...');
 
     this.messageHandler = async (event) => {
-      // Process messages in background without blocking event loop
-      setImmediate(async () => {
-        try {
-          const message = event.message;
+      // Add to queue instead of processing immediately
+      try {
+        const message = event.message;
 
-          // Faqat text xabarlar va guruh xabarlarini qabul qilish
-          if (!message?.text || (!message.peerId?.channelId && !message.peerId?.chatId)) {
-            return;
-          }
-
-          const sender = await message.getSender();
-          const chat = await message.getChat();
-
-          const senderId = sender?.id?.toString();
-          const chatId = chat?.id?.toString();
-
-          // Bloklangan user bo'lsa, xabarni qabul qilmaymiz
-          const isBlocked = await BlockedUser.isBlocked(senderId);
-          if (isBlocked) {
-            console.log(`🚫 Bloklangan: ${sender?.username || senderId}`);
-            await BlockedUser.incrementBlockedCount(senderId);
-            return;
-          }
-
-          // Xabar ma'lumotlari
-          const messageData = {
-            telegram_message_id: message.id,
-            sender_user_id: senderId,
-            sender_username: sender?.username || '',
-            sender_full_name: `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
-            message_text: message.text,
-            message_date: new Date(message.date * 1000),
-            group_id: chatId,
-            group_name: chat?.title || '',
-            group_username: chat?.username || ''
-          };
-
-          // YANGI FILTER - Barcha qoidalarni tekshirish
-          const filterResult = messageFilter.checkMessage(messageData);
-
-          if (filterResult.shouldBlock) {
-            console.log(`⛔ ${filterResult.reason}: ${messageData.sender_username || senderId}`);
-
-            // Agar avtomatik bloklash kerak bo'lsa
-            if (filterResult.autoBlock) {
-              const existingBlock = await BlockedUser.findByTelegramId(senderId);
-              if (!existingBlock) {
-                await BlockedUser.create({
-                  telegram_user_id: senderId,
-                  username: messageData.sender_username,
-                  full_name: messageData.sender_full_name,
-                  reason: filterResult.reason,
-                  blocked_by: 0 // Auto-blocked by system
-                });
-                console.log(`🔒 Avtomatik bloklandi: ${messageData.sender_username} - ${filterResult.reason}`);
-              }
-            }
-            return;
-          }
-
-          // Dispetcher detection
-          const detection = dispatcherDetector.analyze(messageData.message_text, messageData);
-
-          // Log only non-dispatcher messages
-          if (!detection.isDispatcher) {
-            console.log(`✅ ${messageData.group_name}: ${messageData.message_text.substring(0, 50)}...`);
-          }
-
-          // Guruhni database'ga qo'shish (agar mavjud bo'lmasa)
-          let dbGroup = await TelegramGroup.findByGroupId(messageData.group_id);
-          if (!dbGroup) {
-            dbGroup = await TelegramGroup.create({
-              group_id: messageData.group_id,
-              group_name: messageData.group_name,
-              group_username: messageData.group_username,
-              added_by: 1
-            });
-          }
-
-          // Logistika ma'lumotlarini ajratish
-          const logisticsData = dispatcherDetector.extractLogisticsData(messageData.message_text);
-
-          // Xabarni database'ga saqlash
-          await Message.create({
-            telegram_message_id: messageData.telegram_message_id,
-            group_id: dbGroup.id,
-            sender_user_id: messageData.sender_user_id,
-            sender_username: messageData.sender_username,
-            sender_full_name: messageData.sender_full_name,
-            message_text: messageData.message_text,
-            message_date: messageData.message_date,
-            is_dispatcher: detection.isDispatcher,
-            confidence_score: detection.confidence,
-            raw_data: {
-              detection: detection,
-              chat: { id: chatId, title: chat?.title }
-            },
-            ...logisticsData
-          });
-
-        } catch (error) {
-          console.error('❌ Message handler error:', error.message);
+        // Faqat text xabarlar va guruh xabarlarini qabul qilish
+        if (!message?.text || (!message.peerId?.channelId && !message.peerId?.chatId)) {
+          return;
         }
-      });
+
+        // Add to queue for batch processing
+        this.messageQueue.push({
+          message,
+          timestamp: Date.now()
+        });
+
+        // Limit queue size
+        if (this.messageQueue.length > 100) {
+          this.messageQueue.shift(); // Remove oldest
+        }
+
+      } catch (error) {
+        console.error('❌ Message handler error:', error.message);
+      }
     };
 
     this.client.addEventHandler(this.messageHandler, new NewMessage({}));
@@ -272,6 +196,117 @@ class TelegramSessionService {
     } catch (error) {
       console.error('❌ Dialoglarni olishda xatolik:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Process message queue in batches
+   */
+  async processMessageQueue() {
+    if (this.processingQueue || this.messageQueue.length === 0) {
+      return;
+    }
+
+    this.processingQueue = true;
+
+    try {
+      const batch = this.messageQueue.splice(0, 20); // Process max 20 at a time
+      console.log(`📦 Processing ${batch.length} messages from queue...`);
+
+      for (const item of batch) {
+        try {
+          const { message } = item;
+
+          const sender = await message.getSender();
+          const chat = await message.getChat();
+
+          const senderId = sender?.id?.toString();
+          const chatId = chat?.id?.toString();
+
+          // Bloklangan user check
+          const isBlocked = await BlockedUser.isBlocked(senderId);
+          if (isBlocked) {
+            continue;
+          }
+
+          const messageData = {
+            telegram_message_id: message.id,
+            sender_user_id: senderId,
+            sender_username: sender?.username || '',
+            sender_full_name: `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+            message_text: message.text,
+            message_date: new Date(message.date * 1000),
+            group_id: chatId,
+            group_name: chat?.title || '',
+            group_username: chat?.username || ''
+          };
+
+          // Filter check
+          const filterResult = messageFilter.checkMessage(messageData);
+
+          if (filterResult.shouldBlock) {
+            // Auto-block if needed
+            if (filterResult.autoBlock) {
+              const existingBlock = await BlockedUser.findByTelegramId(senderId);
+              if (!existingBlock) {
+                await BlockedUser.create({
+                  telegram_user_id: senderId,
+                  username: messageData.sender_username,
+                  full_name: messageData.sender_full_name,
+                  reason: filterResult.reason,
+                  blocked_by: 0
+                });
+              }
+            }
+            continue;
+          }
+
+          // Dispatcher detection
+          const detection = dispatcherDetector.analyze(messageData.message_text, messageData);
+
+          // Get or create group
+          let dbGroup = await TelegramGroup.findByGroupId(messageData.group_id);
+          if (!dbGroup) {
+            dbGroup = await TelegramGroup.create({
+              group_id: messageData.group_id,
+              group_name: messageData.group_name,
+              group_username: messageData.group_username,
+              added_by: 1
+            });
+          }
+
+          // Extract logistics data
+          const logisticsData = dispatcherDetector.extractLogisticsData(messageData.message_text);
+
+          // Save to database
+          await Message.create({
+            telegram_message_id: messageData.telegram_message_id,
+            group_id: dbGroup.id,
+            sender_user_id: messageData.sender_user_id,
+            sender_username: messageData.sender_username,
+            sender_full_name: messageData.sender_full_name,
+            message_text: messageData.message_text,
+            message_date: messageData.message_date,
+            is_dispatcher: detection.isDispatcher,
+            confidence_score: detection.confidence,
+            raw_data: {
+              detection: detection,
+              chat: { id: chatId, title: chat?.title }
+            },
+            ...logisticsData
+          });
+
+          console.log(`✅ Saved: ${messageData.group_name}`);
+
+        } catch (error) {
+          console.error('❌ Process error:', error.message);
+        }
+      }
+
+    } catch (error) {
+      console.error('❌ Queue processing error:', error.message);
+    } finally {
+      this.processingQueue = false;
     }
   }
 
