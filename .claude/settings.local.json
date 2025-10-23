@@ -35,7 +35,9 @@
       "Bash(echo:*)",
       "Bash(done)",
       "Bash(for:*)",
-      "Bash(do sed -i '/<base href/d' \"$file\")"
+      "Bash(do sed -i '/<base href/d' \"$file\")",
+      "Bash(scp:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []

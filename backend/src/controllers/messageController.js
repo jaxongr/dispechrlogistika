@@ -235,6 +235,43 @@ class MessageController {
       res.status(500).json({ error: 'Server xatolik' });
     }
   }
+
+  // Get phone numbers from messages
+  async getPhoneNumbers(req, res) {
+    try {
+      const { is_dispatcher, is_approved } = req.query;
+
+      const filters = {};
+      if (is_dispatcher !== undefined) filters.is_dispatcher = is_dispatcher === 'true';
+      if (is_approved !== undefined) filters.is_approved = is_approved === 'true';
+
+      const messages = await Message.findAll(filters);
+
+      // Extract phone numbers
+      const phoneData = messages
+        .filter(m => m.contact_phone)
+        .map(m => ({
+          phone: m.contact_phone,
+          sender: m.sender_full_name || m.sender_username || 'N/A',
+          group: m.group_name || 'N/A',
+          date: m.message_date,
+          message_text: m.message_text,
+          route_from: m.route_from,
+          route_to: m.route_to,
+          cargo_type: m.cargo_type,
+          is_dispatcher: m.is_dispatcher,
+          is_approved: m.is_approved
+        }));
+
+      res.json({
+        phones: phoneData,
+        total: phoneData.length
+      });
+    } catch (error) {
+      console.error('Get phone numbers xatolik:', error);
+      res.status(500).json({ error: 'Server xatolik' });
+    }
+  }
 }
 
 module.exports = new MessageController();
