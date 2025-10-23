@@ -15,6 +15,7 @@ const TelegramGroup = require('../models/TelegramGroup');
 const BlockedUser = require('../models/BlockedUser');
 const dispatcherDetector = require('./dispatcher-detector');
 const messageFilter = require('./message-filter');
+const telegramBot = require('./telegram-bot');
 
 class TelegramSessionService {
   constructor() {
@@ -279,7 +280,7 @@ class TelegramSessionService {
           const logisticsData = dispatcherDetector.extractLogisticsData(messageData.message_text);
 
           // Save to database
-          await Message.create({
+          const savedMessage = await Message.create({
             telegram_message_id: messageData.telegram_message_id,
             group_id: dbGroup.id,
             sender_user_id: messageData.sender_user_id,
@@ -297,6 +298,16 @@ class TelegramSessionService {
           });
 
           console.log(`✅ Saved: ${messageData.group_name}`);
+
+          // AUTO-SEND to target group with "Bu dispetcher ekan" button
+          if (savedMessage && savedMessage.id) {
+            try {
+              await telegramBot.sendToChannel(savedMessage.id);
+              console.log(`📤 Auto-sent to group: ${savedMessage.id}`);
+            } catch (sendError) {
+              console.error(`❌ Auto-send error for ${savedMessage.id}:`, sendError.message);
+            }
+          }
 
         } catch (error) {
           console.error('❌ Process error:', error.message);

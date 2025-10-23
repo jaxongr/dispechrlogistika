@@ -161,7 +161,18 @@ class MessageController {
       // Xabarni dispetcher deb belgilash
       await Message.update(id, { is_dispatcher: true });
 
-      res.json({ message: 'Foydalanuvchi bloklandi' });
+      // Delete message from target group if it was sent there
+      if (message.is_sent_to_channel && message.group_message_id) {
+        try {
+          await telegramBot.deleteFromGroup(id);
+          console.log(`🗑️ Message ${id} deleted from target group via dashboard`);
+        } catch (deleteError) {
+          console.error('Delete from group error:', deleteError.message);
+          // Don't fail the whole operation if delete fails
+        }
+      }
+
+      res.json({ message: 'Foydalanuvchi bloklandi va e\'lon guruhdan o\'chirildi' });
     } catch (error) {
       console.error('Block sender xatolik:', error);
       res.status(500).json({ error: 'Server xatolik' });
