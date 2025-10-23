@@ -143,6 +143,24 @@ class TelegramBotService {
         return { success: false, error: 'Xabar topilmadi' };
       }
 
+      // DUPLICATE CHECK: Skip if same phone number was sent in last 10 minutes
+      if (message.contact_phone) {
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+        const recentDuplicate = db.get('messages')
+          .filter(msg =>
+            msg.contact_phone === message.contact_phone &&
+            msg.is_sent_to_channel === true &&
+            msg.id !== messageId &&
+            new Date(msg.sent_at) > tenMinutesAgo
+          )
+          .value();
+
+        if (recentDuplicate.length > 0) {
+          console.log(`⏭️ SKIP DUPLICATE: Phone ${message.contact_phone} already sent in last 10 min`);
+          return { success: false, error: 'Dublikat - oxirgi 10 daqiqada yuborilgan', isDuplicate: true };
+        }
+      }
+
       // Format message text
       let messageText = `📦 ${message.message_text}\n\n`;
 

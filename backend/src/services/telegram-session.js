@@ -301,11 +301,13 @@ class TelegramSessionService {
 
           // AUTO-SEND to target group with "Bu dispetcher ekan" button
           if (savedMessage && savedMessage.id) {
-            try {
-              await telegramBot.sendToChannel(savedMessage.id);
+            const sendResult = await telegramBot.sendToChannel(savedMessage.id);
+            if (sendResult.success) {
               console.log(`📤 Auto-sent to group: ${savedMessage.id}`);
-            } catch (sendError) {
-              console.error(`❌ Auto-send error for ${savedMessage.id}:`, sendError.message);
+            } else if (sendResult.isDuplicate) {
+              console.log(`⏭️ Skipped duplicate: ${savedMessage.id} - ${sendResult.error}`);
+            } else {
+              console.error(`❌ Auto-send error for ${savedMessage.id}:`, sendResult.error);
             }
           }
 
