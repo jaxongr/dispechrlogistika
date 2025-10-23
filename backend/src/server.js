@@ -33,6 +33,7 @@ app.use(helmet({
       connectSrc: ["'self'", "https://cdn.jsdelivr.net"],
       imgSrc: ["'self'", "data:", "https:"],
       formAction: ["'self'"],
+      upgradeInsecureRequests: null,
     },
   },
 }));
