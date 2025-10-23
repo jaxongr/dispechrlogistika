@@ -20,12 +20,20 @@ class TelegramBotService {
 
       console.log('🚀 Starting Telegram bot...');
       this.bot = new Telegraf(botToken);
-      await this.bot.launch();
+
+      // Verify token first
+      const me = await this.bot.telegram.getMe();
+      console.log('✅ TELEGRAM BOT ULANDI!');
+      console.log('🤖 Bot username: @' + me.username);
+
+      // Launch bot in background (non-blocking)
+      this.bot.launch().catch(err => {
+        console.error('❌ Bot launch xatolik:', err.message);
+        this.isRunning = false;
+      });
+
       this.isRunning = true;
 
-      const me = await this.bot.telegram.getMe();
-      console.log('✅ TELEGRAM BOT ISHGA TUSHDI!');
-      console.log('🤖 Bot username: @' + me.username);
     } catch (error) {
       console.error('❌ TELEGRAM BOT XATOLIK:', error.message);
       this.isRunning = false;
