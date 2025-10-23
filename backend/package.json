@@ -1,0 +1,31 @@
+{
+  "name": "logistics-dispatch-backend",
+  "version": "1.0.0",
+  "description": "Telegram logistics dispatch filter system",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "init-db": "node src/config/init-db.js"
+  },
+  "keywords": ["telegram", "logistics", "dispatch"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "lowdb": "^1.0.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "telegraf": "^4.15.0",
+    "telegram": "^2.19.6",
+    "input": "^1.0.1",
+    "big-integer": "^1.6.52",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
