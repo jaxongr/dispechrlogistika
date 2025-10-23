@@ -97,22 +97,24 @@ async function startServer() {
       console.log(`✅ HTTP Server ishga tushdi: http://localhost:${PORT}`);
     });
 
-    // Start Telegram Bot
+    // Start Telegram Bot (non-blocking)
     console.log('\n🤖 Telegram bot ishga tushmoqda...');
-    await telegramBot.start();
+    telegramBot.start().catch(err => {
+      console.error('❌ Telegram bot start error:', err.message);
+    });
 
-    // Start Telegram Session (guruhlardan o'qish)
+    // Start Telegram Session (guruhlardan o'qish) (non-blocking)
     console.log('\n📱 Telegram session ishga tushmoqda...');
-    console.log('⚠️  Agar birinchi marta ishga tushirayotgan bo\'lsangiz,');
-    console.log('   telefon raqam va kodingizni kiritishingiz kerak.\n');
 
     // Faqat session string bo'lsa, ulanadi
     if (process.env.TELEGRAM_SESSION_STRING) {
-      await telegramSession.connect();
+      telegramSession.connect().catch(err => {
+        console.error('❌ Telegram session error:', err.message);
+      });
     } else {
       console.log('⚠️  TELEGRAM_SESSION_STRING topilmadi.');
       console.log('   Telegram session\'ni ishga tushirish uchun:');
-      console.log('   npm run connect-telegram\n');
+      console.log('   npm run create-session\n');
     }
 
     console.log('\n✅ Barcha xizmatlar ishga tushdi!');
