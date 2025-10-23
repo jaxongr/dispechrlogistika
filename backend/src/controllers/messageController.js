@@ -158,6 +158,12 @@ class MessageController {
         blocked_by: req.user.id
       });
 
+      // Block all phone numbers from this user's messages
+      await BlockedUser.blockUserPhoneNumbers(
+        message.sender_user_id,
+        'Dashboard orqali bloklangan user telefoni'
+      );
+
       // Xabarni dispetcher deb belgilash
       await Message.update(id, { is_dispatcher: true });
 

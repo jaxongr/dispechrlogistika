@@ -88,6 +88,97 @@ class BlockedUser {
         .write();
     }
   }
+
+  /**
+   * Add phone number to blocked phones list
+   */
+  static async blockPhoneNumber(phone, reason = 'Bloklangan user telefoni') {
+    if (!phone) return;
+
+    // Normalize phone number (remove spaces, dashes, etc)
+    const normalizedPhone = phone.replace(/[\s\-\(\)]/g, '');
+
+    // Check if already blocked
+    const existingBlocked = db.get('blocked_phones')
+      .find({ phone: normalizedPhone })
+      .value();
+
+    if (existingBlocked) {
+      return existingBlocked;
+    }
+
+    // Add to blocked phones
+    const blockedPhone = {
+      id: Date.now(),
+      phone: normalizedPhone,
+      reason,
+      blocked_at: new Date().toISOString()
+    };
+
+    // Initialize blocked_phones array if not exists
+    if (!db.has('blocked_phones').value()) {
+      db.set('blocked_phones', []).write();
+    }
+
+    db.get('blocked_phones')
+      .push(blockedPhone)
+      .write();
+
+    console.log(`📵 Phone blocked: ${normalizedPhone} - ${reason}`);
+    return blockedPhone;
+  }
+
+  /**
+   * Check if phone number is blocked
+   */
+  static async isPhoneBlocked(phone) {
+    if (!phone) return false;
+
+    const normalizedPhone = phone.replace(/[\s\-\(\)]/g, '');
+
+    if (!db.has('blocked_phones').value()) {
+      return false;
+    }
+
+    const blocked = db.get('blocked_phones')
+      .find({ phone: normalizedPhone })
+      .value();
+
+    return !!blocked;
+  }
+
+  /**
+   * Find and block all phone numbers from a user's messages
+   */
+  static async blockUserPhoneNumbers(telegram_user_id, reason = 'Bloklangan user telefoni') {
+    // Find all messages from this user with phone numbers
+    const messages = db.get('messages')
+      .filter({ sender_user_id: telegram_user_id })
+      .value();
+
+    const phoneNumbers = [];
+
+    for (const msg of messages) {
+      if (msg.contact_phone) {
+        await this.blockPhoneNumber(msg.contact_phone, reason);
+        phoneNumbers.push(msg.contact_phone);
+      }
+    }
+
+    console.log(`📵 Blocked ${phoneNumbers.length} phone numbers from user ${telegram_user_id}`);
+    return phoneNumbers;
+  }
+
+  /**
+   * Get all blocked phone numbers
+   */
+  static async getBlockedPhones() {
+    if (!db.has('blocked_phones').value()) {
+      return [];
+    }
+
+    return db.get('blocked_phones').value();
+  }
 }
 
 module.exports = BlockedUser;

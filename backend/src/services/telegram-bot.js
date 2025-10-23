@@ -90,6 +90,12 @@ class TelegramBotService {
         });
 
         console.log(`✅ User ${telegramUserId} blocked by group member ${ctx.from.id}`);
+
+        // Also block all phone numbers from this user's messages
+        await BlockedUser.blockUserPhoneNumbers(
+          telegramUserId,
+          `Guruh a'zosi tomonidan bloklangan user telefoni (reporter: ${ctx.from.id})`
+        );
       }
 
       // Delete message from group

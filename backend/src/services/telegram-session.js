@@ -242,6 +242,19 @@ class TelegramSessionService {
             group_username: chat?.username || ''
           };
 
+          // Extract phone number from message
+          const logisticsData = dispatcherDetector.extractLogisticsData(messageData.message_text);
+          const phoneNumber = logisticsData.contact_phone;
+
+          // Check if phone number is blocked
+          if (phoneNumber) {
+            const isPhoneBlocked = await BlockedUser.isPhoneBlocked(phoneNumber);
+            if (isPhoneBlocked) {
+              console.log(`📵 Skipped message with blocked phone: ${phoneNumber}`);
+              continue;
+            }
+          }
+
           // Filter check
           const filterResult = messageFilter.checkMessage(messageData);
 
@@ -276,8 +289,8 @@ class TelegramSessionService {
             });
           }
 
-          // Extract logistics data
-          const logisticsData = dispatcherDetector.extractLogisticsData(messageData.message_text);
+          // logistics data already extracted above (line 246) for phone check
+          // No need to extract again
 
           // Save to database
           const savedMessage = await Message.create({
