@@ -14,6 +14,7 @@ const Message = require('../models/Message');
 const TelegramGroup = require('../models/TelegramGroup');
 const BlockedUser = require('../models/BlockedUser');
 const dispatcherDetector = require('./dispatcher-detector');
+const messageFilter = require('./message-filter');
 
 class TelegramSessionService {
   constructor() {
@@ -131,12 +132,35 @@ class TelegramSessionService {
             group_username: chat?.username || ''
           };
 
+          // YANGI FILTER - Barcha qoidalarni tekshirish
+          const filterResult = messageFilter.checkMessage(messageData);
+
+          if (filterResult.shouldBlock) {
+            console.log(`⛔ ${filterResult.reason}: ${messageData.sender_username || senderId}`);
+
+            // Agar avtomatik bloklash kerak bo'lsa
+            if (filterResult.autoBlock) {
+              const existingBlock = await BlockedUser.findByTelegramId(senderId);
+              if (!existingBlock) {
+                await BlockedUser.create({
+                  telegram_user_id: senderId,
+                  username: messageData.sender_username,
+                  full_name: messageData.sender_full_name,
+                  reason: filterResult.reason,
+                  blocked_by: 0 // Auto-blocked by system
+                });
+                console.log(`🔒 Avtomatik bloklandi: ${messageData.sender_username} - ${filterResult.reason}`);
+              }
+            }
+            return;
+          }
+
           // Dispetcher detection
           const detection = dispatcherDetector.analyze(messageData.message_text, messageData);
 
           // Log only non-dispatcher messages
           if (!detection.isDispatcher) {
-            console.log(`📨 ${messageData.group_name}: ${messageData.message_text.substring(0, 50)}...`);
+            console.log(`✅ ${messageData.group_name}: ${messageData.message_text.substring(0, 50)}...`);
           }
 
           // Guruhni database'ga qo'shish (agar mavjud bo'lmasa)
