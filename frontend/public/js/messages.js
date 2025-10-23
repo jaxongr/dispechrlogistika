@@ -360,5 +360,13 @@ async function markAsDispatcher(id) {
     }
 }
 
+// Make functions globally accessible for inline onclick handlers
+window.approveMessage = approveMessage;
+window.sendMessage = sendMessage;
+window.markAsDispatcher = markAsDispatcher;
+window.viewMessage = viewMessage;
+window.blockSender = blockSender;
+window.changePage = changePage;
+
 // Initialize
 loadMessages();
