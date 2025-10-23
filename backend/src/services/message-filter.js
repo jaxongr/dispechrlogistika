@@ -195,6 +195,28 @@ class MessageFilter {
   }
 
   /**
+   * Database'dan user'ning guruh sonini olish (barcha xabarlarga asoslangan)
+   */
+  getUserGroupCountFromDB(userId) {
+    try {
+      const { db } = require('../config/database');
+      const messages = db.get('messages').value();
+
+      // User'ning barcha xabarlaridan unique group_id'larni olish
+      const userGroups = new Set(
+        messages
+          .filter(m => m.sender_user_id === userId)
+          .map(m => m.group_id)
+      );
+
+      return userGroups.size;
+    } catch (error) {
+      console.error('❌ Error getting user group count from DB:', error);
+      return 0;
+    }
+  }
+
+  /**
    * Asosiy filter funksiyasi
    * @returns {Object} { shouldBlock: boolean, reason: string, isDispatcher: boolean }
    */
@@ -242,12 +264,17 @@ class MessageFilter {
       };
     }
 
-    // 3. User'ning guruh sonini tekshirish
-    const groupCount = this.trackUserGroup(sender_user_id, group_id);
-    if (groupCount > 50) {
+    // 3. User'ning guruh sonini tekshirish - DATABASE'DAN!
+    // In-memory cache'ni yangilash
+    this.trackUserGroup(sender_user_id, group_id);
+
+    // Database'dan to'liq guruh sonini olish (barcha xabarlarga asoslangan)
+    const dbGroupCount = this.getUserGroupCountFromDB(sender_user_id);
+
+    if (dbGroupCount >= 50) {
       return {
         shouldBlock: true,
-        reason: '50+ guruhda (professional dispatcher)',
+        reason: `${dbGroupCount} guruhda faol (professional dispatcher)`,
         isDispatcher: true,
         autoBlock: true
       };
