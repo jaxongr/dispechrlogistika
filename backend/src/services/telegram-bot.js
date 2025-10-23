@@ -1,8 +1,3 @@
-/**
- * Telegram Bot Service - Optional
- * Agar token bo'lmasa ishlamaydi, xato bermaydi
- */
-
 const { Telegraf } = require('telegraf');
 
 class TelegramBotService {
@@ -15,18 +10,24 @@ class TelegramBotService {
     try {
       const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
-      if (!botToken || botToken.startsWith('1234567890')) {
-        console.log('⚠️  Telegram bot token topilmadi - bot o\'chirilgan');
+      console.log('🔍 Bot token check:', botToken ? 'EXISTS' : 'MISSING');
+
+      if (!botToken) {
+        console.log('❌ Bot token topilmadi!');
         this.isRunning = false;
         return;
       }
 
+      console.log('🚀 Starting Telegram bot...');
       this.bot = new Telegraf(botToken);
       await this.bot.launch();
       this.isRunning = true;
-      console.log('✅ Telegram bot ishga tushdi!');
+
+      const me = await this.bot.telegram.getMe();
+      console.log('✅ TELEGRAM BOT ISHGA TUSHDI!');
+      console.log('🤖 Bot username: @' + me.username);
     } catch (error) {
-      console.error('❌ Telegram bot xatolik:', error.message);
+      console.error('❌ TELEGRAM BOT XATOLIK:', error.message);
       this.isRunning = false;
     }
   }
