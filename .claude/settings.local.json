@@ -29,7 +29,11 @@
       "Bash(ssh:*)",
       "Bash(curl -v http://5.189.141.151/dispatch/)",
       "Bash(curl -I http://5.189.141.151/dispatch/)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(for file in messages.html blocked.html groups.html settings.html)",
+      "Bash(do sed -i '5i\\    <base href=\"\"/dispatch/\"\">' \"$file\")",
+      "Bash(echo:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
