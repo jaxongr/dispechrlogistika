@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "init-db": "node src/config/init-db.js"
+    "init-db": "node src/config/init-db.js",
+    "create-session": "node create-telegram-session.js"
   },
   "keywords": ["telegram", "logistics", "dispatch"],
   "author": "",
