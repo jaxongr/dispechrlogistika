@@ -220,10 +220,6 @@ class MessageController {
       res.status(500).json({ error: 'Server xatolik' });
     }
   }
-}
-
-module.exports = new MessageController();
-
   // Get blocked users
   async getBlockedUsers(req, res) {
     try {
