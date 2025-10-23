@@ -94,97 +94,87 @@ class TelegramSessionService {
     console.log('👂 Xabarlarni tinglash boshlandi...');
 
     this.messageHandler = async (event) => {
-      try {
-        const message = event.message;
+      // Process messages in background without blocking event loop
+      setImmediate(async () => {
+        try {
+          const message = event.message;
 
-        // Faqat guruh xabarlarini qabul qilish
-        if (!message.peerId?.channelId && !message.peerId?.chatId) {
-          return;
-        }
+          // Faqat text xabarlar va guruh xabarlarini qabul qilish
+          if (!message?.text || (!message.peerId?.channelId && !message.peerId?.chatId)) {
+            return;
+          }
 
-        const sender = await message.getSender();
-        const chat = await message.getChat();
+          const sender = await message.getSender();
+          const chat = await message.getChat();
 
-        // Xabar ma'lumotlari
-        const messageData = {
-          telegram_message_id: message.id,
-          sender_user_id: sender?.id?.toString(),
-          sender_username: sender?.username || '',
-          sender_full_name: `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
-          message_text: message.text || '',
-          message_date: new Date(message.date * 1000),
-          group_id: chat?.id?.toString(),
-          group_name: chat?.title || '',
-          group_username: chat?.username || ''
-        };
+          const senderId = sender?.id?.toString();
+          const chatId = chat?.id?.toString();
 
-        // Bloklangan user bo'lsa, xabarni qabul qilmaymiz
-        const isBlocked = await BlockedUser.isBlocked(messageData.sender_user_id);
-        if (isBlocked) {
-          console.log(`🚫 Bloklangan user: ${messageData.sender_username} (${messageData.sender_user_id})`);
-          await BlockedUser.incrementBlockedCount(messageData.sender_user_id);
-          return;
-        }
+          // Bloklangan user bo'lsa, xabarni qabul qilmaymiz
+          const isBlocked = await BlockedUser.isBlocked(senderId);
+          if (isBlocked) {
+            console.log(`🚫 Bloklangan: ${sender?.username || senderId}`);
+            await BlockedUser.incrementBlockedCount(senderId);
+            return;
+          }
 
-        // Dispetcher detection
-        const detection = dispatcherDetector.analyze(messageData.message_text, messageData);
+          // Xabar ma'lumotlari
+          const messageData = {
+            telegram_message_id: message.id,
+            sender_user_id: senderId,
+            sender_username: sender?.username || '',
+            sender_full_name: `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+            message_text: message.text,
+            message_date: new Date(message.date * 1000),
+            group_id: chatId,
+            group_name: chat?.title || '',
+            group_username: chat?.username || ''
+          };
 
-        console.log(`\n📨 Yangi xabar:
-          Guruh: ${messageData.group_name}
-          Yuboruvchi: ${messageData.sender_full_name} (@${messageData.sender_username})
-          Dispetcher: ${detection.isDispatcher ? '❌ HA' : '✅ YO\'Q'}
-          Ishonch: ${(detection.confidence * 100).toFixed(0)}%
-          Ma'lumot: ${messageData.message_text.substring(0, 100)}...
-        `);
+          // Dispetcher detection
+          const detection = dispatcherDetector.analyze(messageData.message_text, messageData);
 
-        // Guruhni database'ga qo'shish
-        let dbGroup = await TelegramGroup.findByGroupId(messageData.group_id);
-        if (!dbGroup) {
-          dbGroup = await TelegramGroup.create({
-            group_id: messageData.group_id,
-            group_name: messageData.group_name,
-            group_username: messageData.group_username,
-            added_by: 1 // System user
+          // Log only non-dispatcher messages
+          if (!detection.isDispatcher) {
+            console.log(`📨 ${messageData.group_name}: ${messageData.message_text.substring(0, 50)}...`);
+          }
+
+          // Guruhni database'ga qo'shish (agar mavjud bo'lmasa)
+          let dbGroup = await TelegramGroup.findByGroupId(messageData.group_id);
+          if (!dbGroup) {
+            dbGroup = await TelegramGroup.create({
+              group_id: messageData.group_id,
+              group_name: messageData.group_name,
+              group_username: messageData.group_username,
+              added_by: 1
+            });
+          }
+
+          // Logistika ma'lumotlarini ajratish
+          const logisticsData = dispatcherDetector.extractLogisticsData(messageData.message_text);
+
+          // Xabarni database'ga saqlash
+          await Message.create({
+            telegram_message_id: messageData.telegram_message_id,
+            group_id: dbGroup.id,
+            sender_user_id: messageData.sender_user_id,
+            sender_username: messageData.sender_username,
+            sender_full_name: messageData.sender_full_name,
+            message_text: messageData.message_text,
+            message_date: messageData.message_date,
+            is_dispatcher: detection.isDispatcher,
+            confidence_score: detection.confidence,
+            raw_data: {
+              detection: detection,
+              chat: { id: chatId, title: chat?.title }
+            },
+            ...logisticsData
           });
-        } else {
-          await TelegramGroup.updateLastMessage(messageData.group_id);
+
+        } catch (error) {
+          console.error('❌ Message handler error:', error.message);
         }
-
-        // Logistika ma'lumotlarini ajratish
-        const logisticsData = dispatcherDetector.extractLogisticsData(messageData.message_text);
-
-        // Xabarni database'ga saqlash
-        await Message.create({
-          telegram_message_id: messageData.telegram_message_id,
-          group_id: dbGroup.id,
-          sender_user_id: messageData.sender_user_id,
-          sender_username: messageData.sender_username,
-          sender_full_name: messageData.sender_full_name,
-          message_text: messageData.message_text,
-          message_date: messageData.message_date,
-          is_dispatcher: detection.isDispatcher,
-          confidence_score: detection.confidence,
-          raw_data: {
-            detection: detection,
-            chat: {
-              id: chat?.id?.toString(),
-              title: chat?.title
-            }
-          },
-          ...logisticsData
-        });
-
-        // Agar dispetcher bo'lmasa va yetarli confidence bo'lsa, avtomatik approve
-        const autoApproveThreshold = parseFloat(process.env.AUTO_APPROVE_THRESHOLD || 0.9);
-        if (!detection.isDispatcher && detection.confidence >= autoApproveThreshold) {
-          console.log('✅ Avtomatik approve qilindi!');
-          // Bu yerda telegram bot service orqali kanalga yuborish kerak
-          // TO DO: Implement in telegram-bot service
-        }
-
-      } catch (error) {
-        console.error('❌ Xabarni qayta ishlashda xatolik:', error);
-      }
+      });
     };
 
     this.client.addEventHandler(this.messageHandler, new NewMessage({}));
