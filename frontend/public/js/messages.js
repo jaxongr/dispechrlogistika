@@ -79,16 +79,24 @@ async function loadMessages() {
                 ? `<span class="badge ${msg.is_dispatcher ? 'bg-danger' : 'bg-success'}">${(msg.confidence_score * 100).toFixed(0)}%</span>`
                 : '-';
 
+            // Count user's groups
+            const userGroupCount = msg.user_group_count || '-';
+
             html += `
                 <tr style="cursor: pointer;" onclick="viewMessage(${msg.id})">
                     <td><small>${formatDate(msg.message_date)}</small></td>
                     <td><small>${msg.group_name || 'N/A'}</small></td>
-                    <td><small>${msg.sender_full_name || msg.sender_username || 'N/A'}</small></td>
+                    <td>
+                        <small>${msg.sender_full_name || msg.sender_username || 'N/A'}</small><br>
+                        <span class="badge bg-secondary" style="font-size: 0.7rem;">
+                            <i class="bi bi-people"></i> ${userGroupCount} guruh
+                        </span>
+                    </td>
                     <td><small>${truncate(msg.message_text, 100)}</small></td>
                     <td>${statusBadge}${sentBadge}</td>
                     <td class="text-center">${confidence}</td>
                     <td>
-                        <div class="btn-group btn-group-sm">
+                        <div class="btn-group btn-group-sm" role="group">
                             ${!msg.is_dispatcher && !msg.is_approved ? `
                                 <button class="btn btn-success" onclick="event.stopPropagation(); approveMessage(${msg.id})" title="Tasdiqlash">
                                     <i class="bi bi-check"></i>
@@ -97,6 +105,11 @@ async function loadMessages() {
                             ${msg.is_approved && !msg.is_sent_to_channel ? `
                                 <button class="btn btn-primary" onclick="event.stopPropagation(); sendMessage(${msg.id})" title="Yuborish">
                                     <i class="bi bi-send"></i>
+                                </button>
+                            ` : ''}
+                            ${!msg.is_dispatcher ? `
+                                <button class="btn btn-danger" onclick="event.stopPropagation(); markAsDispatcher(${msg.id})" title="Dispetchr deb belgilash">
+                                    <i class="bi bi-ban"></i> Dispetchr
                                 </button>
                             ` : ''}
                             <button class="btn btn-info" onclick="event.stopPropagation(); viewMessage(${msg.id})" title="Ko'rish">
@@ -326,6 +339,23 @@ async function blockSender(id) {
         if (modal) modal.hide();
     } catch (error) {
         console.error('Yuboruvchini bloklashda xatolik:', error);
+        alert('Xatolik yuz berdi');
+    }
+}
+
+// Mark message as dispatcher and block sender
+async function markAsDispatcher(id) {
+    if (!confirm('Bu yuboruvchini DISPETCHR deb belgilash va bloklashni xohlaysizmi?\n\nBu user keyingi xabarlarini yuborolmaydi!')) {
+        return;
+    }
+
+    try {
+        // Block sender with auto reason
+        await MessagesAPI.blockSender(id, 'Dispetchr deb belgilangan');
+        alert('✅ Dispetchr deb belgilandi va bloklandi!');
+        loadMessages();
+    } catch (error) {
+        console.error('Dispetchr belgilashda xatolik:', error);
         alert('Xatolik yuz berdi');
     }
 }
