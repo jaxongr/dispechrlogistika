@@ -62,6 +62,13 @@ router.get('/', async (req, res) => {
       };
     });
 
+    // Sort by blocked_at DESC (newest first - eng oxirgisi tepada)
+    enrichedUsers.sort((a, b) => {
+      const dateA = new Date(a.blocked_at);
+      const dateB = new Date(b.blocked_at);
+      return dateB - dateA; // DESC order
+    });
+
     res.json({ blocked_users: enrichedUsers });
   } catch (error) {
     console.error('Get blocked users error:', error);
