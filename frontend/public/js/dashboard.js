@@ -160,12 +160,16 @@ async function checkSystemHealth() {
 
 // Auto refresh
 function startAutoRefresh() {
-    // Refresh every 30 seconds
+    // Refresh every 2 minutes (120 seconds) - optimized for performance
     setInterval(() => {
         loadStatistics();
-        loadRecentMessages();
         checkSystemHealth();
-    }, 30000);
+    }, 120000);
+
+    // Refresh recent messages less frequently (every 3 minutes)
+    setInterval(() => {
+        loadRecentMessages();
+    }, 180000);
 }
 
 // Initialize

@@ -57,7 +57,7 @@ class Message {
   static async findAll(filters = {}) {
     let messages = db.get('messages').value();
 
-    // Apply filters
+    // Apply filters FIRST to reduce dataset
     if (filters.is_dispatcher !== undefined) {
       messages = messages.filter(m => m.is_dispatcher === filters.is_dispatcher);
     }
@@ -84,36 +84,47 @@ class Message {
     // Sort by message_date DESC
     messages.sort((a, b) => new Date(b.message_date) - new Date(a.message_date));
 
-    // Add group info and count user's groups
-    const groups = db.get('telegram_groups').value();
-    const allMessages = db.get('messages').value();
-
-    messages = messages.map(m => {
-      const group = groups.find(g => g.id === m.group_id);
-
-      // Count how many unique groups this user has posted in
-      const userGroupIds = new Set(
-        allMessages
-          .filter(msg => msg.sender_user_id === m.sender_user_id)
-          .map(msg => msg.group_id)
-      );
-
-      return {
-        ...m,
-        group_name: group ? group.group_name : null,
-        group_username: group ? group.group_username : null,
-        user_group_count: userGroupIds.size // Number of groups user is active in
-      };
-    });
-
-    // Pagination
+    // Count total BEFORE pagination
     const total = messages.length;
+
+    // Apply pagination EARLY
     if (filters.offset) {
       messages = messages.slice(filters.offset);
     }
     if (filters.limit) {
       messages = messages.slice(0, filters.limit);
     }
+
+    // Only load groups and calculate user_group_count for paginated results
+    const groups = db.get('telegram_groups').value();
+    const groupsMap = new Map(groups.map(g => [g.id, g]));
+
+    // Get unique user IDs from current page only
+    const uniqueUserIds = [...new Set(messages.map(m => m.sender_user_id))];
+
+    // Pre-calculate user group counts for only these users
+    const allMessages = db.get('messages').value();
+    const userGroupCountsMap = new Map();
+
+    uniqueUserIds.forEach(userId => {
+      const userGroupIds = new Set(
+        allMessages
+          .filter(msg => msg.sender_user_id === userId)
+          .map(msg => msg.group_id)
+      );
+      userGroupCountsMap.set(userId, userGroupIds.size);
+    });
+
+    // Enrich messages with group info and user group count
+    messages = messages.map(m => {
+      const group = groupsMap.get(m.group_id);
+      return {
+        ...m,
+        group_name: group ? group.group_name : null,
+        group_username: group ? group.group_username : null,
+        user_group_count: userGroupCountsMap.get(m.sender_user_id) || 0
+      };
+    });
 
     return messages;
   }

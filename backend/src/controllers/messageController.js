@@ -240,28 +240,47 @@ class MessageController {
   async getPhoneNumbers(req, res) {
     try {
       const { is_dispatcher, is_approved } = req.query;
+      const { db } = require('../config/database');
 
-      const filters = {};
-      if (is_dispatcher !== undefined) filters.is_dispatcher = is_dispatcher === 'true';
-      if (is_approved !== undefined) filters.is_approved = is_approved === 'true';
+      // Direct DB query - much faster than using findAll
+      let messages = db.get('messages').value();
 
-      const messages = await Message.findAll(filters);
+      // Filter only messages with phone numbers FIRST
+      messages = messages.filter(m => m.contact_phone);
 
-      // Extract phone numbers
-      const phoneData = messages
-        .filter(m => m.contact_phone)
-        .map(m => ({
+      // Apply filters
+      if (is_dispatcher !== undefined) {
+        const isDispatcherBool = is_dispatcher === 'true';
+        messages = messages.filter(m => m.is_dispatcher === isDispatcherBool);
+      }
+
+      if (is_approved !== undefined) {
+        const isApprovedBool = is_approved === 'true';
+        messages = messages.filter(m => m.is_approved === isApprovedBool);
+      }
+
+      // Sort by date DESC
+      messages.sort((a, b) => new Date(b.message_date) - new Date(a.message_date));
+
+      // Get groups for mapping
+      const groups = db.get('telegram_groups').value();
+      const groupsMap = new Map(groups.map(g => [g.id, g]));
+
+      // Extract phone numbers with minimal data
+      const phoneData = messages.map(m => {
+        const group = groupsMap.get(m.group_id);
+        return {
           phone: m.contact_phone,
           sender: m.sender_full_name || m.sender_username || 'N/A',
-          group: m.group_name || 'N/A',
+          group: group ? group.group_name : 'N/A',
           date: m.message_date,
-          message_text: m.message_text,
           route_from: m.route_from,
           route_to: m.route_to,
           cargo_type: m.cargo_type,
           is_dispatcher: m.is_dispatcher,
           is_approved: m.is_approved
-        }));
+        };
+      });
 
       res.json({
         phones: phoneData,
