@@ -74,9 +74,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-// 404 handler
+// 404 handler - only for API routes
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route topilmadi' });
+  if (req.path.startsWith('/api/')) {
+    res.status(404).json({ error: 'Route topilmadi' });
+  } else {
+    // For HTML pages, return 404 page or redirect to login
+    res.status(404).sendFile(path.join(frontendPath, 'index.html'));
+  }
 });
 
 // Error handler
