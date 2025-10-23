@@ -104,5 +104,68 @@ async function unblockUser(id) {
     }
 }
 
+// Export phone numbers to TXT file
+async function exportToTxt() {
+    try {
+        const response = await fetch('/api/messages/blocked-users', {
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch blocked users');
+        }
+
+        const data = await response.json();
+
+        if (!data.blockedUsers || data.blockedUsers.length === 0) {
+            alert('Bloklangan foydalanuvchilar yo\'q!');
+            return;
+        }
+
+        // Extract phone numbers from usernames and full names
+        let phoneNumbers = [];
+
+        data.blockedUsers.forEach(user => {
+            // Try to extract from username
+            const usernameMatch = user.username?.match(/\+?\d{7,15}/);
+            if (usernameMatch) {
+                phoneNumbers.push(usernameMatch[0]);
+            }
+
+            // Try to extract from full_name
+            const nameMatch = user.full_name?.match(/\+?\d{7,15}/);
+            if (nameMatch && !phoneNumbers.includes(nameMatch[0])) {
+                phoneNumbers.push(nameMatch[0]);
+            }
+
+            // Add telegram_user_id as fallback
+            if (!usernameMatch && !nameMatch) {
+                phoneNumbers.push(`ID: ${user.telegram_user_id}`);
+            }
+        });
+
+        // Create text content
+        const textContent = phoneNumbers.join('\n');
+
+        // Create and download file
+        const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bloklangan_tel_raqamlar_${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert(`✅ ${phoneNumbers.length} ta telefon raqam yuklandi!`);
+    } catch (error) {
+        console.error('Export xatolik:', error);
+        alert('Xatolik yuz berdi!');
+    }
+}
+
 // Initialize
 loadBlockedUsers();

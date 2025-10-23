@@ -9,6 +9,7 @@ router.use(authenticate);
 // GET routes
 router.get('/', messageController.getAll);
 router.get('/statistics', messageController.getStatistics);
+router.get('/blocked-users', messageController.getBlockedUsers);
 router.get('/:id', messageController.getOne);
 
 // POST routes

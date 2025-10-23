@@ -223,3 +223,20 @@ class MessageController {
 }
 
 module.exports = new MessageController();
+
+  // Get blocked users
+  async getBlockedUsers(req, res) {
+    try {
+      const BlockedUser = require('../models/BlockedUser');
+      const blockedUsers = await BlockedUser.findAll(1000, 0);
+
+      res.json({
+        blockedUsers: blockedUsers,
+        total: blockedUsers.length
+      });
+    } catch (error) {
+      console.error('Get blocked users xatolik:', error);
+      res.status(500).json({ error: 'Server xatolik' });
+    }
+  }
+}
