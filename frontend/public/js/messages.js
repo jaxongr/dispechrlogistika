@@ -95,24 +95,24 @@ async function loadMessages() {
                     <td><small>${truncate(msg.message_text, 100)}</small></td>
                     <td>${statusBadge}${sentBadge}</td>
                     <td class="text-center">${confidence}</td>
-                    <td>
+                    <td onclick="event.stopPropagation();">
                         <div class="btn-group btn-group-sm" role="group">
-                            ${!msg.is_dispatcher && !msg.is_approved ? `
-                                <button class="btn btn-success" onclick="event.stopPropagation(); approveMessage(${msg.id})" title="Tasdiqlash">
-                                    <i class="bi bi-check"></i>
-                                </button>
-                            ` : ''}
-                            ${msg.is_approved && !msg.is_sent_to_channel ? `
-                                <button class="btn btn-primary" onclick="event.stopPropagation(); sendMessage(${msg.id})" title="Yuborish">
-                                    <i class="bi bi-send"></i>
-                                </button>
-                            ` : ''}
-                            ${!msg.is_dispatcher ? `
-                                <button class="btn btn-danger" onclick="event.stopPropagation(); markAsDispatcher(${msg.id})" title="Dispetchr deb belgilash">
-                                    <i class="bi bi-ban"></i> Dispetchr
-                                </button>
-                            ` : ''}
-                            <button class="btn btn-info" onclick="event.stopPropagation(); viewMessage(${msg.id})" title="Ko'rish">
+                            ${!msg.is_dispatcher && !msg.is_approved ?
+                                '<button class="btn btn-success" onclick="approveMessage(' + msg.id + ')" title="Tasdiqlash">' +
+                                    '<i class="bi bi-check"></i>' +
+                                '</button>'
+                            : ''}
+                            ${msg.is_approved && !msg.is_sent_to_channel ?
+                                '<button class="btn btn-primary" onclick="sendMessage(' + msg.id + ')" title="Yuborish">' +
+                                    '<i class="bi bi-send"></i>' +
+                                '</button>'
+                            : ''}
+                            ${!msg.is_dispatcher ?
+                                '<button class="btn btn-danger" onclick="markAsDispatcher(' + msg.id + ')" title="Dispetchr deb belgilash">' +
+                                    '<i class="bi bi-ban"></i> Dispetchr' +
+                                '</button>'
+                            : ''}
+                            <button class="btn btn-info" onclick="viewMessage(${msg.id})" title="Ko'rish">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
@@ -262,21 +262,21 @@ async function viewMessage(id) {
         const modalFooter = document.getElementById('modalFooter');
         modalFooter.innerHTML = `
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
-            ${!msg.is_dispatcher && !msg.is_approved ? `
-                <button type="button" class="btn btn-success" onclick="approveMessage(${msg.id})">
-                    <i class="bi bi-check"></i> Tasdiqlash
-                </button>
-            ` : ''}
-            ${msg.is_approved && !msg.is_sent_to_channel ? `
-                <button type="button" class="btn btn-primary" onclick="sendMessage(${msg.id})">
-                    <i class="bi bi-send"></i> Kanalga yuborish
-                </button>
-            ` : ''}
-            ${!msg.is_dispatcher ? `
-                <button type="button" class="btn btn-danger" onclick="blockSender(${msg.id})">
-                    <i class="bi bi-ban"></i> Yuboruvchini bloklash
-                </button>
-            ` : ''}
+            ${!msg.is_dispatcher && !msg.is_approved ?
+                '<button type="button" class="btn btn-success" onclick="approveMessage(' + msg.id + ')">' +
+                    '<i class="bi bi-check"></i> Tasdiqlash' +
+                '</button>'
+            : ''}
+            ${msg.is_approved && !msg.is_sent_to_channel ?
+                '<button type="button" class="btn btn-primary" onclick="sendMessage(' + msg.id + ')">' +
+                    '<i class="bi bi-send"></i> Kanalga yuborish' +
+                '</button>'
+            : ''}
+            ${!msg.is_dispatcher ?
+                '<button type="button" class="btn btn-danger" onclick="blockSender(' + msg.id + ')">' +
+                    '<i class="bi bi-ban"></i> Yuboruvchini bloklash' +
+                '</button>'
+            : ''}
         `;
 
         const modal = new bootstrap.Modal(document.getElementById('messageModal'));
