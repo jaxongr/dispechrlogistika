@@ -10,8 +10,36 @@ class MessageFilter {
     this.recentMessages = new Map(); // message_hash -> timestamp
     this.userGroupCount = new Map(); // user_id -> Set of group_ids
 
+    // Load dispatcher keywords
+    try {
+      const keywordsData = require('../data/dispatcher-keywords.json');
+      this.dispatcherKeywords = keywordsData.keywords.map(k => k.toLowerCase());
+      console.log(`✅ Loaded ${this.dispatcherKeywords.length} dispatcher keywords`);
+    } catch (error) {
+      console.error('❌ Failed to load dispatcher keywords:', error);
+      this.dispatcherKeywords = [];
+    }
+
     // Cleanup old data every 5 minutes
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
+  }
+
+  /**
+   * Check if username or bio contains dispatcher keywords
+   */
+  hasDispatcherKeywordsInProfile(username, fullName) {
+    if (!username && !fullName) return false;
+
+    const textToCheck = `${username || ''} ${fullName || ''}`.toLowerCase();
+
+    // Check each keyword
+    for (const keyword of this.dispatcherKeywords) {
+      if (textToCheck.includes(keyword)) {
+        return { found: true, keyword: keyword };
+      }
+    }
+
+    return { found: false };
   }
 
   /**
@@ -110,7 +138,18 @@ class MessageFilter {
    * @returns {Object} { shouldBlock: boolean, reason: string, isDispatcher: boolean }
    */
   checkMessage(messageData) {
-    const { message_text, sender_user_id, group_id } = messageData;
+    const { message_text, sender_user_id, sender_username, sender_full_name, group_id } = messageData;
+
+    // 0. Username yoki full name'da kalit so'z bor mi?
+    const keywordCheck = this.hasDispatcherKeywordsInProfile(sender_username, sender_full_name);
+    if (keywordCheck.found) {
+      return {
+        shouldBlock: true,
+        reason: `Username/Bio'da kalit so'z: "${keywordCheck.keyword}"`,
+        isDispatcher: true,
+        autoBlock: true
+      };
+    }
 
     // 1. Telefon raqam tekshirish
     if (!this.hasPhoneNumber(message_text)) {
