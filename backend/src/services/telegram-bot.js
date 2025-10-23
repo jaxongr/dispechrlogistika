@@ -64,7 +64,7 @@ class TelegramBotService {
       // Extract message_id and telegram_user_id from callback data
       // Format: report_dispatcher_{message_id}_{telegram_user_id}
       const parts = callbackData.split('_');
-      const messageId = parts[2];
+      const messageId = parseInt(parts[2]); // Convert to number to match DB type
       const telegramUserId = parts[3];
 
       console.log(`🚫 Dispetcher report: msg=${messageId}, user=${telegramUserId}, reporter=${ctx.from.id}`);

@@ -135,7 +135,7 @@ class MessageController {
   // Xabar yuboruvchisini bloklash
   async blockSender(req, res) {
     try {
-      const { id } = req.params;
+      const id = parseInt(req.params.id); // Convert to number
       const { reason } = req.body;
 
       const message = await Message.findById(id);
