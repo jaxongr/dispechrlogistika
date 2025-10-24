@@ -27,6 +27,82 @@ class TelegramBotService {
       console.log('🚀 Starting Telegram bot...');
       this.bot = new Telegraf(botToken);
 
+      // Setup /start command
+      this.bot.command('start', async (ctx) => {
+        const welcomeMessage = `🤖 <b>YO'LDA | Yuk Markazi Bot</b>
+
+Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi.
+
+<b>📊 Statistika:</b>
+Dashboard: http://5.189.141.151:3001
+
+<b>🔧 Komandalar:</b>
+/start - Bot haqida ma'lumot
+/help - Yordam
+/stats - Mening statistikam
+
+<b>ℹ️ Qanday ishlaydi:</b>
+1. E'lonlar avtomatik filter qilinadi
+2. To'g'ri e'lonlar guruhga yuboriladi
+3. Agar e'lon dispetcher bo'lsa, "Bu dispetcher ekan" tugmasini bosing
+4. Dispetcher avtomatik bloklanadi
+
+<b>⚠️ Eslatma:</b>
+Noto'g'ri e'lonlarni bloklasangiz, admin sizga xabar yuborishi mumkin.`;
+
+        await ctx.reply(welcomeMessage, { parse_mode: 'HTML' });
+      });
+
+      // Setup /help command
+      this.bot.command('help', async (ctx) => {
+        const helpMessage = `📚 <b>YORDAM</b>
+
+<b>Bot komandalar:</b>
+/start - Bot haqida
+/help - Bu yordam
+/stats - Mening statistikam
+
+<b>Qanday ishlaydi:</b>
+• Bot guruhlardan e'lonlarni o'qiydi
+• AI va qoidalar orqali filter qiladi
+• To'g'ri e'lonlar "YO'LDA | Yuk markazi" guruhiga yuboriladi
+
+<b>Agar e'lon dispetcher bo'lsa:</b>
+• "🚫 Bu dispetcher ekan" tugmasini bosing
+• User avtomatik bloklanadi
+• E'lon o'chiriladi
+
+<b>Dashboard:</b>
+http://5.189.141.151:3001
+
+Savol bo'lsa, admin bilan bog'laning.`;
+
+        await ctx.reply(helpMessage, { parse_mode: 'HTML' });
+      });
+
+      // Setup /stats command
+      this.bot.command('stats', async (ctx) => {
+        try {
+          const userId = ctx.from.id.toString();
+          const DispatcherReport = require('../models/DispatcherReport');
+          const reports = await DispatcherReport.getReportsByUser(userId);
+
+          const statsMessage = `📊 <b>SIZNING STATISTIKANGIZ</b>
+
+👤 User: ${ctx.from.first_name || 'Noma\'lum'}
+🆔 ID: <code>${userId}</code>
+
+📝 <b>Jami bloklagan:</b> ${reports.length} ta e'lon
+
+🔗 <b>To'liq statistika:</b>
+http://5.189.141.151:3001/reporter-stats.html`;
+
+          await ctx.reply(statsMessage, { parse_mode: 'HTML' });
+        } catch (error) {
+          await ctx.reply('❌ Statistikani yuklashda xatolik yuz berdi.');
+        }
+      });
+
       // Setup callback query handler for "Bu dispetcher ekan" button
       this.bot.on('callback_query', async (ctx) => {
         await this.handleDispatcherReport(ctx);
