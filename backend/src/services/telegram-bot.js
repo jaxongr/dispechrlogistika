@@ -204,6 +204,43 @@ http://5.189.141.151:3001/reporter-stats.html`;
         return;
       }
 
+      // Check if reporter is admin - if yes, auto-block immediately
+      const adminId = process.env.ADMIN_USER_ID;
+      const isAdmin = adminId && ctx.from.id.toString() === adminId.toString();
+
+      if (isAdmin) {
+        // Admin bosgan - to'g'ridan-to'g'ri bloklash
+        console.log(`👑 Admin o'zi blokladi - avtomatik tasdiqlandi`);
+
+        // Block the user
+        await BlockedUser.create({
+          telegram_user_id: telegramUserId,
+          username: message.sender_username || '',
+          full_name: message.sender_full_name || '',
+          reason: `Admin tomonidan dispetcher deb belgilangan`,
+          blocked_by: ctx.from.id
+        });
+
+        // Mark message as DISPATCHER in group
+        await this.markMessageAsDispatcher(message, ctx.from);
+
+        // Update database
+        db.get('messages')
+          .find({ id: messageId })
+          .assign({
+            is_dispatcher: true,
+            confidence_score: 1.0,
+            confirmed_by_admin: true,
+            confirmed_at: new Date().toISOString()
+          })
+          .write();
+
+        await ctx.answerCbQuery('✅ Dispetcher bloklandi!');
+        console.log(`✅ Admin blocked user ${telegramUserId} immediately`);
+        return;
+      }
+
+      // Agar admin emas bo'lsa - tasdiqlash uchun admin'ga so'rov yuborish
       // Save report to database
       const report = await DispatcherReport.create({
         message_id: messageId,
