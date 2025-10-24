@@ -368,10 +368,10 @@ class MessageFilter {
 
     // 3. User'ning guruh sonini tekshirish
     const groupCount = this.trackUserGroup(sender_user_id, group_id);
-    if (groupCount > 50) {
+    if (groupCount > 15) {
       return {
         shouldBlock: true,
-        reason: '50+ guruhda (professional dispatcher)',
+        reason: '15+ guruhda (professional dispatcher)',
         isDispatcher: true,
         autoBlock: true
       };
