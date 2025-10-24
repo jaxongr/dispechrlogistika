@@ -852,7 +852,18 @@ http://5.189.141.151:3001/reporter-stats.html`;
       }
 
       // Recreate message text without phone number
-      let messageText = `📦 ${this.escapeHtml(message.message_text)}\n\n`;
+      // Remove phone numbers from message text using regex
+      let cleanedText = message.message_text;
+
+      // Remove phone numbers in various formats
+      // +998901234567, 998901234567, 901234567, 90 123 45 67, etc.
+      cleanedText = cleanedText.replace(/\+?\d{12}/g, '***');  // +998901234567
+      cleanedText = cleanedText.replace(/\b\d{12}\b/g, '***');  // 998901234567
+      cleanedText = cleanedText.replace(/\b\d{9}\b/g, '***');   // 901234567
+      cleanedText = cleanedText.replace(/\b\d{2}\s?\d{3}\s?\d{2}\s?\d{2}\b/g, '***'); // 90 123 45 67
+      cleanedText = cleanedText.replace(/\b\d{3}\s?\d{3}\s?\d{3}\b/g, '***'); // 977 016 763
+
+      let messageText = `📦 ${this.escapeHtml(cleanedText)}\n\n`;
 
       // COMPLETELY HIDE PHONE NUMBER - don't show it at all
       // Phone will be sent only to the taker via private message
