@@ -183,3 +183,35 @@ function truncate(text, length = 100) {
     if (text.length <= length) return text;
     return text.substring(0, length) + '...';
 }
+
+// Format phone number to +998 XX XXX XX XX
+function formatPhone(phone) {
+    if (!phone) return '';
+    
+    // Remove all non-digit characters
+    const digits = phone.replace(/\D/g, '');
+    
+    // If starts with 998 and has 12 digits: 998XXXXXXXXX
+    if (digits.startsWith('998') && digits.length === 12) {
+        return '+998 ' + digits.substr(3, 2) + ' ' + digits.substr(5, 3) + ' ' + 
+               digits.substr(8, 2) + ' ' + digits.substr(10, 2);
+    }
+    
+    // If has 9 digits: XXXXXXXXX (assume Uzbek)
+    if (digits.length === 9) {
+        return '+998 ' + digits.substr(0, 2) + ' ' + digits.substr(2, 3) + ' ' + 
+               digits.substr(5, 2) + ' ' + digits.substr(7, 2);
+    }
+    
+    // If already has +998 prefix
+    if (phone.includes('+998')) {
+        const digitsOnly = digits.startsWith('998') ? digits.substr(3) : digits;
+        if (digitsOnly.length === 9) {
+            return '+998 ' + digitsOnly.substr(0, 2) + ' ' + digitsOnly.substr(2, 3) + ' ' + 
+                   digitsOnly.substr(5, 2) + ' ' + digitsOnly.substr(7, 2);
+        }
+    }
+    
+    // Return as-is if cannot format
+    return phone;
+}

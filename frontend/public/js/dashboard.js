@@ -28,7 +28,7 @@ async function loadStatistics() {
 
         document.getElementById('totalMessages').textContent = stats.total_messages || 0;
         document.getElementById('approvedMessages').textContent = stats.approved_messages || 0;
-        document.getElementById('dispatcherMessages').textContent = stats.dispatcher_messages || 0;
+        document.getElementById('dispatcherMessages').textContent = stats.blocked_users || 0;
         document.getElementById('sentMessages').textContent = stats.sent_messages || 0;
 
         // Today and week stats

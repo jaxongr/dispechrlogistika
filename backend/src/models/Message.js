@@ -197,6 +197,7 @@ class Message {
 
   static async getStatistics() {
     const messages = db.get('messages').value();
+    const blockedUsers = db.get('blocked_users').value();
 
     const now = new Date();
     const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
@@ -208,7 +209,8 @@ class Message {
       approved_messages: messages.filter(m => m.is_approved).length,
       sent_messages: messages.filter(m => m.is_sent_to_channel).length,
       messages_today: messages.filter(m => new Date(m.message_date) > oneDayAgo).length,
-      messages_week: messages.filter(m => new Date(m.message_date) > oneWeekAgo).length
+      messages_week: messages.filter(m => new Date(m.message_date) > oneWeekAgo).length,
+      blocked_users: blockedUsers.length
     };
   }
 }

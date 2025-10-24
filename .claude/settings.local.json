@@ -37,7 +37,9 @@
       "Bash(for:*)",
       "Bash(do sed -i '/<base href/d' \"$file\")",
       "Bash(scp:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(git revert:*)",
+      "Read(//c/Users/Pro/Desktop/**)"
     ],
     "deny": [],
     "ask": []

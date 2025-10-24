@@ -109,7 +109,7 @@ function renderPhones() {
 
         html += `
             <tr>
-                <td><strong>${phone.phone}</strong></td>
+                <td><strong>${formatPhone(phone.phone)}</strong></td>
                 <td><small>${phone.sender}</small></td>
                 <td><small>${phone.group}</small></td>
                 <td><small>${route}</small></td>
@@ -150,8 +150,8 @@ document.getElementById('exportTxtBtn').addEventListener('click', () => {
         return;
     }
 
-    // Get unique phone numbers only
-    const uniquePhones = [...new Set(filteredPhones.map(p => p.phone))];
+    // Get unique phone numbers only (formatted)
+    const uniquePhones = [...new Set(filteredPhones.map(p => formatPhone(p.phone)))];
     const txtContent = uniquePhones.join('\n');
 
     const blob = new Blob([txtContent], { type: 'text/plain' });
@@ -183,7 +183,7 @@ document.getElementById('exportCsvBtn').addEventListener('click', () => {
             : 'Kutilmoqda';
 
         const row = [
-            phone.phone,
+            formatPhone(phone.phone),
             phone.sender.replace(/,/g, ' '),
             phone.group.replace(/,/g, ' '),
             phone.route_from || '-',
