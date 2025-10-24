@@ -856,12 +856,14 @@ http://5.189.141.151:3001/reporter-stats.html`;
       let cleanedText = message.message_text;
 
       // Remove phone numbers in various formats
-      // +998901234567, 998901234567, 901234567, 90 123 45 67, etc.
+      // +998901234567, 998901234567, 901234567, 90 123 45 67, 33.483.90.86, etc.
       cleanedText = cleanedText.replace(/\+?\d{12}/g, '***');  // +998901234567
       cleanedText = cleanedText.replace(/\b\d{12}\b/g, '***');  // 998901234567
       cleanedText = cleanedText.replace(/\b\d{9}\b/g, '***');   // 901234567
       cleanedText = cleanedText.replace(/\b\d{2}\s?\d{3}\s?\d{2}\s?\d{2}\b/g, '***'); // 90 123 45 67
       cleanedText = cleanedText.replace(/\b\d{3}\s?\d{3}\s?\d{3}\b/g, '***'); // 977 016 763
+      cleanedText = cleanedText.replace(/\b\d{2}\.\d{3}\.\d{2}\.\d{2}\b/g, '***'); // 33.483.90.86
+      cleanedText = cleanedText.replace(/\b\d{2}\.\d{3}\.\d{3}\b/g, '***'); // 33.483.9086 (variant)
 
       let messageText = `📦 ${this.escapeHtml(cleanedText)}\n\n`;
 
