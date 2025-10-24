@@ -179,52 +179,19 @@ http://5.189.141.151:3001/reporter-stats.html`;
 
       console.log(`📝 Report saved: ID=${report.id}, reporter=${ctx.from.id}`);
 
-      // Send notification to admin
-      await this.notifyAdminAboutReport(report, message, ctx);
+      // Send notification to admin for confirmation (NOT auto-block)
+      await this.notifyAdminAboutReportForConfirmation(report, message, ctx);
 
-      // Block the user
-      const isAlreadyBlocked = await BlockedUser.isBlocked(telegramUserId);
-
-      if (!isAlreadyBlocked) {
-        await BlockedUser.create({
-          telegram_user_id: telegramUserId,
-          username: message.sender_username || '',
-          full_name: message.sender_full_name || '',
-          reason: `Guruh a'zosi tomonidan dispetcher deb belgilandi (reporter: ${ctx.from.id})`,
-          blocked_by: ctx.from.id
-        });
-
-        console.log(`✅ User ${telegramUserId} blocked by group member ${ctx.from.id}`);
-
-        // Also block all phone numbers from this user's messages
-        await BlockedUser.blockUserPhoneNumbers(
-          telegramUserId,
-          `Guruh a'zosi tomonidan bloklangan user telefoni (reporter: ${ctx.from.id})`
-        );
-      }
-
-      // Delete message from group
-      if (message.group_message_id) {
-        try {
-          await ctx.deleteMessage(message.group_message_id);
-          console.log(`🗑️ Message ${message.group_message_id} deleted from group`);
-        } catch (deleteError) {
-          console.error('Delete error:', deleteError.message);
-        }
-      }
-
-      // Update message in database
+      // Mark report as pending in database
       db.get('messages')
         .find({ id: messageId })
         .assign({
-          is_dispatcher: true,
-          confidence_score: 1.0,
-          blocked_by_group: true,
-          blocked_at: new Date().toISOString()
+          pending_dispatcher_report: true,
+          reported_at: new Date().toISOString()
         })
         .write();
 
-      await ctx.answerCbQuery('✅ Dispetcher bloklandi va e\'lon o\'chirildi!');
+      await ctx.answerCbQuery('📨 So\'rov admin\'ga yuborildi. Tasdiqlashni kutib turing...');
 
     } catch (error) {
       console.error('❌ Callback handler error:', error);
@@ -490,6 +457,82 @@ http://5.189.141.151:3001/reporter-stats.html`;
   }
 
   /**
+   * Notify admin about dispatcher report - FOR CONFIRMATION
+   */
+  async notifyAdminAboutReportForConfirmation(report, message, reporter) {
+    try {
+      const adminId = process.env.ADMIN_USER_ID;
+
+      if (!adminId) {
+        console.log('⚠️ ADMIN_USER_ID not set in .env');
+        return;
+      }
+
+      // Get reporter's stats
+      const reporterStats = await DispatcherReport.getReportsByUser(report.reported_by_user_id);
+
+      let notificationText = `⚠️ <b>DISPECHR SO'ROV!</b>\n\n`;
+      notificationText += `👤 <b>Kim xabar berdi:</b> `;
+
+      if (reporter.from.username) {
+        notificationText += `<a href="https://t.me/${reporter.from.username}">${this.escapeHtml(report.reported_by_full_name)}</a>`;
+      } else {
+        notificationText += `<a href="tg://user?id=${report.reported_by_user_id}">${this.escapeHtml(report.reported_by_full_name)}</a>`;
+      }
+
+      notificationText += `\n📊 <b>Jami hisobotlar:</b> ${reporterStats.length} ta\n\n`;
+
+      notificationText += `❓ <b>Dispetcher deb gumon qilingan user:</b>\n`;
+      if (message.sender_username) {
+        notificationText += `   @${message.sender_username}\n`;
+      }
+      notificationText += `   ID: <code>${message.sender_user_id}</code>\n`;
+      notificationText += `   Ism: ${this.escapeHtml(message.sender_full_name || 'N/A')}\n\n`;
+
+      notificationText += `📝 <b>E'lon matni:</b>\n${this.escapeHtml(message.message_text.substring(0, 200))}${message.message_text.length > 200 ? '...' : ''}\n\n`;
+
+      if (message.contact_phone) {
+        notificationText += `📞 Telefon: ${message.contact_phone}\n`;
+      }
+
+      notificationText += `\n<b>⚠️ TASDIQLANG:</b> Bu haqiqatan dispetchermi?`;
+
+      // Create admin confirmation keyboard
+      const keyboard = Markup.inlineKeyboard([
+        [
+          Markup.button.callback(
+            '✅ Ha, dispetcher - Blokla',
+            `admin_confirm_dispatcher_${report.id}_${message.id}_${message.sender_user_id}`
+          )
+        ],
+        [
+          Markup.button.callback(
+            '❌ Yo\'q, dispetcher emas',
+            `admin_reject_dispatcher_${report.id}_${report.reported_by_user_id}`
+          )
+        ]
+      ]);
+
+      await this.bot.telegram.sendMessage(
+        adminId,
+        notificationText,
+        {
+          parse_mode: 'HTML',
+          reply_markup: keyboard.reply_markup
+        }
+      );
+
+      // Mark as notified
+      await DispatcherReport.markAsNotified(report.id);
+
+      console.log(`📨 Admin notified about dispatcher confirmation ${report.id}`);
+
+    } catch (error) {
+      console.error('❌ Error notifying admin:', error.message);
+    }
+  }
+
+  /**
    * Handle admin actions on reporter
    */
   async handleAdminAction(ctx) {
@@ -497,7 +540,83 @@ http://5.189.141.151:3001/reporter-stats.html`;
       const callbackData = ctx.callbackQuery.data;
       const parts = callbackData.split('_');
 
-      if (callbackData.startsWith('admin_block_reporter_')) {
+      // Admin confirms dispatcher report
+      if (callbackData.startsWith('admin_confirm_dispatcher_')) {
+        // Format: admin_confirm_dispatcher_{report_id}_{message_id}_{user_id}
+        const reportId = parseInt(parts[3]);
+        const messageId = parseInt(parts[4]);
+        const userId = parts[5];
+
+        // Get message from database
+        const message = db.get('messages').find({ id: messageId }).value();
+
+        if (!message) {
+          await ctx.answerCbQuery('❌ Xabar topilmadi');
+          return;
+        }
+
+        // Block the user
+        const isAlreadyBlocked = await BlockedUser.isBlocked(userId);
+
+        if (!isAlreadyBlocked) {
+          await BlockedUser.create({
+            telegram_user_id: userId,
+            username: message.sender_username || '',
+            full_name: message.sender_full_name || '',
+            reason: `Admin tomonidan tasdiqlangan dispetcher`,
+            blocked_by: ctx.from.id
+          });
+
+          // Block phone numbers
+          await BlockedUser.blockUserPhoneNumbers(
+            userId,
+            `Admin tomonidan tasdiqlangan dispetcher telefoni`
+          );
+
+          console.log(`✅ Admin confirmed dispatcher: ${userId}`);
+        }
+
+        // Edit message in group - mark as DISPECHR
+        await this.markMessageAsDispatcher(message, ctx.from);
+
+        // Update report
+        await DispatcherReport.updateAdminAction(reportId, 'confirmed_dispatcher');
+
+        // Update message in database
+        db.get('messages')
+          .find({ id: messageId })
+          .assign({
+            is_dispatcher: true,
+            confidence_score: 1.0,
+            confirmed_by_admin: true,
+            confirmed_at: new Date().toISOString(),
+            pending_dispatcher_report: false
+          })
+          .write();
+
+        await ctx.answerCbQuery('✅ Dispetcher tasdiqlandi va bloklandi');
+        await ctx.editMessageText(
+          ctx.callbackQuery.message.text + '\n\n✅ <b>Admin action:</b> Dispetcher tasdiqlandi va bloklandi',
+          { parse_mode: 'HTML' }
+        );
+
+      } else if (callbackData.startsWith('admin_reject_dispatcher_')) {
+        // Format: admin_reject_dispatcher_{report_id}_{reporter_user_id}
+        const reportId = parseInt(parts[3]);
+        const reporterUserId = parts[4];
+
+        // Update report
+        await DispatcherReport.updateAdminAction(reportId, 'rejected');
+
+        await ctx.answerCbQuery('❌ Hisobot rad etildi');
+        await ctx.editMessageText(
+          ctx.callbackQuery.message.text + '\n\n❌ <b>Admin action:</b> Dispetcher emas, hisobot rad etildi',
+          { parse_mode: 'HTML' }
+        );
+
+        console.log(`❌ Admin rejected dispatcher report ${reportId}`);
+
+      } else if (callbackData.startsWith('admin_block_reporter_')) {
         // Format: admin_block_reporter_{report_id}_{user_id}
         const reportId = parseInt(parts[3]);
         const userId = parts[4];
@@ -534,22 +653,25 @@ http://5.189.141.151:3001/reporter-stats.html`;
         const userId = parts[4];
 
         try {
-          // Kick from target group
-          await this.bot.telegram.banChatMember(this.targetGroupId, userId);
+          // Kick from target group - use banChatMember with until_date
+          // until_date: current time + 30 seconds (temporary ban, then auto-unban)
+          const untilDate = Math.floor(Date.now() / 1000) + 30;
 
-          // Unban immediately (just kick, not permanent ban)
-          await this.bot.telegram.unbanChatMember(this.targetGroupId, userId);
+          await this.bot.telegram.banChatMember(this.targetGroupId, userId, {
+            until_date: untilDate,
+            revoke_messages: false
+          });
 
           // Update report
           await DispatcherReport.updateAdminAction(reportId, 'kicked');
 
           await ctx.answerCbQuery('✅ User guruhdan chiqarildi');
           await ctx.editMessageText(
-            ctx.callbackQuery.message.text + '\n\n⛔ <b>Admin action:</b> User guruhdan chiqarildi',
+            ctx.callbackQuery.message.text + '\n\n⛔ <b>Admin action:</b> User guruhdan chiqarildi (30s temp ban)',
             { parse_mode: 'HTML' }
           );
 
-          console.log(`✅ Admin kicked reporter ${userId} from group`);
+          console.log(`✅ Admin kicked reporter ${userId} from group (30s temp ban)`);
 
         } catch (error) {
           console.error('❌ Kick error:', error.message);
@@ -767,6 +889,83 @@ http://5.189.141.151:3001/reporter-stats.html`;
 
     } catch (error) {
       console.error('❌ Error notifying admin about taken:', error.message);
+    }
+  }
+
+  /**
+   * Mark message as dispatcher in group (after admin confirmation)
+   */
+  async markMessageAsDispatcher(message, admin) {
+    try {
+      if (!message.group_message_id) {
+        return;
+      }
+
+      // Recreate message text
+      let messageText = `📦 ${this.escapeHtml(message.message_text)}\n\n`;
+
+      // Keep phone number visible (for DISPATCHER posts)
+      if (message.contact_phone) {
+        messageText += `📞 Telefon: ${message.contact_phone}\n`;
+      }
+
+      if (message.route_from || message.route_to) {
+        messageText += `🛣️ Yo'nalish: ${this.escapeHtml(message.route_from || '?')} → ${this.escapeHtml(message.route_to || '?')}\n`;
+      }
+
+      if (message.cargo_type) {
+        messageText += `📦 Yuk turi: ${this.escapeHtml(message.cargo_type)}\n`;
+      }
+
+      // Get group info
+      const groupInfo = db.get('telegram_groups')
+        .find({ id: message.group_id })
+        .value();
+
+      // Add sender info
+      const senderName = this.escapeHtml(message.sender_full_name || 'Noma\'lum');
+      let senderInfo;
+
+      if (message.sender_username && message.sender_username.trim()) {
+        senderInfo = `<a href="https://t.me/${message.sender_username}">${senderName}</a>`;
+      } else {
+        senderInfo = `<a href="tg://user?id=${message.sender_user_id}">${senderName}</a>`;
+      }
+
+      const userIdHashtag = `#ID${message.sender_user_id}`;
+      messageText += `\n👤 Yuboruvchi: ${senderInfo} ${userIdHashtag}`;
+
+      // Add source link
+      if (groupInfo) {
+        let sourceLink;
+        if (groupInfo.group_username && groupInfo.group_username.trim()) {
+          sourceLink = `https://t.me/${groupInfo.group_username}/${message.telegram_message_id}`;
+        } else {
+          const cleanGroupId = groupInfo.group_id.toString().replace(/^-100/, '');
+          sourceLink = `https://t.me/c/${cleanGroupId}/${message.telegram_message_id}`;
+        }
+        messageText += `\n📍 Manba: <a href="${sourceLink}">Bu yerda</a>`;
+      }
+
+      // Add "DISPECHR" badge
+      messageText += `\n\n🚫 <b>DISPECHR!</b> (Admin tomonidan tasdiqlangan)`;
+
+      // Update message - remove buttons
+      await this.bot.telegram.editMessageText(
+        this.targetGroupId,
+        message.group_message_id,
+        null,
+        messageText,
+        {
+          parse_mode: 'HTML',
+          disable_web_page_preview: true
+        }
+      );
+
+      console.log(`✅ Message ${message.id} marked as DISPATCHER`);
+
+    } catch (error) {
+      console.error('❌ Mark dispatcher error:', error.message);
     }
   }
 
