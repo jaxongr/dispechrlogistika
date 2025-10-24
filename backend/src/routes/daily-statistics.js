@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticate } = require('../middlewares/auth');
 const DailyStatistics = require('../models/DailyStatistics');
 
 /**
  * GET /api/daily-statistics
  * Oxirgi N kunlik statistikani olish
  */
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', authenticate, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 30; // default: oxirgi 30 kun
     const stats = await DailyStatistics.getLastDays(limit);
@@ -30,7 +30,7 @@ router.get('/', authenticateToken, async (req, res) => {
  * GET /api/daily-statistics/range
  * Ma'lum sanalar oralig'idagi statistika
  */
-router.get('/range', authenticateToken, async (req, res) => {
+router.get('/range', authenticate, async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
 
@@ -61,7 +61,7 @@ router.get('/range', authenticateToken, async (req, res) => {
  * GET /api/daily-statistics/total
  * Umumiy statistika (barcha kunlar bo'yicha)
  */
-router.get('/total', authenticateToken, async (req, res) => {
+router.get('/total', authenticate, async (req, res) => {
   try {
     const totalStats = await DailyStatistics.getTotalStatistics();
 
@@ -82,7 +82,7 @@ router.get('/total', authenticateToken, async (req, res) => {
  * POST /api/daily-statistics/save-now
  * Hozir statistikani saqlash (test uchun)
  */
-router.post('/save-now', authenticateToken, async (req, res) => {
+router.post('/save-now', authenticate, async (req, res) => {
   try {
     const stat = await DailyStatistics.saveTodayStatistics();
 
