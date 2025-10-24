@@ -348,6 +348,24 @@ class MessageFilter {
       };
     }
 
+    // 2.2. YANGI: Ko'p bo'sh qatorlar (3+ ketma-ket bo'sh qator = dispatcher)
+    // Dispatcherlar xabarni uzun qilish uchun ko'p bo'sh qatorlar qo'shishadi
+    const consecutiveNewlines = /\n\s*\n\s*\n/; // 3+ bo'sh qator ketma-ket
+    if (consecutiveNewlines.test(message_text)) {
+      // Count how many blank lines
+      const blankLineGroups = message_text.match(/(\n\s*){3,}/g) || [];
+      const maxConsecutive = blankLineGroups.length > 0
+        ? Math.max(...blankLineGroups.map(g => (g.match(/\n/g) || []).length))
+        : 0;
+
+      return {
+        shouldBlock: true,
+        reason: `Ko'p bo'sh qatorlar (${maxConsecutive}ta ketma-ket)`,
+        isDispatcher: true,
+        autoBlock: true
+      };
+    }
+
     // 3. User'ning guruh sonini tekshirish
     const groupCount = this.trackUserGroup(sender_user_id, group_id);
     if (groupCount > 50) {
