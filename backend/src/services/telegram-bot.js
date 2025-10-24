@@ -219,9 +219,9 @@ class TelegramBotService {
           sourceLink = `https://t.me/c/${cleanGroupId}/${message.telegram_message_id}`;
         }
 
-        messageText += `\n📍 Manba: <a href="${sourceLink}">${groupName}</a>`;
+        messageText += `\n📍 <a href="${sourceLink}">${groupName}</a>`;
       } else {
-        messageText += `\n📍 Manba: Noma'lum`;
+        messageText += `\n📍 Noma'lum guruh`;
       }
 
       // Create inline keyboard with "Bu dispetcher ekan" button
