@@ -32,8 +32,8 @@ async function loadStatistics() {
         document.getElementById('dispatcherMessages').textContent = stats.blocked_users || 0;
         document.getElementById('sentMessages').textContent = stats.sent_messages || 0;
 
-        // Yangi statistikalar
-        document.getElementById('sentToGroup').textContent = stats.sent_messages || 0;
+        // Yangi statistikalar (bugungi)
+        document.getElementById('sentToGroup').textContent = stats.sent_today || 0;
         document.getElementById('blockedPhones').textContent = stats.blocked_phones || 0;
         document.getElementById('autoBlocked').textContent = stats.auto_blocked_users || 0;
 

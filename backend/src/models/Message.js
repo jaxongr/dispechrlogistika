@@ -204,6 +204,9 @@ class Message {
     const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
     const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
 
+    // Bugungi sana (00:00:00 dan)
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
     // Guruhga yuborilgan unikal telefon raqamlar
     const sentMessages = messages.filter(m => m.is_sent_to_channel && m.contact_phone);
     const uniquePhones = new Set(sentMessages.map(m => m.contact_phone));
@@ -226,10 +229,10 @@ class Message {
       blocked_phones: blockedPhones.length,
       auto_blocked_users: autoBlockedUsers.length,
       manual_blocked_users: manualBlockedUsers.length,
-      
-      // Bugungi statistika
-      sent_today: sentMessages.filter(m => new Date(m.sent_at || m.created_at) > oneDayAgo).length,
-      blocked_today: blockedUsers.filter(u => new Date(u.blocked_at) > oneDayAgo).length
+
+      // Bugungi statistika (00:00:00 dan hozirgi vaqtgacha)
+      sent_today: messages.filter(m => m.is_sent_to_channel && new Date(m.created_at) >= todayStart).length,
+      blocked_today: blockedUsers.filter(u => new Date(u.blocked_at) >= todayStart).length
     };
   }
 }

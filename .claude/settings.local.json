@@ -39,7 +39,10 @@
       "Bash(scp:*)",
       "mcp__ide__getDiagnostics",
       "Bash(git revert:*)",
-      "Read(//c/Users/Pro/Desktop/**)"
+      "Read(//c/Users/Pro/Desktop/**)",
+      "Read(//c/tmp/**)",
+      "Read(//c/Users/Pro/Downloads/**)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
