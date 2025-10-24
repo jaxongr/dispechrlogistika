@@ -242,6 +242,18 @@ class MessageFilter {
       };
     }
 
+    // 2.1. YANGI: Xabardagi emoji soni (3+ emoji = dispatcher)
+    const emojiPattern = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu;
+    const emojiMatches = message_text.match(emojiPattern) || [];
+    if (emojiMatches.length >= 3) {
+      return {
+        shouldBlock: true,
+        reason: `3+ emoji dispetcher belgisi (${emojiMatches.length}ta emoji)`,
+        isDispatcher: true,
+        autoBlock: true
+      };
+    }
+
     // 3. User'ning guruh sonini tekshirish
     const groupCount = this.trackUserGroup(sender_user_id, group_id);
     if (groupCount > 50) {
