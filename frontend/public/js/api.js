@@ -215,3 +215,52 @@ function formatPhone(phone) {
     // Return as-is if cannot format
     return phone;
 }
+
+// Generic API helper for statistics and other pages
+const api = {
+    async get(endpoint) {
+        const token = getToken();
+        return fetch(`${API_BASE_URL}${endpoint}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            }
+        });
+    },
+
+    async post(endpoint, data) {
+        const token = getToken();
+        return fetch(`${API_BASE_URL}${endpoint}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: JSON.stringify(data)
+        });
+    },
+
+    async put(endpoint, data) {
+        const token = getToken();
+        return fetch(`${API_BASE_URL}${endpoint}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: JSON.stringify(data)
+        });
+    },
+
+    async delete(endpoint) {
+        const token = getToken();
+        return fetch(`${API_BASE_URL}${endpoint}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            }
+        });
+    }
+};
