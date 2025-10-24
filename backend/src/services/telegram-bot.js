@@ -182,6 +182,11 @@ class TelegramBotService {
         messageText += `📦 Yuk turi: ${this.escapeHtml(message.cargo_type)}\n`;
       }
 
+      // Get group info from database
+      const groupInfo = db.get('telegram_groups')
+        .find({ id: message.group_id })
+        .value();
+
       // Create clickable sender link
       const senderName = this.escapeHtml(message.sender_full_name || 'Noma\'lum');
       let senderInfo;
@@ -192,11 +197,32 @@ class TelegramBotService {
       } else {
         // No username - use text mention format (works in all Telegram clients)
         // Format: <a href="tg://user?id=USER_ID">Name</a>
-        senderInfo = `<a href="tg://user?id=${message.sender_user_id}">${senderName}</a> (ID: ${message.sender_user_id})`;
+        senderInfo = `<a href="tg://user?id=${message.sender_user_id}">${senderName}</a>`;
       }
 
-      messageText += `\n👤 Yuboruvchi: ${senderInfo}`;
-      messageText += `\n🏷️ Guruh: ${this.escapeHtml(message.group_name || 'Noma\'lum')}`;
+      // Add hashtag for user ID tracking
+      const userIdHashtag = `#ID${message.sender_user_id}`;
+
+      messageText += `\n👤 Yuboruvchi: ${senderInfo} ${userIdHashtag}`;
+
+      // Create message source link
+      if (groupInfo) {
+        let sourceLink;
+        const groupName = this.escapeHtml(groupInfo.group_name || 'Guruh');
+
+        if (groupInfo.group_username && groupInfo.group_username.trim()) {
+          // Public group - use username
+          sourceLink = `https://t.me/${groupInfo.group_username}/${message.telegram_message_id}`;
+        } else {
+          // Private group - use group ID (remove -100 prefix if exists)
+          const cleanGroupId = groupInfo.group_id.toString().replace(/^-100/, '');
+          sourceLink = `https://t.me/c/${cleanGroupId}/${message.telegram_message_id}`;
+        }
+
+        messageText += `\n📍 Manba: <a href="${sourceLink}">${groupName}</a>`;
+      } else {
+        messageText += `\n📍 Manba: Noma'lum`;
+      }
 
       // Create inline keyboard with "Bu dispetcher ekan" button
       const keyboard = Markup.inlineKeyboard([
