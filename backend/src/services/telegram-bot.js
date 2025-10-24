@@ -146,6 +146,12 @@ http://5.189.141.151:3001/reporter-stats.html`;
         return;
       }
 
+      // "Raqamni olish" button handler
+      if (callbackData.startsWith('get_phone_')) {
+        await this.handleGetPhoneButton(ctx);
+        return;
+      }
+
       if (!callbackData.startsWith('report_dispatcher_')) {
         return;
       }
@@ -755,6 +761,56 @@ http://5.189.141.151:3001/reporter-stats.html`;
   }
 
   /**
+   * Handle "Raqamni olish" button click
+   */
+  async handleGetPhoneButton(ctx) {
+    try {
+      const callbackData = ctx.callbackQuery.data;
+      // Format: get_phone_{message_id}
+      const parts = callbackData.split('_');
+      const messageId = parseInt(parts[2]);
+
+      console.log(`📞 Get phone button: msg=${messageId}, user=${ctx.from.id}`);
+
+      // Get message from database
+      const message = db.get('messages').find({ id: messageId }).value();
+
+      if (!message) {
+        await ctx.answerCbQuery('❌ Xabar topilmadi');
+        return;
+      }
+
+      // Check if message has phone number
+      if (!message.contact_phone) {
+        await ctx.answerCbQuery('❌ Bu e\'londa telefon raqam yo\'q');
+        return;
+      }
+
+      // Send phone number privately to the user
+      try {
+        await this.bot.telegram.sendMessage(
+          ctx.from.id,
+          `📞 <b>E'lon uchun telefon raqam:</b>\n\n${message.contact_phone}\n\n👤 Yuboruvchi: ${message.sender_full_name || 'Noma\'lum'}\n\n<i>💡 Agar bot ishlamasa, avval /start bosing</i>`,
+          { parse_mode: 'HTML' }
+        );
+
+        await ctx.answerCbQuery('✅ Telefon raqam botda yuborildi!');
+        console.log(`📞 Phone sent to ${ctx.from.username || ctx.from.id} for message ${messageId}`);
+
+      } catch (err) {
+        console.log('⚠️ Could not send phone to user (not started bot):', err.message);
+
+        // If failed to send, tell user to start the bot first
+        await ctx.answerCbQuery('❌ Botni avval ishga tushiring: @Yukchiborbot ga /start bosing', { show_alert: true });
+      }
+
+    } catch (error) {
+      console.error('❌ Get phone handler error:', error.message);
+      await ctx.answerCbQuery('❌ Xatolik yuz berdi').catch(() => {});
+    }
+  }
+
+  /**
    * Edit message after "Olindi" - hide phone and add badge
    */
   async editMessageAsTaken(messageId, message, takenBy) {
@@ -801,7 +857,17 @@ http://5.189.141.151:3001/reporter-stats.html`;
       const takerUsername = takenBy.username ? `@${takenBy.username}` : takenBy.first_name;
       messageText += `\n\n✅ <b>OLINDI!</b> 👤 ${takerUsername}`;
 
-      // Update with buttons removed (no more "Olindi" or "Bu dispetcher ekan" buttons)
+      // Add button to get phone number if forgotten
+      const keyboard = Markup.inlineKeyboard([
+        [
+          Markup.button.callback(
+            '📞 Raqamni olish',
+            `get_phone_${messageId}`
+          )
+        ]
+      ]);
+
+      // Update message with "Get Phone" button
       await this.bot.telegram.editMessageText(
         this.targetGroupId,
         message.group_message_id,
@@ -809,7 +875,8 @@ http://5.189.141.151:3001/reporter-stats.html`;
         messageText,
         {
           parse_mode: 'HTML',
-          disable_web_page_preview: true
+          disable_web_page_preview: true,
+          ...keyboard
         }
       );
 
