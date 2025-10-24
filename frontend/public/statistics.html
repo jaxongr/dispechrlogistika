@@ -339,8 +339,8 @@
             try {
                 // Load daily stats
                 const dailyUrl = dateInput
-                    ? `/api/statistics/daily?date=${dateInput}`
-                    : '/api/statistics/daily';
+                    ? `/statistics/daily?date=${dateInput}`
+                    : '/statistics/daily';
 
                 const dailyResponse = await api.get(dailyUrl);
 
@@ -351,7 +351,7 @@
                 const dailyData = await dailyResponse.json();
 
                 // Load overview stats
-                const overviewResponse = await api.get('/api/statistics/overview');
+                const overviewResponse = await api.get('/statistics/overview');
                 const overviewData = await overviewResponse.json();
 
                 // Update daily stats
