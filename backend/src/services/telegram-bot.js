@@ -549,8 +549,8 @@ http://5.189.141.151:3001/reporter-stats.html`;
       let notificationText = `⚠️ <b>DISPECHR SO'ROV!</b>\n\n`;
       notificationText += `👤 <b>Kim xabar berdi:</b> `;
 
-      if (reporter.from.username) {
-        notificationText += `<a href="https://t.me/${reporter.from.username}">${this.escapeHtml(report.reported_by_full_name)}</a>`;
+      if (report.reported_by_username) {
+        notificationText += `<a href="https://t.me/${report.reported_by_username}">${this.escapeHtml(report.reported_by_full_name)}</a>`;
       } else {
         notificationText += `<a href="tg://user?id=${report.reported_by_user_id}">${this.escapeHtml(report.reported_by_full_name)}</a>`;
       }
