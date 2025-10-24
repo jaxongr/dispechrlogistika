@@ -180,38 +180,181 @@ class DispatcherDetector {
       price: null
     };
 
-    // Telefon raqamni topish - kengaytirilgan regex
-    // Bo'shliq, tire, nuqta, qavs va boshqa belgilarni qo'llab-quvvatlaydi
-    // Formatlar: 998901234567, 998 90 123 45 67, 998.90.123.45.67, +998(90)123-45-67, va hokazo
+    // 🚀 COMPREHENSIVE PHONE NUMBER EXTRACTION - 1000+ FORMAT VARIATIONS
+    // Barcha O'zbekiston telefon raqam formatlarini qo'llab-quvvatlaydi
+
+    // Separator patterns - har xil belgilar (bo'shliq, nuqta, tire, qavs, va boshqalar)
+    const sep = '[\\s\\.\\-\\_\\,\\(\\)\\[\\]\\{\\}\\|\\\\\\//]*'; // Flexible separator
+    const sepReq = '[\\s\\.\\-\\_\\,\\(\\)\\[\\]\\{\\}\\|\\\\\\//]+'; // At least one separator
+
+    // Build dynamic patterns using RegExp constructor for proper variable interpolation
     const phonePatterns = [
-      // +998 bilan: +998901234567, +998 90 123 45 67, +998.90.123.45.67, +998(90)123-45-67
-      /\+?998[\s\.\-\(\)]?(\d{2})[\s\.\-\(\)]?(\d{3})[\s\.\-\(\)]?(\d{2})[\s\.\-\(\)]?(\d{2})/g,
-      // 998 siz: 901234567, 90 123 45 67, 90.123.45.67, (90)123-45-67
-      /(?<!\d)([789]\d)[\s\.\-\(\)]?(\d{3})[\s\.\-\(\)]?(\d{2})[\s\.\-\(\)]?(\d{2})(?!\d)/g,
-      // 9 raqamli: 901234567 (bo'shliq/nuqta/tire bilan ham)
-      /(?<!\d)([789]\d[\s\.\-]?\d{3}[\s\.\-]?\d{2}[\s\.\-]?\d{2})(?!\d)/g
+      // =====================================================
+      // GROUP 1: +998 yoki 998 bilan (12 raqamli)
+      // =====================================================
+
+      // +998 90 123 45 67 (bo'shliq bilan) - using RegExp for proper interpolation
+      new RegExp(`\\+?998${sep}(\\d{2})${sepReq}(\\d{3})${sepReq}(\\d{2})${sepReq}(\\d{2})`, 'g'),
+
+      // +998 90 123 4567 (3-4 format)
+      new RegExp(`\\+?998${sep}(\\d{2})${sepReq}(\\d{3})${sepReq}(\\d{4})`, 'g'),
+
+      // +998 90 1234567 (2-7 format)
+      new RegExp(`\\+?998${sep}(\\d{2})${sepReq}(\\d{7})`, 'g'),
+
+      // +998 901234567 (bo'shliqsiz)
+      new RegExp(`\\+?998${sep}(\\d{9})`, 'g'),
+
+      // +998(90)123-45-67, +998.90.123.45.67, +998-90-123-45-67
+      new RegExp(`\\+?998${sep}(\\d{2})${sep}(\\d{3})${sep}(\\d{2})${sep}(\\d{2})`, 'g'),
+
+      // =====================================================
+      // GROUP 2: 9 raqamli formatlar (operator code bilan)
+      // O'zbekiston operator kodlari: 33, 50, 55, 61-69, 71, 74-79, 88, 90-99
+      // =====================================================
+
+      // 90 123 45 67 (bo'shliq bilan, 2-3-2-2 format) ⭐ USER'S EXAMPLE: "88 149 04 07"
+      new RegExp(`(?<!\\d)([3-9]\\d)${sepReq}(\\d{3})${sepReq}(\\d{2})${sepReq}(\\d{2})(?!\\d)`, 'g'),
+
+      // 90 123 4567 (2-3-4 format)
+      new RegExp(`(?<!\\d)([3-9]\\d)${sepReq}(\\d{3})${sepReq}(\\d{4})(?!\\d)`, 'g'),
+
+      // 90 1234567 (2-7 format)
+      new RegExp(`(?<!\\d)([3-9]\\d)${sepReq}(\\d{7})(?!\\d)`, 'g'),
+
+      // 901234567 (9 raqam bo'shliqsiz)
+      /(?<!\d)([3-9]\d\d{7})(?!\d)/g,
+
+      // 90-123-45-67, 90.123.45.67, 90_123_45_67
+      new RegExp(`(?<!\\d)(\\(?\\d{2}\\)?${sep}\\d{3}${sep}\\d{2}${sep}\\d{2})(?!\\d)`, 'g'),
+
+      // =====================================================
+      // GROUP 3: Maxsus formatlar va edge cases
+      // =====================================================
+
+      // Format: 9-0-1-2-3-4-5-6-7 (har bir raqam ajratilgan)
+      new RegExp(`(?<!\\d)([3-9])${sep}(\\d)${sep}(\\d)${sep}(\\d)${sep}(\\d)${sep}(\\d)${sep}(\\d)${sep}(\\d)${sep}(\\d)(?!\\d)`, 'g'),
+
+      // Format: 9 0 1 2 3 4 5 6 7 (bo'shliq bilan har bir raqam)
+      /(?<!\d)([3-9])\s+(\d)\s+(\d)\s+(\d)\s+(\d)\s+(\d)\s+(\d)\s+(\d)\s+(\d)(?!\d)/g,
+
+      // Format: 901 234 567 (3-3-3)
+      new RegExp(`(?<!\\d)([3-9]\\d{2})${sepReq}(\\d{3})${sepReq}(\\d{3})(?!\\d)`, 'g'),
+
+      // Format: 9012 34567 (4-5)
+      new RegExp(`(?<!\\d)([3-9]\\d{3})${sepReq}(\\d{5})(?!\\d)`, 'g'),
+
+      // Format: 90123 4567 (5-4)
+      new RegExp(`(?<!\\d)([3-9]\\d{4})${sepReq}(\\d{4})(?!\\d)`, 'g'),
+
+      // =====================================================
+      // GROUP 4: Mixed separator formatlar
+      // =====================================================
+
+      // 90.123-45 67, 90-123.45-67, 90 123-45.67 (aralash separatorlar)
+      /(?<!\d)([3-9]\d)[\s\.\-]+(\d{3})[\s\.\-]+(\d{2})[\s\.\-]+(\d{2})(?!\d)/g,
+
+      // (90) 123 45 67, [90] 123-45-67
+      new RegExp(`(?<!\\d)[\\(\\[]([3-9]\\d)[\\)\\]]${sep}(\\d{3})${sep}(\\d{2})${sep}(\\d{2})(?!\\d)`, 'g'),
+
+      // =====================================================
+      // GROUP 5: Leading zero yoki prefix bilan
+      // =====================================================
+
+      // 0901234567, 0-90-123-45-67 (0 bilan boshlanadi)
+      new RegExp(`(?<!\\d)0${sep}([3-9]\\d)${sep}(\\d{3})${sep}(\\d{2})${sep}(\\d{2})(?!\\d)`, 'g'),
+      new RegExp(`(?<!\\d)0${sep}([3-9]\\d)${sep}(\\d{7})(?!\\d)`, 'g'),
+      /(?<!\d)0([3-9]\d\d{7})(?!\d)/g,
+
+      // =====================================================
+      // GROUP 6: Unicode va maxsus belgilar
+      // =====================================================
+
+      // Telefon emojisi yonida: 📞 901234567, ☎️ 90 123 45 67
+      new RegExp(`[📞☎️📱📲]${sep}(\\+?998)?${sep}([3-9]\\d)${sep}(\\d{3})${sep}(\\d{2})${sep}(\\d{2})`, 'g'),
+      new RegExp(`[📞☎️📱📲]${sep}(\\+?998)?${sep}([3-9]\\d\\d{7})`, 'g'),
+
+      // Tel: 901234567, Phone: 90 123 45 67, Тел: 901234567
+      new RegExp(`(?:tel|phone|telefon|тел|телефон)[:\\s]+(\\+?998)?${sep}([3-9]\\d)${sep}(\\d{3})${sep}(\\d{2})${sep}(\\d{2})`, 'gi'),
+      new RegExp(`(?:tel|phone|telefon|тел|телефон)[:\\s]+(\\+?998)?${sep}([3-9]\\d\\d{7})`, 'gi'),
+
+      // =====================================================
+      // GROUP 7: Anchor va URL formatlar
+      // =====================================================
+
+      // <a href="tel:+998901234567">
+      /tel:(\+?998)?([3-9]\d\d{7})/gi,
+
+      // =====================================================
+      // GROUP 8: Barcha qolgan 9 raqamli kombinatsiyalar
+      // =====================================================
+
+      // Juda flexible pattern - har qanday separator bilan 9 ta raqam
+      /(?<!\d)([3-9]\d)[\s\.\-\(\)]*(\d)[\s\.\-\(\)]*(\d)[\s\.\-\(\)]*(\d)[\s\.\-\(\)]*(\d)[\s\.\-\(\)]*(\d)[\s\.\-\(\)]*(\d)[\s\.\-\(\)]*(\d)[\s\.\-\(\)]*(\d)(?!\d)/g,
     ];
 
     let phoneNumbers = [];
-    
+
+    // Process each pattern
     for (const pattern of phonePatterns) {
       const matches = messageText.matchAll(pattern);
       for (const match of matches) {
         const rawPhone = match[0];
-        // Faqat raqamlarni qoldirish
-        const digitsOnly = rawPhone.replace(/\D/g, '');
-        
-        // Agar 9 raqamli bo'lsa va 7,8,9 bilan boshlansa - O'zbekiston raqami
-        if (digitsOnly.length === 9 && /^[789]/.test(digitsOnly)) {
-          phoneNumbers.push('998' + digitsOnly);
+
+        // Faqat raqamlarni qoldirish (barcha separatorlarni olib tashlash)
+        let digitsOnly = rawPhone.replace(/\D/g, '');
+
+        // Leading 0 ni olib tashlash (0901234567 -> 901234567)
+        if (digitsOnly.startsWith('0') && digitsOnly.length === 10) {
+          digitsOnly = digitsOnly.substring(1);
         }
-        // Agar 12 raqamli va 998 bilan boshlansa
+
+        // VALIDATION: O'zbekiston operator kodlarini tekshirish
+        // Valid operator codes: 33, 50, 55, 61-69, 71, 74-79, 88, 90-99
+        const validOperatorCodes = [
+          '33', '50', '55',
+          '61', '62', '65', '66', '67', '69',
+          '71', '74', '75', '76', '77', '78', '79',
+          '88',
+          '90', '91', '93', '94', '95', '97', '98', '99'
+        ];
+
+        let normalizedPhone = null;
+
+        // CASE 1: 9 raqamli (operator code + 7 raqam)
+        if (digitsOnly.length === 9) {
+          const operatorCode = digitsOnly.substring(0, 2);
+          if (validOperatorCodes.includes(operatorCode)) {
+            normalizedPhone = '998' + digitsOnly;
+          }
+        }
+
+        // CASE 2: 12 raqamli (998 + 9 raqam)
         else if (digitsOnly.length === 12 && digitsOnly.startsWith('998')) {
-          phoneNumbers.push(digitsOnly);
+          const operatorCode = digitsOnly.substring(3, 5);
+          if (validOperatorCodes.includes(operatorCode)) {
+            normalizedPhone = digitsOnly;
+          }
         }
-        // Agar 11 raqamli va 98 bilan boshlansa (998 dan 9 tushib ketgan)
+
+        // CASE 3: 11 raqamli (98 + 9 raqam - birinchi 9 tushib ketgan)
         else if (digitsOnly.length === 11 && digitsOnly.startsWith('98')) {
-          phoneNumbers.push('9' + digitsOnly);
+          const operatorCode = digitsOnly.substring(2, 4);
+          if (validOperatorCodes.includes(operatorCode)) {
+            normalizedPhone = '9' + digitsOnly;
+          }
+        }
+
+        // CASE 4: 10 raqamli (0 + 9 raqam)
+        else if (digitsOnly.length === 10 && digitsOnly.startsWith('0')) {
+          const operatorCode = digitsOnly.substring(1, 3);
+          if (validOperatorCodes.includes(operatorCode)) {
+            normalizedPhone = '998' + digitsOnly.substring(1);
+          }
+        }
+
+        if (normalizedPhone) {
+          phoneNumbers.push(normalizedPhone);
         }
       }
     }
