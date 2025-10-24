@@ -20,6 +20,67 @@ class MessageFilter {
       this.dispatcherKeywords = [];
     }
 
+    // Xorijiy davlatlar va shaharlar ro'yxati (faqat O'zbekiston kerak!)
+    this.foreignLocations = [
+      // Rossiya shaharlari
+      'россия', 'russia', 'moskva', 'москва', 'piter', 'питер', 'petersburg', 'петербург',
+      'kazan', 'казань', 'novosibirsk', 'новосибирск', 'yekaterinburg', 'екатеринбург',
+      'saratov', 'саратов', 'samara', 'самара', 'rostov', 'ростов', 'краснодар', 'krasnodar',
+      'vladivostok', 'владивосток', 'omsk', 'омск', 'chelyabinsk', 'челябинск',
+      'krasnoyarsk', 'красноярск', 'voronezh', 'воронеж', 'perm', 'пермь', 'volgograd', 'волгоград',
+
+      // Qozog'iston
+      'казахстан', 'kazakhstan', 'almaty', 'алматы', 'astana', 'астана', 'nur-sultan', 'нур-султан',
+      'shymkent', 'шымкент', 'aktobe', 'актобе', 'karaganda', 'караганда',
+
+      // Turkiya
+      'турция', 'turkey', 'turkiye', 'istanbul', 'стамбул', 'antalya', 'анталья',
+      'ankara', 'анкара', 'izmir', 'измир', 'bursa', 'бурса',
+
+      // Evropa
+      'европа', 'europe', 'polsha', 'польша', 'poland', 'warsaw', 'варшава',
+      'germany', 'германия', 'berlin', 'берлин', 'munich', 'мюнхен',
+      'italy', 'италия', 'рим', 'rome', 'milano', 'милан',
+      'france', 'франция', 'paris', 'париж', 'london', 'лондон', 'england', 'англия',
+      'spain', 'испания', 'madrid', 'мадрид', 'barcelona', 'барселона',
+      'netherlands', 'нидерланды', 'amsterdam', 'амстердам',
+      'belgium', 'бельгия', 'brussels', 'брюссель',
+      'czech', 'чехия', 'prague', 'прага',
+      'austria', 'австрия', 'vienna', 'вена',
+
+      // Tojikiston
+      'таджикистан', 'tajikistan', 'dushanbe', 'душанбе',
+
+      // Qirg'iziston
+      'кыргызстан', 'kyrgyzstan', 'bishkek', 'бишкек',
+
+      // Turkmaniston
+      'туркменистан', 'turkmenistan', 'ashgabat', 'ашхабад',
+
+      // Ozarbayjon
+      'азербайджан', 'azerbaijan', 'baku', 'баку',
+
+      // Xitoy
+      'китай', 'china', 'urumqi', 'урумчи', 'beijing', 'пекин', 'shanghai', 'шанхай',
+
+      // Eron
+      'иран', 'iran', 'tehran', 'тегеран',
+
+      // Afg'oniston
+      'афганистан', 'afghanistan', 'kabul', 'кабул',
+
+      // Hindiston
+      'индия', 'india', 'delhi', 'дели', 'mumbai', 'мумбаи',
+
+      // Arabiston
+      'дубай', 'dubai', 'uae', 'оаэ', 'arab', 'арабия', 'saudi', 'саудия',
+
+      // Boshqa xorijiy so'zlar
+      'межд', 'между', 'international', 'cargo', 'карго', 'снг', 'cis', 'европ'
+    ];
+
+    console.log(`✅ Loaded ${this.foreignLocations.length} foreign locations for blocking`);
+
     // Cleanup old data every 5 minutes
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
@@ -101,6 +162,28 @@ class MessageFilter {
     }
 
     return { suspicious: false };
+  }
+
+  /**
+   * Xorijiy joy/davlat bormi tekshirish (faqat O'zbekiston kerak!)
+   */
+  hasForeignLocation(text) {
+    if (!text) return { found: false };
+
+    const lowerText = text.toLowerCase();
+
+    // Check each foreign location
+    for (const location of this.foreignLocations) {
+      if (lowerText.includes(location)) {
+        return {
+          found: true,
+          location: location,
+          reason: `Xorijiy yo'nalish: "${location}"`
+        };
+      }
+    }
+
+    return { found: false };
   }
 
   /**
@@ -229,6 +312,17 @@ class MessageFilter {
         shouldBlock: true,
         reason: 'Telefon raqam yo\'q',
         isDispatcher: false
+      };
+    }
+
+    // 1.1. YANGI: Xorijiy yo'nalish tekshirish (faqat O'zbekiston kerak!)
+    const foreignCheck = this.hasForeignLocation(message_text);
+    if (foreignCheck.found) {
+      return {
+        shouldBlock: true,
+        reason: `${foreignCheck.reason} (faqat O'zbekiston ichida)`,
+        isDispatcher: true,
+        autoBlock: true
       };
     }
 
