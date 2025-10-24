@@ -33,7 +33,7 @@ async function loadStatistics() {
         document.getElementById('sentMessages').textContent = stats.sent_messages || 0;
 
         // Yangi statistikalar
-        document.getElementById('uniquePhones').textContent = stats.unique_phones_sent || 0;
+        document.getElementById('sentToGroup').textContent = stats.sent_messages || 0;
         document.getElementById('blockedPhones').textContent = stats.blocked_phones || 0;
         document.getElementById('autoBlocked').textContent = stats.auto_blocked_users || 0;
 
