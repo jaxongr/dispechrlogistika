@@ -799,17 +799,7 @@ http://5.189.141.151:3001/reporter-stats.html`;
       const userIdHashtag = `#ID${message.sender_user_id}`;
       messageText += `\n👤 Yuboruvchi: ${senderInfo} ${userIdHashtag}`;
 
-      // Add source link
-      if (groupInfo) {
-        let sourceLink;
-        if (groupInfo.group_username && groupInfo.group_username.trim()) {
-          sourceLink = `https://t.me/${groupInfo.group_username}/${message.telegram_message_id}`;
-        } else {
-          const cleanGroupId = groupInfo.group_id.toString().replace(/^-100/, '');
-          sourceLink = `https://t.me/c/${cleanGroupId}/${message.telegram_message_id}`;
-        }
-        messageText += `\n📍 Manba: <a href="${sourceLink}">Bu yerda</a>`;
-      }
+      // DON'T add source link when taken - hide manba completely
 
       // Add "OLINDI" badge with user info
       const takerUsername = takenBy.username ? `@${takenBy.username}` : takenBy.first_name;
