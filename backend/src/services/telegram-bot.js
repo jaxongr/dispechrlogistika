@@ -140,6 +140,12 @@ http://5.189.141.151:3001/reporter-stats.html`;
         return;
       }
 
+      // "Olindi" button handler
+      if (callbackData.startsWith('taken_')) {
+        await this.handleTakenButton(ctx);
+        return;
+      }
+
       if (!callbackData.startsWith('report_dispatcher_')) {
         return;
       }
@@ -322,12 +328,18 @@ http://5.189.141.151:3001/reporter-stats.html`;
         messageText += `\n📍 Manba: Noma'lum`;
       }
 
-      // Create inline keyboard with "Bu dispetcher ekan" button
+      // Create inline keyboard with "Bu dispetcher ekan" and "Olindi" buttons
       const keyboard = Markup.inlineKeyboard([
-        Markup.button.callback(
-          '🚫 Bu dispetcher ekan',
-          `report_dispatcher_${messageId}_${message.sender_user_id}`
-        )
+        [
+          Markup.button.callback(
+            '✅ Olindi',
+            `taken_${messageId}_${message.sender_user_id}`
+          ),
+          Markup.button.callback(
+            '🚫 Bu dispetcher ekan',
+            `report_dispatcher_${messageId}_${message.sender_user_id}`
+          )
+        ]
       ]);
 
       // Send message to target group with HTML formatting
@@ -563,6 +575,198 @@ http://5.189.141.151:3001/reporter-stats.html`;
     } catch (error) {
       console.error('❌ Admin action error:', error.message);
       await ctx.answerCbQuery('❌ Xatolik yuz berdi').catch(() => {});
+    }
+  }
+
+  /**
+   * Handle "Olindi" button click
+   */
+  async handleTakenButton(ctx) {
+    try {
+      const callbackData = ctx.callbackQuery.data;
+      // Format: taken_{message_id}_{original_sender_id}
+      const parts = callbackData.split('_');
+      const messageId = parseInt(parts[1]);
+
+      console.log(`✅ Olindi button: msg=${messageId}, taker=${ctx.from.id}`);
+
+      // Get message from database
+      const message = db.get('messages').find({ id: messageId }).value();
+
+      if (!message) {
+        await ctx.answerCbQuery('❌ Xabar topilmadi');
+        return;
+      }
+
+      // Check if already taken
+      if (message.is_taken) {
+        await ctx.answerCbQuery(`⚠️ Bu e'lon allaqachon ${message.taken_by_username || 'boshqa user'} tomonidan olingan`);
+        return;
+      }
+
+      // Mark as taken
+      db.get('messages')
+        .find({ id: messageId })
+        .assign({
+          is_taken: true,
+          taken_by_user_id: ctx.from.id.toString(),
+          taken_by_username: ctx.from.username || '',
+          taken_by_full_name: `${ctx.from.first_name || ''} ${ctx.from.last_name || ''}`.trim(),
+          taken_at: new Date().toISOString()
+        })
+        .write();
+
+      console.log(`✅ Message marked as taken by ${ctx.from.username || ctx.from.id}`);
+
+      // Edit the message - hide phone number and add "Olindi" badge
+      await this.editMessageAsTaken(messageId, message, ctx.from);
+
+      // Notify admin
+      await this.notifyAdminAboutTaken(message, ctx.from);
+
+      await ctx.answerCbQuery('✅ E\'lon sizga berildi!');
+
+    } catch (error) {
+      console.error('❌ Olindi handler error:', error.message);
+      await ctx.answerCbQuery('❌ Xatolik yuz berdi').catch(() => {});
+    }
+  }
+
+  /**
+   * Edit message after "Olindi" - hide phone and add badge
+   */
+  async editMessageAsTaken(messageId, message, takenBy) {
+    try {
+      if (!message.group_message_id) {
+        return;
+      }
+
+      // Recreate message text without phone number
+      let messageText = `📦 ${this.escapeHtml(message.message_text)}\n\n`;
+
+      // HIDE PHONE NUMBER - show stars instead
+      if (message.contact_phone) {
+        const phone = message.contact_phone;
+        const hiddenPhone = phone.substring(0, 4) + '***' + phone.substring(phone.length - 2);
+        messageText += `📞 Telefon: <code>${hiddenPhone}</code> (faqat olgan user ko'radi)\n`;
+      }
+
+      if (message.route_from || message.route_to) {
+        messageText += `🛣️ Yo'nalish: ${this.escapeHtml(message.route_from || '?')} → ${this.escapeHtml(message.route_to || '?')}\n`;
+      }
+
+      if (message.cargo_type) {
+        messageText += `📦 Yuk turi: ${this.escapeHtml(message.cargo_type)}\n`;
+      }
+
+      // Get group info
+      const groupInfo = db.get('telegram_groups')
+        .find({ id: message.group_id })
+        .value();
+
+      // Add sender info
+      const senderName = this.escapeHtml(message.sender_full_name || 'Noma\'lum');
+      let senderInfo;
+
+      if (message.sender_username && message.sender_username.trim()) {
+        senderInfo = `<a href="https://t.me/${message.sender_username}">${senderName}</a>`;
+      } else {
+        senderInfo = `<a href="tg://user?id=${message.sender_user_id}">${senderName}</a>`;
+      }
+
+      const userIdHashtag = `#ID${message.sender_user_id}`;
+      messageText += `\n👤 Yuboruvchi: ${senderInfo} ${userIdHashtag}`;
+
+      // Add source link
+      if (groupInfo) {
+        let sourceLink;
+        if (groupInfo.group_username && groupInfo.group_username.trim()) {
+          sourceLink = `https://t.me/${groupInfo.group_username}/${message.telegram_message_id}`;
+        } else {
+          const cleanGroupId = groupInfo.group_id.toString().replace(/^-100/, '');
+          sourceLink = `https://t.me/c/${cleanGroupId}/${message.telegram_message_id}`;
+        }
+        messageText += `\n📍 Manba: <a href="${sourceLink}">Bu yerda</a>`;
+      }
+
+      // Add "OLINDI" badge with user info
+      const takerUsername = takenBy.username ? `@${takenBy.username}` : takenBy.first_name;
+      messageText += `\n\n✅ <b>OLINDI!</b> 👤 ${takerUsername}`;
+
+      // Update with buttons removed (no more "Olindi" or "Bu dispetcher ekan" buttons)
+      await this.bot.telegram.editMessageText(
+        this.targetGroupId,
+        message.group_message_id,
+        null,
+        messageText,
+        {
+          parse_mode: 'HTML',
+          disable_web_page_preview: true
+        }
+      );
+
+      // Send phone number privately to the taker
+      if (message.contact_phone) {
+        try {
+          await this.bot.telegram.sendMessage(
+            takenBy.id,
+            `📞 <b>E'lon uchun telefon raqam:</b>\n\n${message.contact_phone}\n\n👤 Yuboruvchi: ${message.sender_full_name || 'Noma\'lum'}`,
+            { parse_mode: 'HTML' }
+          );
+        } catch (err) {
+          console.log('⚠️ Could not send phone to taker (user has not started bot)');
+        }
+      }
+
+      console.log(`✅ Message ${messageId} edited as taken`);
+
+    } catch (error) {
+      console.error('❌ Edit message error:', error.message);
+    }
+  }
+
+  /**
+   * Notify admin about taken message
+   */
+  async notifyAdminAboutTaken(message, takenBy) {
+    try {
+      const adminId = process.env.ADMIN_USER_ID;
+
+      if (!adminId) {
+        return;
+      }
+
+      const takerUsername = takenBy.username ? `@${takenBy.username}` : takenBy.first_name;
+      const takerLink = takenBy.username ?
+        `<a href="https://t.me/${takenBy.username}">${this.escapeHtml(takerUsername)}</a>` :
+        `<a href="tg://user?id=${takenBy.id}">${this.escapeHtml(takerUsername)}</a>`;
+
+      let notificationText = `✅ <b>E'LON OLINDI!</b>\n\n`;
+      notificationText += `👤 <b>Kim oldi:</b> ${takerLink}\n`;
+      notificationText += `🆔 ID: <code>${takenBy.id}</code>\n\n`;
+
+      notificationText += `📝 <b>E'lon:</b>\n${this.escapeHtml(message.message_text.substring(0, 200))}${message.message_text.length > 200 ? '...' : ''}\n\n`;
+
+      if (message.contact_phone) {
+        notificationText += `📞 Telefon: ${message.contact_phone}\n`;
+      }
+
+      if (message.route_from || message.route_to) {
+        notificationText += `🛣️ ${message.route_from || '?'} → ${message.route_to || '?'}\n`;
+      }
+
+      notificationText += `\n👤 <b>E'lon egasi:</b> ${message.sender_full_name || message.sender_username || 'N/A'}`;
+
+      await this.bot.telegram.sendMessage(
+        adminId,
+        notificationText,
+        { parse_mode: 'HTML' }
+      );
+
+      console.log(`📨 Admin notified about taken message ${message.id}`);
+
+    } catch (error) {
+      console.error('❌ Error notifying admin about taken:', error.message);
     }
   }
 
