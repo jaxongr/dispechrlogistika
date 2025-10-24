@@ -50,16 +50,16 @@ async function loadBlockedUsers() {
             return;
         }
 
-        let html = '<div class="table-responsive"><table class="table table-hover">';
+        let html = '<div class="table-responsive"><table class="table table-hover table-striped">';
         html += `
-            <thead>
+            <thead class="table-dark">
                 <tr>
                     <th>Telegram ID</th>
                     <th>Username</th>
                     <th>To'liq ism</th>
-                    <th>Sabab</th>
+                    <th>🚫 Bloklash sababi</th>
                     <th>Guruhlar</th>
-                    <th>Bloklangan sana</th>
+                    <th>📅 Qachon bloklangan</th>
                     <th>Bloklangan xabarlar</th>
                     <th>Amallar</th>
                 </tr>
@@ -68,21 +68,40 @@ async function loadBlockedUsers() {
         `;
 
         blockedUsers.forEach(user => {
+            // Format reason with color
+            let reasonBadge = '';
+            const reason = user.reason || 'Noma\'lum sabab';
+
+            if (reason.includes('15+ guruhda') || reason.includes('50+ guruhda')) {
+                reasonBadge = `<span class="badge bg-danger">${reason}</span>`;
+            } else if (reason.includes('200+ belgi') || reason.includes('spam')) {
+                reasonBadge = `<span class="badge bg-warning text-dark">${reason}</span>`;
+            } else if (reason.includes('AI')) {
+                reasonBadge = `<span class="badge bg-info">${reason}</span>`;
+            } else if (reason.includes('admin') || reason.includes('manual')) {
+                reasonBadge = `<span class="badge bg-secondary">${reason}</span>`;
+            } else {
+                reasonBadge = `<span class="badge bg-primary">${reason}</span>`;
+            }
+
             html += `
                 <tr>
                     <td><code>${user.telegram_user_id}</code></td>
                     <td>@${user.username || 'N/A'}</td>
                     <td>${user.full_name || 'N/A'}</td>
-                    <td><small>${user.reason || '-'}</small></td>
+                    <td>${reasonBadge}</td>
                     <td>
                         <span class="badge bg-primary">
                             <i class="bi bi-people"></i> ${user.group_count || 0} ta
                         </span>
                     </td>
-                    <td><small>${formatDate(user.blocked_at)}</small></td>
+                    <td>
+                        <i class="bi bi-calendar-x text-danger"></i>
+                        <strong>${formatDate(user.blocked_at)}</strong>
+                    </td>
                     <td><span class="badge bg-danger">${user.blocked_message_count || 0}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-danger" onclick="unblockUser(${user.id})">
+                        <button class="btn btn-sm btn-outline-danger" onclick="unblockUser(${user.id})">
                             <i class="bi bi-unlock"></i> Blokdan chiqarish
                         </button>
                     </td>
