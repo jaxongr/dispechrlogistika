@@ -9,23 +9,27 @@
     "init-db": "node src/config/init-db.js",
     "create-session": "node create-telegram-session.js"
   },
-  "keywords": ["telegram", "logistics", "dispatch"],
+  "keywords": [
+    "telegram",
+    "logistics",
+    "dispatch"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "dotenv": "^16.3.1",
-    "lowdb": "^1.0.0",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "cors": "^2.8.5",
-    "telegraf": "^4.15.0",
-    "telegram": "^2.19.6",
-    "input": "^1.0.1",
     "big-integer": "^1.6.52",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
-    "node-cron": "^3.0.3"
+    "input": "^1.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "lowdb": "^1.0.0",
+    "node-cron": "^3.0.3",
+    "telegraf": "^4.15.0",
+    "telegram": "^2.19.6"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

@@ -29,6 +29,35 @@ class TelegramBotService {
 
       // Setup /start command
       this.bot.command('start', async (ctx) => {
+        // Save user to database
+        try {
+          const existingUser = db.get('bot_users')
+            .find({ telegram_user_id: ctx.from.id.toString() })
+            .value();
+
+          if (!existingUser) {
+            db.get('bot_users')
+              .push({
+                telegram_user_id: ctx.from.id.toString(),
+                username: ctx.from.username || '',
+                first_name: ctx.from.first_name || '',
+                last_name: ctx.from.last_name || '',
+                started_at: new Date().toISOString()
+              })
+              .write();
+
+            console.log(`✅ New bot user registered: ${ctx.from.username || ctx.from.id}`);
+          } else {
+            // Update last interaction
+            db.get('bot_users')
+              .find({ telegram_user_id: ctx.from.id.toString() })
+              .assign({ last_interaction: new Date().toISOString() })
+              .write();
+          }
+        } catch (err) {
+          console.error('Error saving bot user:', err.message);
+        }
+
         const welcomeMessage = `🤖 <b>YO'LDA | Yuk Markazi Bot</b>
 
 Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi.
@@ -44,11 +73,14 @@ Dashboard: http://5.189.141.151:3001
 <b>ℹ️ Qanday ishlaydi:</b>
 1. E'lonlar avtomatik filter qilinadi
 2. To'g'ri e'lonlar guruhga yuboriladi
-3. Agar e'lon dispetcher bo'lsa, "Bu dispetcher ekan" tugmasini bosing
-4. Dispetcher avtomatik bloklanadi
+3. E'lonni olish uchun "✅ Olindi" tugmasini bosing
+4. Telefon raqam botda yuboriladi
+
+<b>📞 Raqamni qayta olish:</b>
+Agar raqamni unutsangiz, "📞 Raqamni olish" tugmasini bosing
 
 <b>⚠️ Eslatma:</b>
-Noto'g'ri e'lonlarni bloklasangiz, admin sizga xabar yuborishi mumkin.`;
+Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini kutib turing.`;
 
         await ctx.reply(welcomeMessage, { parse_mode: 'HTML' });
       });

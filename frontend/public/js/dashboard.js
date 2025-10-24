@@ -53,8 +53,46 @@ async function loadStatistics() {
             document.getElementById('weekProgress').style.width = weekPercent + '%';
         }
 
+        // Load bot statistics
+        await loadBotStatistics();
+
     } catch (error) {
         console.error('Statistika yuklashda xatolik:', error);
+    }
+}
+
+// Load bot user statistics
+async function loadBotStatistics() {
+    try {
+        const response = await fetch('/api/statistics/bot-stats', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Bot statistika yuklashda xatolik');
+        }
+
+        const data = await response.json();
+
+        // Bot users
+        document.getElementById('botUsers').textContent = data.bot_users.total || 0;
+        document.getElementById('botUsersToday').textContent = data.bot_users.today || 0;
+
+        // Olindi users
+        document.getElementById('olindiUsers').textContent = data.olindi_users.total || 0;
+        document.getElementById('olindiUsersToday').textContent = data.olindi_users.today || 0;
+
+    } catch (error) {
+        console.error('Bot statistika yuklashda xatolik:', error);
+        // Set defaults on error
+        document.getElementById('botUsers').textContent = '0';
+        document.getElementById('botUsersToday').textContent = '0';
+        document.getElementById('olindiUsers').textContent = '0';
+        document.getElementById('olindiUsersToday').textContent = '0';
     }
 }
 

@@ -24,7 +24,8 @@ db.defaults({
   target_channels: [],
   statistics: [],
   daily_statistics: [],
-  dispatcher_reports: []
+  dispatcher_reports: [],
+  bot_users: []
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);

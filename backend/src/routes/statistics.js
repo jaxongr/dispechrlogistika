@@ -199,4 +199,75 @@ router.get('/realtime', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/statistics/bot-stats - Bot foydalanuvchilar statistikasi
+ */
+router.get('/bot-stats', async (req, res) => {
+  try {
+    const botUsers = db.get('bot_users').value() || [];
+    const allMessages = db.get('messages').value() || [];
+
+    // Count unique users who clicked "Olindi"
+    const takenMessages = allMessages.filter(m => m.is_taken && m.taken_by_user_id);
+    const uniqueTakers = new Set(takenMessages.map(m => m.taken_by_user_id));
+
+    // Count total bot users (who started the bot)
+    const totalBotUsers = botUsers.length;
+
+    // Count users who clicked "Olindi" today
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const todayTakenMessages = takenMessages.filter(m => {
+      const takenDate = new Date(m.taken_at);
+      return takenDate >= startOfDay;
+    });
+    const todayUniqueTakers = new Set(todayTakenMessages.map(m => m.taken_by_user_id));
+
+    // Count users who started bot today
+    const todayBotUsers = botUsers.filter(u => {
+      const startedDate = new Date(u.started_at);
+      return startedDate >= startOfDay;
+    });
+
+    // Top 10 most active "Olindi" users
+    const takerCounts = {};
+    takenMessages.forEach(m => {
+      const userId = m.taken_by_user_id;
+      takerCounts[userId] = (takerCounts[userId] || 0) + 1;
+    });
+
+    const topTakers = Object.entries(takerCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([userId, count]) => {
+        const msg = takenMessages.find(m => m.taken_by_user_id === userId);
+        return {
+          user_id: userId,
+          username: msg?.taken_by_username || '',
+          full_name: msg?.taken_by_full_name || 'Noma\'lum',
+          count: count
+        };
+      });
+
+    res.json({
+      bot_users: {
+        total: totalBotUsers,
+        today: todayBotUsers.length
+      },
+      olindi_users: {
+        total: uniqueTakers.size,
+        today: todayUniqueTakers.size,
+        total_taken: takenMessages.length,
+        today_taken: todayTakenMessages.length
+      },
+      top_takers: topTakers,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Bot stats error:', error);
+    res.status(500).json({ error: 'Server xatolik' });
+  }
+});
+
 module.exports = router;
