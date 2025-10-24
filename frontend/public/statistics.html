@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistika - Dispetcher Filter</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .stats-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-header h1 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .date-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-selector input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .date-selector button {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .date-selector button:hover {
+            background: #2980b9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.success {
+            border-left: 4px solid #27ae60;
+        }
+
+        .stat-card.danger {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .stat-card.warning {
+            border-left: 4px solid #f39c12;
+        }
+
+        .stat-card.info {
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-percentage {
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .chart-section h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .reasons-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reason-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .reason-item:last-child {
+            border-bottom: none;
+        }
+
+        .reason-text {
+            flex: 1;
+            color: #34495e;
+        }
+
+        .reason-count {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .reason-bar {
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .reason-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            transition: width 0.3s;
+        }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .auto-refresh label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">📊 Dispetcher Filter - Statistika</div>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="messages.html">Xabarlar</a>
+            <a href="blocked.html">Bloklangan</a>
+            <a href="groups.html">Guruhlar</a>
+            <a href="statistics.html" class="active">Statistika</a>
+            <a href="settings.html">Sozlamalar</a>
+        </div>
+    </nav>
+
+    <div class="stats-container">
+        <div class="stats-header">
+            <h1>📊 Kunlik Statistika</h1>
+            <div style="display: flex; align-items: center;">
+                <div class="date-selector">
+                    <input type="date" id="dateInput" />
+                    <button onclick="loadStatistics()">Ko'rsatish</button>
+                </div>
+                <div class="auto-refresh">
+                    <input type="checkbox" id="autoRefresh" />
+                    <label for="autoRefresh">Avto yangilash (30s)</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorMessage" style="display: none;" class="error"></div>
+
+        <div id="loading" class="loading">Yuklanmoqda...</div>
+
+        <div id="statsContent" style="display: none;">
+            <!-- Today's Stats -->
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-label">📥 Jami kelgan xabarlar</div>
+                    <div class="stat-value" id="totalReceived">0</div>
+                    <div class="stat-percentage">Bugun</div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-label">✅ Filter o'tgan</div>
+                    <div class="stat-value" id="totalApproved">0</div>
+                    <div class="stat-percentage" id="approvalRate">0%</div>
+                </div>
+
+                <div class="stat-card danger">
+                    <div class="stat-label">🚫 Bloklangan</div>
+                    <div class="stat-value" id="totalBlocked">0</div>
+                    <div class="stat-percentage" id="blockRate">0%</div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-label">📤 Guruhga yuborildi</div>
+                    <div class="stat-value" id="totalSent">0</div>
+                    <div class="stat-percentage">Auto-send</div>
+                </div>
+
+                <div class="stat-card danger">
+                    <div class="stat-label">👥 Bloklangan userlar</div>
+                    <div class="stat-value" id="blockedUsers">0</div>
+                    <div class="stat-percentage" id="autoBlocked">0 avtomatik</div>
+                </div>
+            </div>
+
+            <!-- Block Reasons -->
+            <div class="chart-section">
+                <h2>🚫 Bloklash sabablari (Top 10)</h2>
+                <ul class="reasons-list" id="reasonsList"></ul>
+            </div>
+
+            <!-- Last 7 Days Chart -->
+            <div class="chart-section">
+                <h2>📈 Oxirgi 7 kun statistikasi</h2>
+                <canvas id="weeklyChart"></canvas>
+            </div>
+
+            <!-- All Time Stats -->
+            <div class="chart-section">
+                <h2>🌐 Umumiy statistika</h2>
+                <div class="stats-grid">
+                    <div class="stat-card info">
+                        <div class="stat-label">Jami xabarlar</div>
+                        <div class="stat-value" id="allTimeMessages">0</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-label">O'tgan xabarlar</div>
+                        <div class="stat-value" id="allTimeApproved">0</div>
+                        <div class="stat-percentage" id="allTimeApprovalRate">0%</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-label">Bloklangan xabarlar</div>
+                        <div class="stat-value" id="allTimeBlocked">0</div>
+                        <div class="stat-percentage" id="allTimeBlockRate">0%</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-label">Jami bloklangan userlar</div>
+                        <div class="stat-value" id="allTimeBlockedUsers">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        let weeklyChart = null;
+        let autoRefreshInterval = null;
+
+        // Set today's date as default
+        document.getElementById('dateInput').valueAsDate = new Date();
+
+        // Load statistics on page load
+        window.onload = () => {
+            loadStatistics();
+        };
+
+        // Auto refresh checkbox handler
+        document.getElementById('autoRefresh').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                autoRefreshInterval = setInterval(loadStatistics, 30000); // 30 seconds
+            } else {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            }
+        });
+
+        async function loadStatistics() {
+            const dateInput = document.getElementById('dateInput').value;
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('statsContent');
+            const errorDiv = document.getElementById('errorMessage');
+
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            try {
+                // Load daily stats
+                const dailyUrl = dateInput
+                    ? `/api/statistics/daily?date=${dateInput}`
+                    : '/api/statistics/daily';
+
+                const dailyResponse = await api.get(dailyUrl);
+
+                if (!dailyResponse.ok) {
+                    throw new Error('Statistika yuklanmadi');
+                }
+
+                const dailyData = await dailyResponse.json();
+
+                // Load overview stats
+                const overviewResponse = await api.get('/api/statistics/overview');
+                const overviewData = await overviewResponse.json();
+
+                // Update daily stats
+                document.getElementById('totalReceived').textContent = dailyData.messages.total_received;
+                document.getElementById('totalApproved').textContent = dailyData.messages.total_approved;
+                document.getElementById('totalBlocked').textContent = dailyData.messages.total_blocked;
+                document.getElementById('totalSent').textContent = dailyData.messages.total_sent;
+                document.getElementById('approvalRate').textContent = dailyData.messages.approval_rate + '%';
+                document.getElementById('blockRate').textContent = dailyData.messages.block_rate + '%';
+
+                document.getElementById('blockedUsers').textContent = dailyData.users.total_blocked;
+                document.getElementById('autoBlocked').textContent = dailyData.users.auto_blocked + ' avtomatik';
+
+                // Update block reasons
+                const reasonsList = document.getElementById('reasonsList');
+                reasonsList.innerHTML = '';
+
+                const maxCount = dailyData.block_reasons[0]?.count || 1;
+
+                dailyData.block_reasons.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'reason-item';
+
+                    const percentage = (item.count / maxCount) * 100;
+
+                    li.innerHTML = `
+                        <div style="flex: 1;">
+                            <div class="reason-text">${item.reason}</div>
+                            <div class="reason-bar">
+                                <div class="reason-bar-fill" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                        <span class="reason-count">${item.count}</span>
+                    `;
+                    reasonsList.appendChild(li);
+                });
+
+                // Update all-time stats
+                document.getElementById('allTimeMessages').textContent = overviewData.all_time.total_messages;
+                document.getElementById('allTimeApproved').textContent = overviewData.all_time.total_approved;
+                document.getElementById('allTimeBlocked').textContent = overviewData.all_time.total_blocked;
+                document.getElementById('allTimeBlockedUsers').textContent = overviewData.all_time.total_blocked_users;
+                document.getElementById('allTimeApprovalRate').textContent = overviewData.all_time.approval_rate + '%';
+                document.getElementById('allTimeBlockRate').textContent = overviewData.all_time.block_rate + '%';
+
+                // Update weekly chart
+                updateWeeklyChart(overviewData.last_7_days);
+
+                loading.style.display = 'none';
+                content.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                loading.style.display = 'none';
+                errorDiv.textContent = 'Statistika yuklanmadi: ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function updateWeeklyChart(data) {
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+
+            if (weeklyChart) {
+                weeklyChart.destroy();
+            }
+
+            const labels = data.map(d => {
+                const date = new Date(d.date);
+                return date.toLocaleDateString('uz-UZ', { month: 'short', day: 'numeric' });
+            });
+
+            weeklyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Jami xabarlar',
+                            data: data.map(d => d.total_messages),
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Filter o\'tgan',
+                            data: data.map(d => d.approved_messages),
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Bloklangan',
+                            data: data.map(d => d.blocked_messages),
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Bloklangan userlar',
+                            data: data.map(d => d.blocked_users),
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
