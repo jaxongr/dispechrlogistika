@@ -180,11 +180,48 @@ class DispatcherDetector {
       price: null
     };
 
-    // Telefon raqamni topish
-    const phoneRegex = /(\+?998)?[\s-]?(\d{2})[\s-]?(\d{3})[\s-]?(\d{2})[\s-]?(\d{2})/;
-    const phoneMatch = messageText.match(phoneRegex);
-    if (phoneMatch) {
-      data.contact_phone = phoneMatch[0].trim();
+    // Telefon raqamni topish - kengaytirilgan regex
+    // Bo'shliq, tire, nuqta, qavs va boshqa belgilarni qo'llab-quvvatlaydi
+    // Formatlar: 998901234567, 998 90 123 45 67, 998.90.123.45.67, +998(90)123-45-67, va hokazo
+    const phonePatterns = [
+      // +998 bilan: +998901234567, +998 90 123 45 67, +998.90.123.45.67, +998(90)123-45-67
+      /\+?998[\s\.\-\(\)]?(\d{2})[\s\.\-\(\)]?(\d{3})[\s\.\-\(\)]?(\d{2})[\s\.\-\(\)]?(\d{2})/g,
+      // 998 siz: 901234567, 90 123 45 67, 90.123.45.67, (90)123-45-67
+      /(?<!\d)([789]\d)[\s\.\-\(\)]?(\d{3})[\s\.\-\(\)]?(\d{2})[\s\.\-\(\)]?(\d{2})(?!\d)/g,
+      // 9 raqamli: 901234567 (bo'shliq/nuqta/tire bilan ham)
+      /(?<!\d)([789]\d[\s\.\-]?\d{3}[\s\.\-]?\d{2}[\s\.\-]?\d{2})(?!\d)/g
+    ];
+
+    let phoneNumbers = [];
+    
+    for (const pattern of phonePatterns) {
+      const matches = messageText.matchAll(pattern);
+      for (const match of matches) {
+        const rawPhone = match[0];
+        // Faqat raqamlarni qoldirish
+        const digitsOnly = rawPhone.replace(/\D/g, '');
+        
+        // Agar 9 raqamli bo'lsa va 7,8,9 bilan boshlansa - O'zbekiston raqami
+        if (digitsOnly.length === 9 && /^[789]/.test(digitsOnly)) {
+          phoneNumbers.push('998' + digitsOnly);
+        }
+        // Agar 12 raqamli va 998 bilan boshlansa
+        else if (digitsOnly.length === 12 && digitsOnly.startsWith('998')) {
+          phoneNumbers.push(digitsOnly);
+        }
+        // Agar 11 raqamli va 98 bilan boshlansa (998 dan 9 tushib ketgan)
+        else if (digitsOnly.length === 11 && digitsOnly.startsWith('98')) {
+          phoneNumbers.push('9' + digitsOnly);
+        }
+      }
+    }
+
+    // Birinchi topilgan telefon raqamni olish va +998 formatida saqlash
+    if (phoneNumbers.length > 0) {
+      // Dublikatlarni olib tashlash
+      phoneNumbers = [...new Set(phoneNumbers)];
+      // +998 qo'shish
+      data.contact_phone = '+' + phoneNumbers[0];
     }
 
     // Og'irlikni topish (tonna)
@@ -206,7 +243,7 @@ class DispatcherDetector {
     }
 
     // Narxni topish
-    const priceRegex = /(\d+[\s,]?\d*)\s*(сум|so'm|uzs|\$|dollar|дол)/i;
+    const priceRegex = /(\d+[\s,]?\d*)\s*(сум|so'm|uzs|$|dollar|дол)/i;
     const priceMatch = messageText.match(priceRegex);
     if (priceMatch) {
       data.price = priceMatch[0].trim();
