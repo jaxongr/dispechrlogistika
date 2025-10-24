@@ -326,11 +326,11 @@ class MessageFilter {
       };
     }
 
-    // 2. Xabar uzunligi (250+ belgi = dispatcher)
-    if (message_text.length > 250) {
+    // 2. Xabar uzunligi (200+ belgi = dispatcher)
+    if (message_text.length > 200) {
       return {
         shouldBlock: true,
-        reason: '250+ belgi (spam)',
+        reason: '200+ belgi (spam)',
         isDispatcher: true,
         autoBlock: true
       };
