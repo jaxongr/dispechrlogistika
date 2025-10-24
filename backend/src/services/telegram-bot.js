@@ -205,10 +205,9 @@ class TelegramBotService {
 
       messageText += `\n👤 Yuboruvchi: ${senderInfo} ${userIdHashtag}`;
 
-      // Create message source link
+      // Create message source link - universal "Bu yerda" text
       if (groupInfo) {
         let sourceLink;
-        const groupName = this.escapeHtml(groupInfo.group_name || 'Guruh');
 
         if (groupInfo.group_username && groupInfo.group_username.trim()) {
           // Public group - use username
@@ -219,9 +218,9 @@ class TelegramBotService {
           sourceLink = `https://t.me/c/${cleanGroupId}/${message.telegram_message_id}`;
         }
 
-        messageText += `\n📍 <a href="${sourceLink}">${groupName}</a>`;
+        messageText += `\n📍 Manba: <a href="${sourceLink}">Bu yerda</a>`;
       } else {
-        messageText += `\n📍 Noma'lum guruh`;
+        messageText += `\n📍 Manba: Noma'lum`;
       }
 
       // Create inline keyboard with "Bu dispetcher ekan" button
