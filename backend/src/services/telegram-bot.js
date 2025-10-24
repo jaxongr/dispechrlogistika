@@ -766,12 +766,8 @@ http://5.189.141.151:3001/reporter-stats.html`;
       // Recreate message text without phone number
       let messageText = `📦 ${this.escapeHtml(message.message_text)}\n\n`;
 
-      // HIDE PHONE NUMBER - show stars instead
-      if (message.contact_phone) {
-        const phone = message.contact_phone;
-        const hiddenPhone = phone.substring(0, 4) + '***' + phone.substring(phone.length - 2);
-        messageText += `📞 Telefon: <code>${hiddenPhone}</code> (faqat olgan user ko'radi)\n`;
-      }
+      // COMPLETELY HIDE PHONE NUMBER - don't show it at all
+      // Phone will be sent only to the taker via private message
 
       if (message.route_from || message.route_to) {
         messageText += `🛣️ Yo'nalish: ${this.escapeHtml(message.route_from || '?')} → ${this.escapeHtml(message.route_to || '?')}\n`;
