@@ -196,12 +196,21 @@ class Message {
   }
 
   static async getStatistics() {
-    const messages = db.get('messages').value();
-    const blockedUsers = db.get('blocked_users').value();
+    const messages = db.get('messages').value() || [];
+    const blockedUsers = db.get('blocked_users').value() || [];
+    const blockedPhones = db.get('blocked_phones').value() || [];
 
     const now = new Date();
     const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
     const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+    // Guruhga yuborilgan unikal telefon raqamlar
+    const sentMessages = messages.filter(m => m.is_sent_to_channel && m.contact_phone);
+    const uniquePhones = new Set(sentMessages.map(m => m.contact_phone));
+
+    // Bloklangan userlar - avtomatik va qo'lda
+    const autoBlockedUsers = blockedUsers.filter(u => u.blocked_by === 0 || u.blocked_by === null);
+    const manualBlockedUsers = blockedUsers.filter(u => u.blocked_by && u.blocked_by !== 0);
 
     return {
       total_messages: messages.length,
@@ -210,7 +219,17 @@ class Message {
       sent_messages: messages.filter(m => m.is_sent_to_channel).length,
       messages_today: messages.filter(m => new Date(m.message_date) > oneDayAgo).length,
       messages_week: messages.filter(m => new Date(m.message_date) > oneWeekAgo).length,
-      blocked_users: blockedUsers.length
+      blocked_users: blockedUsers.length,
+      
+      // Yangi statistikalar
+      unique_phones_sent: uniquePhones.size,
+      blocked_phones: blockedPhones.length,
+      auto_blocked_users: autoBlockedUsers.length,
+      manual_blocked_users: manualBlockedUsers.length,
+      
+      // Bugungi statistika
+      sent_today: sentMessages.filter(m => new Date(m.sent_at || m.created_at) > oneDayAgo).length,
+      blocked_today: blockedUsers.filter(u => new Date(u.blocked_at) > oneDayAgo).length
     };
   }
 }

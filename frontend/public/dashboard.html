@@ -98,7 +98,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">Dispetcherlar</h6>
+                                <h6 class="card-title">Bloklangan Userlar</h6>
                                 <h2 id="dispatcherMessages">0</h2>
                             </div>
                             <i class="bi bi-x-circle" style="font-size: 3rem; opacity: 0.3;"></i>
@@ -117,6 +117,51 @@
                             <i class="bi bi-send" style="font-size: 3rem; opacity: 0.3;"></i>
                         </div>
                     </div>
+        <!-- Additional Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">📞 Guruhga yuborilgan telefon raqamlar</h6>
+                                <h2 id="uniquePhones">0</h2>
+                                <small>Unikal raqamlar</small>
+                            </div>
+                            <i class="bi bi-telephone-check" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-danger">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">🚫 Bloklangan telefonlar</h6>
+                                <h2 id="blockedPhones">0</h2>
+                                <small>Dispetcherlardan</small>
+                            </div>
+                            <i class="bi bi-telephone-x" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">🤖 Avtomatik bloklangan</h6>
+                                <h2 id="autoBlocked">0</h2>
+                                <small>Userlar (AI detection)</small>
+                            </div>
+                            <i class="bi bi-robot" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
                 </div>
             </div>
         </div>
@@ -204,7 +249,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/api.js"></script>
-    <script src="/js/dashboard.js"></script>
+    <script src="/js/api.js?v=1761299929"></script>
+    <script src="/js/dashboard.js?v=1761301575"></script>
 </body>
 </html>

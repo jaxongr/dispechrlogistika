@@ -26,24 +26,32 @@ async function loadStatistics() {
         const data = await MessagesAPI.getStatistics();
         const stats = data.statistics;
 
+        // Mavjud kartalar
         document.getElementById('totalMessages').textContent = stats.total_messages || 0;
         document.getElementById('approvedMessages').textContent = stats.approved_messages || 0;
         document.getElementById('dispatcherMessages').textContent = stats.blocked_users || 0;
         document.getElementById('sentMessages').textContent = stats.sent_messages || 0;
 
-        // Today and week stats
-        const todayCount = stats.messages_today || 0;
-        const weekCount = stats.messages_week || 0;
-        const totalCount = stats.total_messages || 1;
+        // Yangi statistikalar
+        document.getElementById('uniquePhones').textContent = stats.unique_phones_sent || 0;
+        document.getElementById('blockedPhones').textContent = stats.blocked_phones || 0;
+        document.getElementById('autoBlocked').textContent = stats.auto_blocked_users || 0;
 
-        document.getElementById('todayCount').textContent = todayCount;
-        document.getElementById('weekCount').textContent = weekCount;
+        // Today and week stats (agar mavjud bo'lsa)
+        if (document.getElementById('todayCount')) {
+            const todayCount = stats.messages_today || 0;
+            const weekCount = stats.messages_week || 0;
+            const totalCount = stats.total_messages || 1;
 
-        const todayPercent = (todayCount / totalCount * 100).toFixed(0);
-        const weekPercent = (weekCount / totalCount * 100).toFixed(0);
+            document.getElementById('todayCount').textContent = todayCount;
+            document.getElementById('weekCount').textContent = weekCount;
 
-        document.getElementById('todayProgress').style.width = todayPercent + '%';
-        document.getElementById('weekProgress').style.width = weekPercent + '%';
+            const todayPercent = (todayCount / totalCount * 100).toFixed(0);
+            const weekPercent = (weekCount / totalCount * 100).toFixed(0);
+
+            document.getElementById('todayProgress').style.width = todayPercent + '%';
+            document.getElementById('weekProgress').style.width = weekPercent + '%';
+        }
 
     } catch (error) {
         console.error('Statistika yuklashda xatolik:', error);
@@ -137,18 +145,18 @@ async function checkSystemHealth() {
         const sessionStatus = document.getElementById('sessionStatus');
         const botStatus = document.getElementById('botStatus');
 
-        if (health.services.telegram_session) {
+        if (sessionStatus && health.services.telegram_session) {
             sessionStatus.className = 'badge bg-success';
             sessionStatus.textContent = 'Ulanган';
-        } else {
+        } else if (sessionStatus) {
             sessionStatus.className = 'badge bg-danger';
             sessionStatus.textContent = 'Uzilgan';
         }
 
-        if (health.services.telegram_bot) {
+        if (botStatus && health.services.telegram_bot) {
             botStatus.className = 'badge bg-success';
             botStatus.textContent = 'Ishlamoqda';
-        } else {
+        } else if (botStatus) {
             botStatus.className = 'badge bg-danger';
             botStatus.textContent = 'To\'xtatilgan';
         }
@@ -160,16 +168,16 @@ async function checkSystemHealth() {
 
 // Auto refresh
 function startAutoRefresh() {
-    // Refresh every 2 minutes (120 seconds) - optimized for performance
+    // Refresh every 30 seconds for statistics
     setInterval(() => {
         loadStatistics();
         checkSystemHealth();
-    }, 120000);
+    }, 30000);
 
-    // Refresh recent messages less frequently (every 3 minutes)
+    // Refresh recent messages less frequently (every 1 minute)
     setInterval(() => {
         loadRecentMessages();
-    }, 180000);
+    }, 60000);
 }
 
 // Initialize
