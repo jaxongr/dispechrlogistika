@@ -19,6 +19,7 @@ const { startDailyStatisticsScheduler } = require('./services/daily-statistics-s
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
 const blockedUsersRoutes = require('./routes/blocked-users');
+const dispatcherReportsRoutes = require('./routes/dispatcher-reports');
 // const dailyStatisticsRoutes = require('./routes/daily-statistics'); // Vaqtincha o'chirildi - middleware muammosi
 
 // Initialize Express
@@ -61,6 +62,7 @@ console.log('📁 Frontend path:', frontendPath);
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/blocked-users', blockedUsersRoutes);
+app.use('/api/dispatcher-reports', dispatcherReportsRoutes);
 // app.use('/api/daily-statistics', dailyStatisticsRoutes); // Vaqtincha o'chirildi
 
 // Health check

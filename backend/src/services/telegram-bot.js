@@ -1,6 +1,7 @@
 const { Telegraf, Markup } = require('telegraf');
 const { db } = require('../config/database');
 const BlockedUser = require('../models/BlockedUser');
+const DispatcherReport = require('../models/DispatcherReport');
 
 class TelegramBotService {
   constructor() {
@@ -57,6 +58,12 @@ class TelegramBotService {
     try {
       const callbackData = ctx.callbackQuery.data;
 
+      // Admin action handler
+      if (callbackData.startsWith('admin_block_')) {
+        await this.handleAdminAction(ctx);
+        return;
+      }
+
       if (!callbackData.startsWith('report_dispatcher_')) {
         return;
       }
@@ -76,6 +83,22 @@ class TelegramBotService {
         await ctx.answerCbQuery('❌ Xabar topilmadi');
         return;
       }
+
+      // Save report to database
+      const report = await DispatcherReport.create({
+        message_id: messageId,
+        reported_by_user_id: ctx.from.id.toString(),
+        reported_by_username: ctx.from.username || '',
+        reported_by_full_name: `${ctx.from.first_name || ''} ${ctx.from.last_name || ''}`.trim(),
+        reported_user_id: telegramUserId,
+        reported_user_username: message.sender_username || '',
+        channel_message_id: message.group_message_id
+      });
+
+      console.log(`📝 Report saved: ID=${report.id}, reporter=${ctx.from.id}`);
+
+      // Send notification to admin
+      await this.notifyAdminAboutReport(report, message, ctx);
 
       // Block the user
       const isAlreadyBlocked = await BlockedUser.isBlocked(telegramUserId);
@@ -295,6 +318,175 @@ class TelegramBotService {
     } catch (error) {
       console.error('❌ Delete from group error:', error);
       return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Notify admin about dispatcher report
+   */
+  async notifyAdminAboutReport(report, message, ctx) {
+    try {
+      const adminId = process.env.ADMIN_USER_ID;
+
+      if (!adminId) {
+        console.log('⚠️ ADMIN_USER_ID not set in .env');
+        return;
+      }
+
+      // Get reporter's stats
+      const reporterStats = await DispatcherReport.getReportsByUser(report.reported_by_user_id);
+
+      let notificationText = `🚨 <b>DISPETCHER BLOKLANDI!</b>\n\n`;
+      notificationText += `👤 <b>Bloklagan:</b> `;
+
+      if (ctx.from.username) {
+        notificationText += `<a href="https://t.me/${ctx.from.username}">${this.escapeHtml(report.reported_by_full_name)}</a>`;
+      } else {
+        notificationText += `<a href="tg://user?id=${report.reported_by_user_id}">${this.escapeHtml(report.reported_by_full_name)}</a>`;
+      }
+
+      notificationText += `\n📊 <b>Jami bloklagan:</b> ${reporterStats.length} ta\n\n`;
+
+      notificationText += `❌ <b>Bloklangan user:</b>\n`;
+      if (message.sender_username) {
+        notificationText += `   @${message.sender_username}\n`;
+      }
+      notificationText += `   ID: <code>${message.sender_user_id}</code>\n`;
+      notificationText += `   Ism: ${this.escapeHtml(message.sender_full_name || 'N/A')}\n\n`;
+
+      notificationText += `📝 <b>E'lon matni:</b>\n${this.escapeHtml(message.message_text.substring(0, 200))}${message.message_text.length > 200 ? '...' : ''}\n\n`;
+
+      if (message.contact_phone) {
+        notificationText += `📞 Telefon: ${message.contact_phone}\n`;
+      }
+
+      // Create admin keyboard with actions
+      const keyboard = Markup.inlineKeyboard([
+        [
+          Markup.button.callback(
+            '🚫 Bloklagan userni blokla',
+            `admin_block_reporter_${report.id}_${report.reported_by_user_id}`
+          )
+        ],
+        [
+          Markup.button.callback(
+            '⛔ Guruhdan chiqar',
+            `admin_kick_reporter_${report.id}_${report.reported_by_user_id}`
+          )
+        ],
+        [
+          Markup.button.callback(
+            '✅ Hech narsa qilma',
+            `admin_ignore_${report.id}`
+          )
+        ]
+      ]);
+
+      await this.bot.telegram.sendMessage(
+        adminId,
+        notificationText,
+        {
+          parse_mode: 'HTML',
+          reply_markup: keyboard.reply_markup
+        }
+      );
+
+      // Mark as notified
+      await DispatcherReport.markAsNotified(report.id);
+
+      console.log(`📨 Admin notified about report ${report.id}`);
+
+    } catch (error) {
+      console.error('❌ Error notifying admin:', error.message);
+    }
+  }
+
+  /**
+   * Handle admin actions on reporter
+   */
+  async handleAdminAction(ctx) {
+    try {
+      const callbackData = ctx.callbackQuery.data;
+      const parts = callbackData.split('_');
+
+      if (callbackData.startsWith('admin_block_reporter_')) {
+        // Format: admin_block_reporter_{report_id}_{user_id}
+        const reportId = parseInt(parts[3]);
+        const userId = parts[4];
+
+        // Block the reporter
+        const isAlreadyBlocked = await BlockedUser.isBlocked(userId);
+
+        if (!isAlreadyBlocked) {
+          await BlockedUser.create({
+            telegram_user_id: userId,
+            username: '',
+            full_name: '',
+            reason: 'Admin tomonidan bloklandi - noto\'g\'ri hisobotlar yuborgan',
+            blocked_by: ctx.from.id
+          });
+
+          // Update report
+          await DispatcherReport.updateAdminAction(reportId, 'blocked');
+
+          await ctx.answerCbQuery('✅ User bloklandi');
+          await ctx.editMessageText(
+            ctx.callbackQuery.message.text + '\n\n✅ <b>Admin action:</b> User bloklandi',
+            { parse_mode: 'HTML' }
+          );
+
+          console.log(`✅ Admin blocked reporter ${userId}`);
+        } else {
+          await ctx.answerCbQuery('⚠️ User allaqachon bloklangan');
+        }
+
+      } else if (callbackData.startsWith('admin_kick_reporter_')) {
+        // Format: admin_kick_reporter_{report_id}_{user_id}
+        const reportId = parseInt(parts[3]);
+        const userId = parts[4];
+
+        try {
+          // Kick from target group
+          await this.bot.telegram.banChatMember(this.targetGroupId, userId);
+
+          // Unban immediately (just kick, not permanent ban)
+          await this.bot.telegram.unbanChatMember(this.targetGroupId, userId);
+
+          // Update report
+          await DispatcherReport.updateAdminAction(reportId, 'kicked');
+
+          await ctx.answerCbQuery('✅ User guruhdan chiqarildi');
+          await ctx.editMessageText(
+            ctx.callbackQuery.message.text + '\n\n⛔ <b>Admin action:</b> User guruhdan chiqarildi',
+            { parse_mode: 'HTML' }
+          );
+
+          console.log(`✅ Admin kicked reporter ${userId} from group`);
+
+        } catch (error) {
+          console.error('❌ Kick error:', error.message);
+          await ctx.answerCbQuery('❌ Xatolik: ' + error.message);
+        }
+
+      } else if (callbackData.startsWith('admin_ignore_')) {
+        // Format: admin_ignore_{report_id}
+        const reportId = parseInt(parts[2]);
+
+        // Update report
+        await DispatcherReport.updateAdminAction(reportId, 'ignored');
+
+        await ctx.answerCbQuery('✅ Hech narsa qilinmadi');
+        await ctx.editMessageText(
+          ctx.callbackQuery.message.text + '\n\n✅ <b>Admin action:</b> Ignore qilindi',
+          { parse_mode: 'HTML' }
+        );
+
+        console.log(`✅ Admin ignored report ${reportId}`);
+      }
+
+    } catch (error) {
+      console.error('❌ Admin action error:', error.message);
+      await ctx.answerCbQuery('❌ Xatolik yuz berdi').catch(() => {});
     }
   }
 

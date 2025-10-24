@@ -23,7 +23,8 @@ db.defaults({
   telegram_sessions: [],
   target_channels: [],
   statistics: [],
-  daily_statistics: []
+  daily_statistics: [],
+  dispatcher_reports: []
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);
