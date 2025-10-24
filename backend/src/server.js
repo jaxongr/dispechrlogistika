@@ -13,11 +13,13 @@ require('dotenv').config();
 // Services
 const telegramSession = require('./services/telegram-session');
 const telegramBot = require('./services/telegram-bot');
+const { startDailyStatisticsScheduler } = require('./services/daily-statistics-scheduler');
 
 // Routes
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
 const blockedUsersRoutes = require('./routes/blocked-users');
+const dailyStatisticsRoutes = require('./routes/daily-statistics');
 
 // Initialize Express
 const app = express();
@@ -59,6 +61,7 @@ console.log('📁 Frontend path:', frontendPath);
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/blocked-users', blockedUsersRoutes);
+app.use('/api/daily-statistics', dailyStatisticsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -125,6 +128,9 @@ async function startServer() {
       console.log('   npm run create-session\n');
     }
 
+    // Start Daily Statistics Scheduler
+    console.log('\n📅 Kunlik statistika scheduler ishga tushmoqda...');
+    startDailyStatisticsScheduler();
 
     console.log('\n✅ Barcha xizmatlar ishga tushdi!');
     console.log('📊 Dashboard: http://localhost:' + PORT);

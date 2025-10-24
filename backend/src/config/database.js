@@ -17,11 +17,13 @@ db.defaults({
   telegram_groups: [],
   messages: [],
   blocked_users: [],
+  blocked_phones: [],
   subscriptions: [],
   payments: [],
   telegram_sessions: [],
   target_channels: [],
-  statistics: []
+  statistics: [],
+  daily_statistics: []
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);

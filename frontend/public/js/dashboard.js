@@ -180,11 +180,77 @@ function startAutoRefresh() {
     }, 60000);
 }
 
+// Load daily archive
+async function loadDailyArchive() {
+    try {
+        const response = await apiRequest('/daily-statistics?limit=30');
+        const stats = response.statistics;
+
+        const container = document.getElementById('dailyArchiveContainer');
+
+        if (!stats || stats.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-archive" style="font-size: 3rem;"></i>
+                    <p class="mt-2">Hali kunlik arxiv yo'q</p>
+                    <small>Har kecha 00:00 da avtomatik saqlanadi</small>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="table-responsive"><table class="table table-striped table-hover">';
+        html += `
+            <thead>
+                <tr>
+                    <th>📅 Sana</th>
+                    <th>📤 Guruhga yuborilgan</th>
+                    <th>🚫 Bloklangan userlar</th>
+                    <th>🤖 AI bloklagan</th>
+                    <th>📊 Jami e'lonlar</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        stats.forEach(stat => {
+            const date = new Date(stat.date).toLocaleDateString('uz-UZ', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            html += `
+                <tr>
+                    <td><strong>${date}</strong></td>
+                    <td><span class="badge bg-success">${stat.sent_to_group || 0}</span></td>
+                    <td><span class="badge bg-danger">${stat.blocked_users || 0}</span></td>
+                    <td><span class="badge bg-warning">${stat.auto_blocked_users || 0}</span></td>
+                    <td>${stat.total_messages || 0}</td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error('Kunlik arxiv yuklashda xatolik:', error);
+        const container = document.getElementById('dailyArchiveContainer');
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                Arxiv yuklashda xatolik yuz berdi
+            </div>
+        `;
+    }
+}
+
 // Initialize
 async function initialize() {
     await loadStatistics();
     await loadRecentMessages();
     await checkSystemHealth();
+    await loadDailyArchive();
     startAutoRefresh();
 }
 
