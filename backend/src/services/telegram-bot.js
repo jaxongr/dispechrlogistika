@@ -219,13 +219,12 @@ http://5.189.141.151:3001/reporter-stats.html`;
         return;
       }
 
-      // SHOW THE FULL MESSAGE to the user who clicked the button
+      // DELETE THE MESSAGE from group immediately
       try {
-        const fullMessageText = `📋 <b>E'LON MATNI:</b>\n\n${this.escapeHtml(message.message_text)}\n\n👤 <b>Yuboruvchi:</b> ${this.escapeHtml(message.sender_full_name || message.sender_username || 'N/A')}\n📍 <b>Guruh:</b> ${this.escapeHtml(message.group_name || 'N/A')}`;
-
-        await ctx.reply(fullMessageText, { parse_mode: 'HTML' });
+        await ctx.deleteMessage();
+        console.log(`🗑️ Message deleted from group: ${messageId}`);
       } catch (err) {
-        console.error('Error sending full message:', err.message);
+        console.error('Error deleting message:', err.message);
       }
 
       // Check if reporter is admin - if yes, auto-block immediately
