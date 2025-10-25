@@ -2,6 +2,9 @@ const { Telegraf, Markup } = require('telegraf');
 const { db } = require('../config/database');
 const BlockedUser = require('../models/BlockedUser');
 const DispatcherReport = require('../models/DispatcherReport');
+const PendingApproval = require('../models/PendingApproval');
+const Whitelist = require('../models/Whitelist');
+const Message = require('../models/Message');
 
 class TelegramBotService {
   constructor() {
@@ -181,6 +184,18 @@ http://5.189.141.151:3001/reporter-stats.html`;
       // "Raqamni olish" button handler
       if (callbackData.startsWith('get_phone_')) {
         await this.handleGetPhoneButton(ctx);
+        return;
+      }
+
+      // "Ha bu dispetcher" button handler - block user
+      if (callbackData.startsWith('admin_confirm_')) {
+        await this.handleAdminConfirmDispatcher(ctx);
+        return;
+      }
+
+      // "Yo'q bu yukchi" button handler - add to whitelist
+      if (callbackData.startsWith('admin_reject_')) {
+        await this.handleAdminRejectDispatcher(ctx);
         return;
       }
 
@@ -1101,6 +1116,171 @@ http://5.189.141.151:3001/reporter-stats.html`;
 
     } catch (error) {
       console.error('❌ Mark dispatcher error:', error.message);
+    }
+  }
+
+  /**
+   * Send admin notification for flagged user (Admin confirmation required)
+   */
+  async sendAdminNotification(userData) {
+    try {
+      const adminId = process.env.ADMIN_USER_ID;
+      if (!adminId) {
+        console.log('⚠️ ADMIN_USER_ID not set - cannot send admin notification');
+        return;
+      }
+
+      const message = `
+🚨 <b>SPAM/DISPETCHER ANIQLANDI</b>
+
+👤 <b>User:</b> ${this.escapeHtml(userData.full_name || 'N/A')}
+📱 <b>Username:</b> @${this.escapeHtml(userData.username || 'N/A')}
+📞 <b>Tel:</b> ${this.escapeHtml(userData.phone_number || 'N/A')}
+🆔 <b>User ID:</b> <code>${userData.user_id}</code>
+
+🔍 <b>Sabab:</b> ${this.escapeHtml(userData.reason)}
+
+📝 <b>Xabar:</b>
+${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.message_text || '').length > 200 ? '...' : ''}
+
+<b>Tasdiqlansinmi?</b>
+`;
+
+      await this.bot.telegram.sendMessage(
+        adminId,
+        message,
+        {
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [[
+              { text: '✅ Ha bu dispetcher', callback_data: `admin_confirm_${userData.user_id}` },
+              { text: '❌ Yo\'q bu yukchi', callback_data: `admin_reject_${userData.user_id}` }
+            ]]
+          }
+        }
+      );
+
+      console.log(`📨 Admin notification sent for user ${userData.user_id}`);
+    } catch (error) {
+      console.error('❌ Send admin notification error:', error.message);
+    }
+  }
+
+  /**
+   * Handle admin confirmation - "Ha bu dispetcher" button
+   * Block user and update pending approval
+   */
+  async handleAdminConfirmDispatcher(ctx) {
+    try {
+      const callbackData = ctx.callbackQuery.data;
+      const userId = callbackData.replace('admin_confirm_', '');
+
+      console.log(`👑 Admin confirmed dispatcher: ${userId}`);
+
+      // Get pending approval
+      const approvals = await PendingApproval.findByUserId(userId);
+      if (!approvals || approvals.length === 0) {
+        await ctx.answerCbQuery('❌ Pending approval not found');
+        return;
+      }
+
+      const approval = approvals[0];
+
+      // Block the user
+      const existingBlock = await BlockedUser.findByTelegramId(userId);
+      if (!existingBlock) {
+        await BlockedUser.create({
+          telegram_user_id: userId,
+          username: approval.username,
+          full_name: approval.full_name,
+          phone_number: approval.phone_number,
+          reason: `Admin tasdiqladi: ${approval.reason}`,
+          blocked_by: ctx.from.id
+        });
+      }
+
+      // Update pending approval
+      await PendingApproval.updateAdminResponse(approval.id, 'approved');
+
+      // Edit message to show it's been handled
+      await ctx.editMessageText(
+        ctx.callbackQuery.message.text + '\n\n✅ <b>BLOKLANDI</b> (Dispetcher deb tasdiqlandi)',
+        { parse_mode: 'HTML' }
+      );
+
+      await ctx.answerCbQuery('✅ User bloklandi');
+
+      console.log(`✅ Admin blocked user ${userId}`);
+    } catch (error) {
+      console.error('❌ Handle admin confirm error:', error.message);
+      await ctx.answerCbQuery('❌ Xatolik yuz berdi');
+    }
+  }
+
+  /**
+   * Handle admin rejection - "Yo'q bu yukchi" button
+   * Add to whitelist and reprocess all user's messages
+   */
+  async handleAdminRejectDispatcher(ctx) {
+    try {
+      const callbackData = ctx.callbackQuery.data;
+      const userId = callbackData.replace('admin_reject_', '');
+
+      console.log(`👑 Admin rejected (cargo owner): ${userId}`);
+
+      // Get pending approval
+      const approvals = await PendingApproval.findByUserId(userId);
+      if (!approvals || approvals.length === 0) {
+        await ctx.answerCbQuery('❌ Pending approval not found');
+        return;
+      }
+
+      const approval = approvals[0];
+
+      // Add to whitelist
+      await Whitelist.add({
+        telegram_user_id: userId,
+        username: approval.username,
+        full_name: approval.full_name,
+        phone_number: approval.phone_number,
+        reason: 'Admin tomonidan yuk egasi deb tasdiqlangan',
+        added_by: ctx.from.id
+      });
+
+      // Update pending approval
+      await PendingApproval.updateAdminResponse(approval.id, 'rejected');
+
+      // Reprocess all user's messages
+      const userMessages = db.get('messages')
+        .filter({ sender_user_id: userId })
+        .value();
+
+      console.log(`🔄 Reprocessing ${userMessages.length} messages from user ${userId}`);
+
+      // Send all messages to target group
+      for (const msg of userMessages) {
+        try {
+          if (!msg.group_message_id) {
+            // Message was never sent to target group - send it now
+            await this.sendToChannel(msg.id);
+          }
+        } catch (error) {
+          console.error(`❌ Error reprocessing message ${msg.id}:`, error.message);
+        }
+      }
+
+      // Edit message to show it's been handled
+      await ctx.editMessageText(
+        ctx.callbackQuery.message.text + `\n\n✅ <b>WHITELIST'GA QO'SHILDI</b> (Yuk egasi - ${userMessages.length} ta xabar qayta ishlandi)`,
+        { parse_mode: 'HTML' }
+      );
+
+      await ctx.answerCbQuery(`✅ Whitelist'ga qo'shildi - ${userMessages.length} ta xabar qayta ishlandi`);
+
+      console.log(`✅ Admin whitelisted user ${userId} and reprocessed ${userMessages.length} messages`);
+    } catch (error) {
+      console.error('❌ Handle admin reject error:', error.message);
+      await ctx.answerCbQuery('❌ Xatolik yuz berdi');
     }
   }
 

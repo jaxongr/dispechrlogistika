@@ -13,6 +13,8 @@ const input = require('input');
 const Message = require('../models/Message');
 const TelegramGroup = require('../models/TelegramGroup');
 const BlockedUser = require('../models/BlockedUser');
+const PendingApproval = require('../models/PendingApproval');
+const Whitelist = require('../models/Whitelist');
 const dispatcherDetector = require('./dispatcher-detector');
 const messageFilter = require('./message-filter');
 const telegramBot = require('./telegram-bot');
@@ -255,25 +257,103 @@ class TelegramSessionService {
             }
           }
 
+          // 🚨 PHONE SPAM DETECTION: 20+ guruhda bir xil raqam = ADMIN TASDIQ KERAK
+          if (phoneNumber) {
+            // Check if user is whitelisted
+            const isWhitelisted = await Whitelist.isWhitelisted(senderId);
+            if (!isWhitelisted) {
+              const { db } = require("../config/database");
+              const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
+              const recentWithSamePhone = db.get("messages")
+                .filter(msg =>
+                  msg.contact_phone === phoneNumber &&
+                  new Date(msg.created_at) >= thirtyMinutesAgo
+                )
+                .value();
+
+              // Count unique groups
+              const uniqueGroups = new Set(recentWithSamePhone.map(m => m.group_id));
+              const groupCount = uniqueGroups.size;
+
+              if (groupCount >= 20) {
+                console.log(`🚨 SPAM DETECTED! Phone ${phoneNumber} in ${groupCount} groups - ADMIN TASDIQ KERAK`);
+
+                // Create pending approval instead of auto-blocking
+                const existingApproval = await PendingApproval.findByUserId(senderId);
+                if (!existingApproval || existingApproval.length === 0) {
+                  await PendingApproval.create({
+                    telegram_user_id: senderId,
+                    username: messageData.sender_username,
+                    full_name: messageData.sender_full_name,
+                    phone_number: phoneNumber,
+                    message_id: null, // Will be set after message is saved
+                    message_text: messageData.message_text,
+                    reason: `Spam: ${groupCount} ta guruhda bir xil raqam (30 daqiqada)`,
+                    detected_by: 'phone_spam_detector'
+                  });
+
+                  // Send admin notification via bot
+                  await telegramBot.sendAdminNotification({
+                    user_id: senderId,
+                    username: messageData.sender_username,
+                    full_name: messageData.sender_full_name,
+                    phone_number: phoneNumber,
+                    reason: `Spam: ${groupCount} ta guruhda bir xil raqam`,
+                    message_text: messageData.message_text
+                  });
+
+                  console.log(`📨 Admin'ga yuborildi: ${messageData.sender_full_name} - tasdiq kutilmoqda`);
+                }
+                // DON'T skip the message - continue processing
+              }
+            }
+          }
+
           // Filter check
-// 🚨 PHONE SPAM DETECTION: 20+ guruhda bir xil raqam = DISPETCHER          if (phoneNumber) {            const { db } = require("../config/database");            const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);                        const recentWithSamePhone = db.get("messages")              .filter(msg =>                 msg.contact_phone === phoneNumber &&                new Date(msg.created_at) >= thirtyMinutesAgo              )              .value();                        // Count unique groups            const uniqueGroups = new Set(recentWithSamePhone.map(m => m.group_id));            const groupCount = uniqueGroups.size;                        if (groupCount >= 20) {              console.log(`🚨 SPAM DETECTED! Phone ${phoneNumber} in ${groupCount} groups (30 min)`);                            // Auto-block sender              const existingBlock = await BlockedUser.findByTelegramId(senderId);              if (!existingBlock) {                await BlockedUser.create({                  telegram_user_id: senderId,                  username: messageData.sender_username,                  full_name: messageData.sender_full_name,                  phone_number: phoneNumber,                  reason: `Spam: ${groupCount} ta guruhda bir xil raqam (30 daqiqada)`,                  blocked_by: 0                });                console.log(`✅ Auto-blocked: ${messageData.sender_full_name} - spam in ${groupCount} groups`);              }                            continue; // Skip this message            }          }
           const filterResult = messageFilter.checkMessage(messageData);
 
           if (filterResult.shouldBlock) {
-            // Auto-block if needed
-            if (filterResult.autoBlock) {
-              const existingBlock = await BlockedUser.findByTelegramId(senderId);
-              if (!existingBlock) {
-                await BlockedUser.create({
-                  telegram_user_id: senderId,
-                  username: messageData.sender_username,
-                  full_name: messageData.sender_full_name,
-                  reason: filterResult.reason,
-                  blocked_by: 0
-                });
+            // Check if user is whitelisted
+            const isWhitelisted = await Whitelist.isWhitelisted(senderId);
+
+            if (!isWhitelisted) {
+              // If autoBlock is false (which is now default), send to admin for approval
+              if (!filterResult.autoBlock) {
+                // Create pending approval
+                const existingApproval = await PendingApproval.findByUserId(senderId);
+                if (!existingApproval || existingApproval.length === 0) {
+                  await PendingApproval.create({
+                    telegram_user_id: senderId,
+                    username: messageData.sender_username,
+                    full_name: messageData.sender_full_name,
+                    phone_number: phoneNumber || null,
+                    message_id: null,
+                    message_text: messageData.message_text,
+                    reason: filterResult.reason,
+                    detected_by: 'message_filter'
+                  });
+
+                  // Send admin notification
+                  await telegramBot.sendAdminNotification({
+                    user_id: senderId,
+                    username: messageData.sender_username,
+                    full_name: messageData.sender_full_name,
+                    phone_number: phoneNumber || null,
+                    reason: filterResult.reason,
+                    message_text: messageData.message_text
+                  });
+
+                  console.log(`📨 Admin'ga yuborildi: ${messageData.sender_full_name} - ${filterResult.reason}`);
+                }
               }
             }
-            continue;
+
+            // Only skip if phone number is missing
+            if (filterResult.reason === 'Telefon raqam yo\'q') {
+              continue; // Skip messages without phone numbers
+            }
+            // Otherwise, continue processing (don't skip)
           }
 
           // Dispatcher detection

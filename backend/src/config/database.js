@@ -25,7 +25,9 @@ db.defaults({
   statistics: [],
   daily_statistics: [],
   dispatcher_reports: [],
-  bot_users: []
+  bot_users: [],
+  pending_approvals: [],  // Admin tasdiq uchun kutayotgan bloklashlar
+  whitelist: []           // Admin tomonidan tasdiqlangan yuk egalari
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);

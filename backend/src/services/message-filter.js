@@ -291,7 +291,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `Username/Bio'da kalit so'z: "${keywordCheck.keyword}"`,
         isDispatcher: true,
-        autoBlock: true
+        autoBlock: false  // Admin tasdiq kutiladi
       };
     }
 
@@ -302,7 +302,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `Shubhali profil: ${suspiciousCheck.reason}`,
         isDispatcher: true,
-        autoBlock: true
+        autoBlock: false  // Admin tasdiq kutiladi
       };
     }
 
@@ -322,7 +322,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `${foreignCheck.reason} (faqat O'zbekiston ichida)`,
         isDispatcher: true,
-        autoBlock: true
+        autoBlock: false  // Admin tasdiq kutiladi
       };
     }
 
@@ -332,7 +332,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: '200+ belgi (spam)',
         isDispatcher: true,
-        autoBlock: true
+        autoBlock: false  // Admin tasdiq kutiladi
       };
     }
 
@@ -344,7 +344,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `3+ emoji dispetcher belgisi (${emojiMatches.length}ta emoji)`,
         isDispatcher: true,
-        autoBlock: true
+        autoBlock: false  // Admin tasdiq kutiladi
       };
     }
 
@@ -362,7 +362,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `Ko'p bo'sh qatorlar (${maxConsecutive}ta ketma-ket)`,
         isDispatcher: true,
-        autoBlock: true
+        autoBlock: false  // Admin tasdiq kutiladi
       };
     }
 
@@ -373,7 +373,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: '15+ guruhda (professional dispatcher)',
         isDispatcher: true,
-        autoBlock: true
+        autoBlock: false  // Admin tasdiq kutiladi
       };
     }
 
@@ -384,7 +384,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: 'Juda ko\'p xabar (spam)',
         isDispatcher: true,
-        autoBlock: true
+        autoBlock: false  // Admin tasdiq kutiladi
       };
     }
 
