@@ -190,6 +190,17 @@ async function loadSMSHistory() {
         const response = await apiRequest('/sms/history?limit=100');
         const history = response.history;
 
+        // Calculate statistics
+        const sentCount = history.filter(sms => sms.status === 'sent').length;
+        const skippedCount = history.filter(sms => sms.status === 'skipped').length;
+        const failedCount = history.filter(sms => sms.status === 'failed').length;
+
+        // Update statistics cards
+        document.getElementById('smsSentCount').textContent = sentCount;
+        document.getElementById('smsSkippedCount').textContent = skippedCount;
+        document.getElementById('smsFailedCount').textContent = failedCount;
+        document.getElementById('smsTotalCount').textContent = history.length;
+
         // Separate block and success SMS
         const blockSMS = history.filter(sms => sms.type !== 'success');
         const successSMS = history.filter(sms => sms.type === 'success');
@@ -250,9 +261,17 @@ function renderSMSHistoryTable(smsHistory, containerId, type, emptyMessage) {
             minute: '2-digit'
         });
 
-        const statusBadge = sms.status === 'sent'
-            ? '<span class="badge bg-success">✅ Yuborildi</span>'
-            : '<span class="badge bg-danger">❌ Xatolik</span>';
+        let statusBadge;
+        if (sms.status === 'sent') {
+            statusBadge = '<span class="badge bg-success">✅ Yuborildi</span>';
+        } else if (sms.status === 'skipped') {
+            const skipReason = sms.reason === 'user_in_group'
+                ? 'Guruhda bor'
+                : 'Guruhdan chiqgan';
+            statusBadge = `<span class="badge bg-warning">⏭️ Skip (${skipReason})</span>`;
+        } else {
+            statusBadge = '<span class="badge bg-danger">❌ Xatolik</span>';
+        }
 
         const deviceId = sms.device_id || 'N/A';
         const errorMsg = sms.error ? `<br><small class="text-danger">${sms.error}</small>` : '';

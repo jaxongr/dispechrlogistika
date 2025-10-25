@@ -218,6 +218,17 @@ class SemySMSService {
 
         if (isInGroup) {
           console.log(`⏭️ User ${telegramUserId} guruhda - SMS yuborilmaydi`);
+
+          // Save to SMS history as skipped
+          this.saveSMSHistory({
+            phone: phoneNumber,
+            message: settings.template.replace('{name}', userName).replace('{reason}', reason),
+            status: 'skipped',
+            type: 'block',
+            reason: 'user_in_group',
+            sent_at: new Date().toISOString()
+          });
+
           return { success: false, reason: 'user_in_group' };
         }
       }
@@ -289,6 +300,17 @@ class SemySMSService {
 
         if (!isInGroup) {
           console.log(`⏭️ User ${telegramUserId} guruhda emas - Success SMS yuborilmaydi (user guruhdan chiqgan)`);
+
+          // Save to SMS history as skipped
+          this.saveSMSHistory({
+            phone: phoneNumber,
+            message: settings.success_template.replace('{name}', userName).replace('{channel}', channelUsername),
+            status: 'skipped',
+            type: 'success',
+            reason: 'user_not_in_group',
+            sent_at: new Date().toISOString()
+          });
+
           return { success: false, reason: 'user_not_in_group' };
         }
       }
