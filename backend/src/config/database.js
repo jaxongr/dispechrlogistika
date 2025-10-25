@@ -41,7 +41,7 @@ db.defaults({
   auto_reply_settings: {   // Dispatcher auto-reply sozlamalari
     enabled: false,
     template: 'Assalomu alaykum hurmatli dispechr! Sizni ish samaradorligingizni oshirish uchun guruh ochdik! U yerda barcha yukchilardan yuk beriladi tekinga! Guruhga qo\'shilish uchun profil shapkasidagi guruhga qo\'shiling!',
-    max_replies_per_hour: 5,
+    max_replies_per_hour: 50,
     cooldown_hours: 1,
     check_target_group: true,
     last_updated: new Date().toISOString()

@@ -138,13 +138,13 @@ document.getElementById('saveSettings').addEventListener('click', async () => {
             return;
         }
 
-        if (settings.max_replies_per_hour < 1 || settings.max_replies_per_hour > 100) {
-            showAlert('Soatlik limit 1-100 orasida bo\'lishi kerak!', 'warning');
+        if (settings.max_replies_per_hour < 1 || settings.max_replies_per_hour > 1000) {
+            showAlert('Soatlik limit 1-1000 orasida bo\'lishi kerak!', 'warning');
             return;
         }
 
-        if (settings.cooldown_hours < 0.5 || settings.cooldown_hours > 24) {
-            showAlert('Cooldown 0.5-24 soat orasida bo\'lishi kerak!', 'warning');
+        if (settings.cooldown_hours < 0.1 || settings.cooldown_hours > 24) {
+            showAlert('Cooldown 0.1-24 soat orasida bo\'lishi kerak!', 'warning');
             return;
         }
 

@@ -12,7 +12,9 @@
       "Bash(ssh root@5.189.141.151 \"cd /var/www/dispatchr-logistics && pm2 logs dispatchr-logistics --lines 50 --nostream | grep -i ''error\\|bloklash\\|block''\")",
       "Bash(ssh root@5.189.141.151 \"cd /var/www/dispatchr-logistics && tail -100 /root/.pm2/logs/dispatchr-logistics-out.log | grep -A 5 ''Block sender\\|blockSender\\|bloklash''\")",
       "Bash(ssh root@5.189.141.151:*)",
-      "WebFetch(domain:semysms.net)"
+      "WebFetch(domain:semysms.net)",
+      "Bash(for file in messages.html blocked.html phones.html groups.html settings.html sms.html)",
+      "Bash(do echo \"Processing: $file\" grep -n \"sms.html\" \"C:\\Users\\Pro\\Desktop\\Dispechrlar uchun logistika\\frontend\\public$file\")"
     ],
     "deny": [],
     "ask": []
