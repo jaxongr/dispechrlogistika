@@ -448,7 +448,8 @@ http://5.189.141.151:3001/reporter-stats.html`;
         semySMS.sendSuccessNotificationSMS(
           message.contact_phone,
           message.sender_full_name || message.sender_username,
-          process.env.TARGET_CHANNEL_USERNAME || '@yoldauz'
+          process.env.TARGET_CHANNEL_USERNAME || '@yoldauz',
+          message.sender_user_id // Check if user still in group
         ).catch(err => {
           console.error('Success SMS yuborishda xatolik:', err.message);
         });
@@ -1380,6 +1381,32 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  /**
+   * Check if user is member of the target group
+   * Used to avoid sending SMS to users who are already in the group
+   */
+  async isUserInGroup(telegram_user_id) {
+    try {
+      if (!this.bot || !this.targetGroupId) {
+        console.log('⚠️ Bot or target group not configured');
+        return false;
+      }
+
+      const chatMember = await this.bot.telegram.getChatMember(this.targetGroupId, telegram_user_id);
+
+      // User is in group if status is: member, administrator, or creator
+      const isInGroup = ['member', 'administrator', 'creator'].includes(chatMember.status);
+
+      console.log(`👤 User ${telegram_user_id} group status: ${chatMember.status} (in group: ${isInGroup})`);
+
+      return isInGroup;
+    } catch (error) {
+      // If user not found or other error, assume user is NOT in group
+      console.log(`ℹ️ User ${telegram_user_id} not in group or error: ${error.message}`);
+      return false;
+    }
   }
 
   /**

@@ -311,7 +311,8 @@ class TelegramSessionService {
                   semySMS.sendBlockNotificationSMS(
                     phoneNumber,
                     messageData.sender_full_name,
-                    `${groupCount} ta guruhda bir xil raqam`
+                    `${groupCount} ta guruhda bir xil raqam`,
+                    senderId // Check if user in group before sending SMS
                   ).catch(err => {
                     console.error('SMS yuborishda xatolik:', err.message);
                   });
@@ -366,7 +367,8 @@ class TelegramSessionService {
                 semySMS.sendBlockNotificationSMS(
                   phoneNumber || null,
                   messageData.sender_full_name,
-                  filterResult.reason
+                  filterResult.reason,
+                  senderId // Check if user in group before sending SMS
                 ).catch(err => {
                   console.error('SMS yuborishda xatolik:', err.message);
                 });

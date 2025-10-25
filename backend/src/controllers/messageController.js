@@ -177,7 +177,8 @@ class MessageController {
         semySMS.sendBlockNotificationSMS(
           message.contact_phone,
           message.sender_full_name,
-          reason || 'Dashboard orqali bloklandi'
+          reason || 'Dashboard orqali bloklandi',
+          message.sender_user_id // Check if user in group before sending SMS
         ).catch(err => {
           console.error('SMS yuborishda xatolik:', err.message);
         });

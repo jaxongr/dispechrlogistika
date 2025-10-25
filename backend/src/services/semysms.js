@@ -196,7 +196,7 @@ class SemySMSService {
    * Send SMS to blocked user
    * Called automatically when user is blocked
    */
-  async sendBlockNotificationSMS(phoneNumber, userName = '', reason = '') {
+  async sendBlockNotificationSMS(phoneNumber, userName = '', reason = '', telegramUserId = null) {
     try {
       const settings = this.getSettings();
 
@@ -209,6 +209,17 @@ class SemySMSService {
       if (!phoneNumber) {
         console.log('⏭️ Telefon raqam yo\'q - SMS yuborilmaydi');
         return { success: false, reason: 'no_phone' };
+      }
+
+      // Check if user is still in group (maybe unblocked or mistake)
+      if (telegramUserId) {
+        const telegramBot = require('./telegram-bot');
+        const isInGroup = await telegramBot.isUserInGroup(telegramUserId);
+
+        if (isInGroup) {
+          console.log(`⏭️ User ${telegramUserId} guruhda - SMS yuborilmaydi`);
+          return { success: false, reason: 'user_in_group' };
+        }
       }
 
       // Use template from settings
@@ -256,7 +267,7 @@ class SemySMSService {
    * Send SMS to user when message is approved and sent to channel
    * Called automatically when message is sent to channel
    */
-  async sendSuccessNotificationSMS(phoneNumber, userName = '', channelUsername = '@yoldauz') {
+  async sendSuccessNotificationSMS(phoneNumber, userName = '', channelUsername = '@yoldauz', telegramUserId = null) {
     try {
       const settings = this.getSettings();
 
@@ -269,6 +280,17 @@ class SemySMSService {
       if (!phoneNumber) {
         console.log('⏭️ Telefon raqam yo\'q - SMS yuborilmaydi');
         return { success: false, reason: 'no_phone' };
+      }
+
+      // Check if user is still in group
+      if (telegramUserId) {
+        const telegramBot = require('./telegram-bot');
+        const isInGroup = await telegramBot.isUserInGroup(telegramUserId);
+
+        if (!isInGroup) {
+          console.log(`⏭️ User ${telegramUserId} guruhda emas - Success SMS yuborilmaydi (user guruhdan chiqgan)`);
+          return { success: false, reason: 'user_not_in_group' };
+        }
       }
 
       // Use success template from settings
