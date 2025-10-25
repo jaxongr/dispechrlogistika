@@ -1,21 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git rev-list:*)",
-      "Bash(ssh:*)",
-      "Bash(scp:*)",
-      "Bash(curl:*)",
-      "Bash(python3:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nDispatcher Reports Tracking: Kim blokladi va nima blokladi\n\nYANGI XUSUSIYATLAR:\n✅ Kim \"Bu dispetcher ekan\" tugmasini bosgani track qilinadi\n✅ Admin''ga bot orqali xabar yuboriladi\n✅ Admin knopkalari: Blokla, Guruhdan chiqar, Ignore\n✅ Statistika sahifasi - kim nechta bloklagan\n✅ Top 10 eng ko''p bloklaganlar\n✅ Qidiruv funksiyasi\n\nTEXNIK O''ZGARISHLAR:\n- database.js: dispatcher_reports table qo''shildi\n- DispatcherReport.js: Yangi model yaratildi\n- telegram-bot.js: Admin notification va action handlers\n- dispatcher-reports.js: Yangi API routes\n- reporter-stats.html: Statistika sahifasi\n- reporter-stats.js: Frontend JavaScript\n- server.js: dispatcher-reports route qo''shildi\n- .env: ADMIN_USER_ID qo''shildi\n\nMUAMMO HAL QILINDI:\n- Guruh ID''lari (-100 prefixi) to''g''rilandi\n- 187 ta guruh ID''si yangilandi\n- yuk_markazi_gruppaaaa endi ishlaydi\n\n🤖 Generated with Claude Code\nEOF\n)\")",
-      "WebFetch(domain:5.189.141.151)",
-      "Bash(pm2 logs:*)",
-      "Bash(git commit:*)",
-      "Bash(pm2 list:*)",
-      "Bash(pm2 restart:*)",
-      "Bash(pm2 start:*)",
-      "Bash(npm install:*)",
-      "Bash(git push:*)"
+      "Bash(git rev-parse:*)"
     ],
     "deny": [],
     "ask": []
