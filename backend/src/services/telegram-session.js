@@ -255,6 +255,8 @@ class TelegramSessionService {
             // continue; // <-- REMOVED
           }
 
+          console.log(`🔍 Processing message from ${sender?.username || sender?.firstName} in ${chat?.title}`);
+
           const messageData = {
             telegram_message_id: message.id,
             sender_user_id: senderId,
