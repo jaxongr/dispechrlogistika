@@ -231,24 +231,21 @@ class TelegramSessionService {
           // Bloklangan user check
           const isBlocked = await BlockedUser.isBlocked(senderId);
           if (isBlocked) {
-            // Send auto-reply to blocked user BEFORE skipping
+            // Send auto-reply to blocked user BEFORE skipping (using session)
             try {
-              const bot = telegramBot.bot;
-              if (bot) {
-                const replyResult = await autoReply.sendAutoReply(
-                  bot,
-                  senderId,
-                  sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
-                  chatId,
-                  chat?.title || 'Unknown Group',
-                  message.id
-                );
+              const replyResult = await autoReply.sendAutoReply(
+                this,
+                senderId,
+                sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+                chatId,
+                chat?.title || 'Unknown Group',
+                message.id
+              );
 
-                if (replyResult.success) {
-                  console.log(`📨 Auto-reply sent to blocked user ${sender?.username}`);
-                } else {
-                  console.log(`⏭️ Auto-reply skipped for blocked user: ${replyResult.reason}`);
-                }
+              if (replyResult.success) {
+                console.log(`📨 Auto-reply sent to blocked user ${sender?.username}`);
+              } else {
+                console.log(`⏭️ Auto-reply skipped for blocked user: ${replyResult.reason}`);
               }
             } catch (error) {
               console.error(`❌ Auto-reply error for blocked user:`, error.message);
@@ -278,24 +275,21 @@ class TelegramSessionService {
             if (isPhoneBlocked) {
               console.log(`📵 Blocked phone detected: ${phoneNumber} - sending auto-reply before skip`);
 
-              // Send auto-reply to blocked phone user BEFORE skipping
+              // Send auto-reply to blocked phone user BEFORE skipping (using session)
               try {
-                const bot = telegramBot.bot;
-                if (bot) {
-                  const replyResult = await autoReply.sendAutoReply(
-                    bot,
-                    senderId,
-                    sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
-                    chatId,
-                    chat?.title || 'Unknown Group',
-                    message.id
-                  );
+                const replyResult = await autoReply.sendAutoReply(
+                  this,
+                  senderId,
+                  sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+                  chatId,
+                  chat?.title || 'Unknown Group',
+                  message.id
+                );
 
-                  if (replyResult.success) {
-                    console.log(`📨 Auto-reply sent to blocked phone user ${sender?.username}`);
-                  } else {
-                    console.log(`⏭️ Auto-reply skipped for blocked phone: ${replyResult.reason}`);
-                  }
+                if (replyResult.success) {
+                  console.log(`📨 Auto-reply sent to blocked phone user ${sender?.username}`);
+                } else {
+                  console.log(`⏭️ Auto-reply skipped for blocked phone: ${replyResult.reason}`);
                 }
               } catch (error) {
                 console.error(`❌ Auto-reply error for blocked phone:`, error.message);
@@ -507,24 +501,20 @@ class TelegramSessionService {
 
           if (shouldReply && messageData.sender_user_id) {
             try {
-              // Get bot instance from telegramBot service
-              const bot = telegramBot.bot;
+              // Send auto-reply using Telegram Session
+              const replyResult = await autoReply.sendAutoReply(
+                this,
+                messageData.sender_user_id,
+                messageData.sender_username || messageData.sender_full_name,
+                chatId,
+                chat?.title || 'Unknown Group',
+                messageData.telegram_message_id
+              );
 
-              if (bot) {
-                const replyResult = await autoReply.sendAutoReply(
-                  bot,
-                  messageData.sender_user_id,
-                  messageData.sender_username || messageData.sender_full_name,
-                  chatId,
-                  chat?.title || 'Unknown Group',
-                  messageData.telegram_message_id
-                );
-
-                if (replyResult.success) {
-                  console.log(`📨 Auto-reply sent to dispatcher ${messageData.sender_username}`);
-                } else {
-                  console.log(`⏭️ Auto-reply skipped for ${messageData.sender_username}: ${replyResult.reason}`);
-                }
+              if (replyResult.success) {
+                console.log(`📨 Auto-reply sent to dispatcher ${messageData.sender_username}`);
+              } else {
+                console.log(`⏭️ Auto-reply skipped for ${messageData.sender_username}: ${replyResult.reason}`);
               }
             } catch (error) {
               console.error(`❌ Auto-reply error for ${messageData.sender_username}:`, error.message);
@@ -540,6 +530,38 @@ class TelegramSessionService {
       console.error('❌ Queue processing error:', error.message);
     } finally {
       this.processingQueue = false;
+    }
+  }
+
+  /**
+   * Send message via session (reply to a message)
+   */
+  async sendMessage(chatId, messageText, replyToMessageId = null) {
+    try {
+      if (!this.client || !this.isConnected) {
+        throw new Error('Telegram session ulanmagan');
+      }
+
+      const options = {};
+      if (replyToMessageId) {
+        options.replyTo = replyToMessageId;
+      }
+
+      const result = await this.client.sendMessage(chatId, {
+        message: messageText,
+        ...options
+      });
+
+      return {
+        success: true,
+        message_id: result.id
+      };
+    } catch (error) {
+      console.error('❌ Session message yuborishda xatolik:', error.message);
+      return {
+        success: false,
+        error: error.message
+      };
     }
   }
 

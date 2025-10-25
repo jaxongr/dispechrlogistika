@@ -96,9 +96,9 @@ class AutoReplyService {
   }
 
   /**
-   * Send auto-reply to dispatcher in group
+   * Send auto-reply to dispatcher in group using Telegram Session
    */
-  async sendAutoReply(bot, userId, username, groupId, groupName, messageId) {
+  async sendAutoReply(sessionClient, userId, username, groupId, groupName, messageId) {
     try {
       const settings = this.getSettings();
 
@@ -126,15 +126,16 @@ class AutoReplyService {
         }
       }
 
-      // Send reply message (bot must be in the group for this to work)
-      const replyMessage = await bot.telegram.sendMessage(
+      // Send reply message via Telegram Session
+      const result = await sessionClient.sendMessage(
         groupId,
         settings.template,
-        {
-          reply_to_message_id: messageId,
-          parse_mode: 'HTML'
-        }
+        messageId
       );
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       console.log(`✅ Auto-reply sent to ${username} in ${groupName}`);
 
@@ -145,7 +146,7 @@ class AutoReplyService {
         group_id: groupId.toString(),
         group_name: groupName || '',
         message_id: messageId,
-        reply_message_id: replyMessage.message_id,
+        reply_message_id: result.message_id,
         replied_at: new Date().toISOString()
       });
 
@@ -153,7 +154,7 @@ class AutoReplyService {
 
       return {
         success: true,
-        reply_message_id: replyMessage.message_id
+        reply_message_id: result.message_id
       };
 
     } catch (error) {
