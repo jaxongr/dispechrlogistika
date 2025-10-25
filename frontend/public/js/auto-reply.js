@@ -28,8 +28,8 @@ async function loadSettings() {
 
         document.getElementById('autoReplyEnabled').checked = settings.enabled || false;
         document.getElementById('checkTargetGroup').checked = settings.check_target_group !== false;
-        document.getElementById('maxRepliesPerMinute').value = settings.max_replies_per_minute || 20;
-        document.getElementById('maxRepliesPerHour').value = settings.max_replies_per_hour || 50;
+        document.getElementById('maxRepliesPerMinute').value = settings.max_replies_per_minute || 5;
+        document.getElementById('maxRepliesPerHour').value = settings.max_replies_per_hour || 100;
         document.getElementById('cooldownHours').value = settings.cooldown_hours || 1;
         document.getElementById('messageTemplate').value = settings.template || '';
 
@@ -140,13 +140,13 @@ document.getElementById('saveSettings').addEventListener('click', async () => {
             return;
         }
 
-        if (settings.max_replies_per_minute < 1 || settings.max_replies_per_minute > 100) {
-            showAlert('Minutlik limit 1-100 orasida bo\'lishi kerak!', 'warning');
+        if (settings.max_replies_per_minute < 1 || settings.max_replies_per_minute > 10) {
+            showAlert('⚠️ Minutlik limit 1-10 orasida bo\'lishi kerak! (Telegram spam oldini olish)', 'warning');
             return;
         }
 
-        if (settings.max_replies_per_hour < 1 || settings.max_replies_per_hour > 1000) {
-            showAlert('Soatlik limit 1-1000 orasida bo\'lishi kerak!', 'warning');
+        if (settings.max_replies_per_hour < 1 || settings.max_replies_per_hour > 200) {
+            showAlert('Soatlik limit 1-200 orasida bo\'lishi kerak!', 'warning');
             return;
         }
 

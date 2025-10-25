@@ -9,6 +9,7 @@ const { db } = require('../config/database');
 class AutoReplyService {
   constructor() {
     this.lastReplyTime = null;
+    this.lastReplyTimestamp = 0; // Track exact time of last reply
   }
 
   /**
@@ -20,8 +21,8 @@ class AutoReplyService {
       const defaultSettings = {
         enabled: false,
         template: 'Assalomu alaykum hurmatli dispechr! Sizni ish samaradorligingizni oshirish uchun guruh ochdik! U yerda barcha yukchilardan yuk beriladi tekinga! Guruhga qo\'shilish uchun profil shapkasidagi guruhga qo\'shiling!',
-        max_replies_per_hour: 50,
-        max_replies_per_minute: 20,
+        max_replies_per_hour: 100,
+        max_replies_per_minute: 5,
         cooldown_hours: 1,
         check_target_group: true,
         last_updated: new Date().toISOString()
@@ -31,7 +32,7 @@ class AutoReplyService {
     }
     // Add default for max_replies_per_minute if missing
     if (!settings.max_replies_per_minute) {
-      settings.max_replies_per_minute = 20;
+      settings.max_replies_per_minute = 5;
     }
     return settings;
   }
@@ -146,6 +147,21 @@ class AutoReplyService {
         }
       }
 
+      // XAVFSIZLIK: Minimum 10 soniya delay (Telegram flood control)
+      const now = Date.now();
+      const minDelay = 10000; // 10 seconds
+      const timeSinceLastReply = now - this.lastReplyTimestamp;
+
+      if (timeSinceLastReply < minDelay && this.lastReplyTimestamp > 0) {
+        const waitTime = minDelay - timeSinceLastReply;
+        console.log(`⏸️ Waiting ${Math.ceil(waitTime / 1000)}s to prevent flood...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+
+      // Random additional delay (3-7 seconds) to look more human
+      const randomDelay = Math.floor(Math.random() * 4000) + 3000;
+      await new Promise(resolve => setTimeout(resolve, randomDelay));
+
       // Send reply message via Telegram Session
       const result = await sessionClient.sendMessage(
         groupId,
@@ -156,6 +172,9 @@ class AutoReplyService {
       if (!result.success) {
         throw new Error(result.error);
       }
+
+      // Update timestamp
+      this.lastReplyTimestamp = Date.now();
 
       console.log(`✅ Auto-reply sent to ${username} in ${groupName}`);
 
