@@ -144,21 +144,24 @@ class MessageController {
         return res.status(404).json({ error: 'Xabar topilmadi' });
       }
 
-      // Allaqachon bloklangan bo'lsa
+      // Allaqachon bloklangan bo'lsa - faqat e'lonlarini o'chiramiz, xatolik bermaymiz
       const isBlocked = await BlockedUser.isBlocked(message.sender_user_id);
-      if (isBlocked) {
-        return res.status(400).json({ error: 'Bu foydalanuvchi allaqachon bloklangan' });
+
+      if (!isBlocked) {
+        // User hali bloklanmagan - bloklash
+        await BlockedUser.create({
+          telegram_user_id: message.sender_user_id,
+          username: message.sender_username,
+          full_name: message.sender_full_name,
+          reason: reason || 'Dispetcher deb aniqlandi',
+          blocked_by: req.user.id
+        });
+        console.log(`✅ User ${message.sender_user_id} bloklandi - dashboard orqali`);
+      } else {
+        console.log(`⚠️ User ${message.sender_user_id} allaqachon bloklangan - faqat e'lonlarini o'chiramiz`);
       }
 
-      await BlockedUser.create({
-        telegram_user_id: message.sender_user_id,
-        username: message.sender_username,
-        full_name: message.sender_full_name,
-        reason: reason || 'Dispetcher deb aniqlandi',
-        blocked_by: req.user.id
-      });
-
-      // DELETE ALL USER'S MESSAGES from group (including old ones)
+      // DELETE ALL USER'S MESSAGES from group (har doim - bloklangan yoki yo'q)
       const telegramBot = require('../services/telegram-bot');
       await telegramBot.deleteAllUserMessages(message.sender_user_id);
 
