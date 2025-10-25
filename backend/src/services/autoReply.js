@@ -11,13 +11,15 @@ class AutoReplyService {
     this.lastReplyTime = null;
     this.lastReplyTimestamp = 0; // Track exact time of last reply
 
-    // TOP 20 eng ko'p e'lon kelayotgan guruhlar - bu guruhlarda auto-reply YUBORMAYMIZ
-    // Sabab: Ushbu guruhlarda ban bo'lish xavfi yuqori
+    // TOP 5 eng xavfli guruhlar - bu guruhlarda auto-reply YUBORMAYMIZ
+    // Sabab: Ushbu guruhlarda ban bo'lish xavfi juda yuqori
+    // Qolgan barcha guruhlarga auto-reply yuboriladi (xavfsiz sozlamalar bilan)
     this.blacklistedGroups = [
-      "1234214428", "1394512469", "1927499179", "1244407059", "1387986186",
-      "1357487067", "1409525633", "1235383010", "1346871534", "1484252579",
-      "1372087764", "1449175942", "1101869964", "1519287756", "1457886378",
-      "1204032282", "1157875905", "1423471919", "1613955690", "1190414019"
+      "1394512469", // Yuk markazi |🇺🇿| Yuk bor - 290 e'lon
+      "1927499179", // YUKLAR🚛 [LoadMe] - 109 e'lon
+      "1234214428", // 🌏YUK_🎯markazi🇺🇿 - 864 e'lon (ENG XAVFLI!)
+      "1387986186", // YUK markazi 🇺🇿
+      "1519287756"  // 🇺🇿🚚 Yuk markazi🚚🇺🇿
     ];
   }
 
