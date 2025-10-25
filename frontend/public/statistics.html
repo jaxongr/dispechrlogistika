@@ -257,7 +257,10 @@
                 <div class="stat-card danger">
                     <div class="stat-label">👥 Bloklangan userlar</div>
                     <div class="stat-value" id="blockedUsers">0</div>
-                    <div class="stat-percentage" id="autoBlocked">0 avtomatik</div>
+                    <div class="stat-percentage">
+                        <span id="autoBlocked">0 avtomatik</span> |
+                        <span id="manualBlocked">0 qo'lda</span>
+                    </div>
                 </div>
             </div>
 
@@ -364,6 +367,7 @@
 
                 document.getElementById('blockedUsers').textContent = dailyData.users.total_blocked;
                 document.getElementById('autoBlocked').textContent = dailyData.users.auto_blocked + ' avtomatik';
+                document.getElementById('manualBlocked').textContent = dailyData.users.manual_blocked + ' qo\'lda';
 
                 // Update block reasons
                 const reasonsList = document.getElementById('reasonsList');
