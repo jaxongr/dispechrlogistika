@@ -2,6 +2,7 @@ const Message = require('../models/Message');
 const BlockedUser = require('../models/BlockedUser');
 const telegramBot = require('../services/telegram-bot');
 const dispatcherDetector = require('../services/dispatcher-detector');
+const semySMS = require('../services/semysms');
 
 class MessageController {
   // Barcha xabarlarni olish
@@ -170,6 +171,17 @@ class MessageController {
         message.sender_user_id,
         'Dashboard orqali bloklangan user telefoni'
       );
+
+      // Send SMS to blocked user (if phone number exists)
+      if (message.contact_phone) {
+        semySMS.sendBlockNotificationSMS(
+          message.contact_phone,
+          message.sender_full_name,
+          reason || 'Dashboard orqali bloklandi'
+        ).catch(err => {
+          console.error('SMS yuborishda xatolik:', err.message);
+        });
+      }
 
       // Xabarni dispetcher deb belgilash
       await Message.update(id, { is_dispatcher: true });

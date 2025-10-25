@@ -20,6 +20,7 @@ const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
 const blockedUsersRoutes = require('./routes/blocked-users');
 const dispatcherReportsRoutes = require('./routes/dispatcher-reports');
+const smsRoutes = require('./routes/sms');
 // const dailyStatisticsRoutes = require('./routes/daily-statistics'); // Vaqtincha o'chirildi - middleware muammosi
 
 // Initialize Express
@@ -63,6 +64,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/blocked-users', blockedUsersRoutes);
 app.use('/api/dispatcher-reports', dispatcherReportsRoutes);
+app.use('/api/sms', smsRoutes);
 // app.use('/api/daily-statistics', dailyStatisticsRoutes); // Vaqtincha o'chirildi
 
 // Health check

@@ -18,6 +18,7 @@ const Whitelist = require('../models/Whitelist');
 const dispatcherDetector = require('./dispatcher-detector');
 const messageFilter = require('./message-filter');
 const telegramBot = require('./telegram-bot');
+const semySMS = require('./semysms');
 
 class TelegramSessionService {
   constructor() {
@@ -305,6 +306,15 @@ class TelegramSessionService {
                   });
 
                   console.log(`✅ AVTOMATIK BLOKLANDI: ${messageData.sender_full_name} - Admin'ga xabar yuborildi`);
+
+                  // Send SMS to blocked user
+                  semySMS.sendBlockNotificationSMS(
+                    phoneNumber,
+                    messageData.sender_full_name,
+                    `${groupCount} ta guruhda bir xil raqam`
+                  ).catch(err => {
+                    console.error('SMS yuborishda xatolik:', err.message);
+                  });
                 }
                 // Skip this message since user is now blocked
                 continue;
@@ -351,6 +361,15 @@ class TelegramSessionService {
                 });
 
                 console.log(`✅ AVTOMATIK BLOKLANDI: ${messageData.sender_full_name} - ${filterResult.reason}`);
+
+                // Send SMS to blocked user
+                semySMS.sendBlockNotificationSMS(
+                  phoneNumber || null,
+                  messageData.sender_full_name,
+                  filterResult.reason
+                ).catch(err => {
+                  console.error('SMS yuborishda xatolik:', err.message);
+                });
               }
               // Skip this message since user is blocked
               continue;

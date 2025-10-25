@@ -27,7 +27,15 @@ db.defaults({
   dispatcher_reports: [],
   bot_users: [],
   pending_approvals: [],  // Admin tasdiq uchun kutayotgan bloklashlar
-  whitelist: []           // Admin tomonidan tasdiqlangan yuk egalari
+  whitelist: [],          // Admin tomonidan tasdiqlangan yuk egalari
+  sms_settings: {         // SemySMS sozlamalari
+    enabled: false,
+    template: 'Sizning e\'loningiz spam deb topildi va bloklandi. Iltimos, guruhda spam e\'lon tarqatmang!',
+    device_id: null,
+    auto_select_device: true,
+    last_updated: new Date().toISOString()
+  },
+  sms_history: []         // SMS yuborish tarixi
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);
