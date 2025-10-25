@@ -126,22 +126,7 @@ class AutoReplyService {
         }
       }
 
-      // Check if bot can send messages in this group
-      try {
-        const botInfo = await bot.telegram.getMe();
-        const chatMember = await bot.telegram.getChatMember(groupId, botInfo.id);
-        const canSendMessages = ['creator', 'administrator', 'member'].includes(chatMember.status);
-
-        if (!canSendMessages || chatMember.is_restricted) {
-          console.log(`⏭️ Bot cannot send messages in group ${groupName}`);
-          return { success: false, reason: 'no_permission' };
-        }
-      } catch (error) {
-        console.log(`⏭️ Cannot check bot permissions in group ${groupName}: ${error.message}`);
-        return { success: false, reason: 'permission_check_failed' };
-      }
-
-      // Send reply message
+      // Send reply message (bot must be in the group for this to work)
       const replyMessage = await bot.telegram.sendMessage(
         groupId,
         settings.template,
