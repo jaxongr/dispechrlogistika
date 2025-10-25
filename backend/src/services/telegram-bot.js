@@ -6,6 +6,7 @@ const PendingApproval = require('../models/PendingApproval');
 const Whitelist = require('../models/Whitelist');
 const Message = require('../models/Message');
 const semySMS = require('./semysms');
+const autoReply = require('./autoReply');
 
 class TelegramBotService {
   constructor() {
@@ -73,6 +74,7 @@ Dashboard: http://5.189.141.151:3001
 /start - Bot haqida ma'lumot
 /help - Yordam
 /stats - Mening statistikam
+/autoreplies - Auto-reply tarixi
 
 <b>ℹ️ Qanday ishlaydi:</b>
 1. E'lonlar avtomatik filter qilinadi
@@ -97,6 +99,7 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 /start - Bot haqida
 /help - Bu yordam
 /stats - Mening statistikam
+/autoreplies - Auto-reply tarixi (havolalar bilan)
 
 <b>Qanday ishlaydi:</b>
 • Bot guruhlardan e'lonlarni o'qiydi
@@ -107,6 +110,10 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 • "🚫 Bu dispetcher ekan" tugmasini bosing
 • User avtomatik bloklanadi
 • E'lon o'chiriladi
+
+<b>Auto-Reply:</b>
+• Bloklangan dispatcher'larga avtomatik javob yuboriladi
+• /autoreplies - So'nggi 20 ta javobni ko'rish
 
 <b>Dashboard:</b>
 http://5.189.141.151:3001
@@ -136,6 +143,63 @@ http://5.189.141.151:3001/reporter-stats.html`;
           await ctx.reply(statsMessage, { parse_mode: 'HTML' });
         } catch (error) {
           await ctx.reply('❌ Statistikani yuklashda xatolik yuz berdi.');
+        }
+      });
+
+      // Setup /autoreplies command - Show auto-reply history with links
+      this.bot.command('autoreplies', async (ctx) => {
+        try {
+          const history = autoReply.getReplyHistory(20); // Last 20 replies
+          const stats = autoReply.getStatistics();
+
+          if (history.length === 0) {
+            await ctx.reply('📭 Hali auto-reply yuborilmagan.');
+            return;
+          }
+
+          let message = `📨 <b>AUTO-REPLY TARIXI</b>\n\n`;
+          message += `📊 <b>Statistika:</b>\n`;
+          message += `• Jami: ${stats.total_replies} ta\n`;
+          message += `• So'nggi 1 soat: ${stats.replies_last_hour} ta\n`;
+          message += `• Noyob userlar: ${stats.unique_users} ta\n`;
+          message += `• Noyob guruhlar: ${stats.unique_groups} ta\n\n`;
+          message += `🔗 <b>So'nggi 20 ta auto-reply:</b>\n\n`;
+
+          for (const reply of history) {
+            const date = new Date(reply.replied_at);
+            const timeStr = date.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = date.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit' });
+
+            // Try to create message link
+            const groupId = reply.group_id.toString();
+            const messageId = reply.reply_message_id;
+
+            // Check if it's a public group (has username)
+            const telegramGroups = db.get('telegram_groups').value() || [];
+            const groupInfo = telegramGroups.find(g => g.group_id === groupId);
+
+            let messageLink = '';
+            if (groupInfo && groupInfo.group_username) {
+              // Public group
+              messageLink = `https://t.me/${groupInfo.group_username}/${messageId}`;
+            } else {
+              // Private group - use t.me/c/ format (remove -100 prefix)
+              const cleanGroupId = groupId.replace('-100', '');
+              messageLink = `https://t.me/c/${cleanGroupId}/${messageId}`;
+            }
+
+            message += `📍 <a href="${messageLink}">${dateStr} ${timeStr}</a> - ${reply.username || 'User'} (${reply.group_name || 'Group'})\n`;
+          }
+
+          message += `\n🌐 <b>Dashboard:</b>\nhttp://5.189.141.151:3001/auto-reply.html`;
+
+          await ctx.reply(message, {
+            parse_mode: 'HTML',
+            disable_web_page_preview: true
+          });
+        } catch (error) {
+          console.error('Auto-reply history error:', error);
+          await ctx.reply('❌ Auto-reply tarixini yuklashda xatolik yuz berdi.');
         }
       });
 
