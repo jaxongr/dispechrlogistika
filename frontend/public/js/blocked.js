@@ -101,7 +101,7 @@ async function loadBlockedUsers() {
                     </td>
                     <td><span class="badge bg-danger">${user.blocked_message_count || 0}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-outline-danger" onclick="unblockUser(${user.id})">
+                        <button class="btn btn-sm btn-outline-danger" onclick="unblockUser('${user.telegram_user_id}')">
                             <i class="bi bi-unlock"></i> Blokdan chiqarish
                         </button>
                     </td>
@@ -124,13 +124,23 @@ async function loadBlockedUsers() {
 }
 
 // Unblock user
-async function unblockUser(id) {
+async function unblockUser(telegram_user_id) {
     if (!confirm('Bu foydalanuvchini blokdan chiqarishni xohlaysizmi?')) {
         return;
     }
 
     try {
-        // Add API call here when endpoint is created
+        const response = await fetch(`/api/blocked-users/${telegram_user_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to unblock user');
+        }
+
         alert('Foydalanuvchi blokdan chiqarildi!');
         loadBlockedUsers();
     } catch (error) {
