@@ -15,14 +15,18 @@ class SMSController {
   // Update SMS settings
   async updateSettings(req, res) {
     try {
-      const { enabled, template, device_id, auto_select_device } = req.body;
+      const { enabled, template, success_enabled, success_template, device_id, auto_select_device } = req.body;
 
       const updated = semySMS.updateSettings({
         enabled,
         template,
+        success_enabled,
+        success_template,
         device_id,
         auto_select_device
       });
+
+      console.log('✅ SMS settings updated:', updated);
 
       res.json({
         message: 'SMS sozlamalari yangilandi',
