@@ -24,6 +24,8 @@ class SemySMSService {
       const defaultSettings = {
         enabled: false,
         template: 'Sizning e\'loningiz spam deb topildi va bloklandi. Iltimos, guruhda spam e\'lon tarqatmang!',
+        success_enabled: false,
+        success_template: 'Tabriklaymiz! Sizning e\'loningiz filtrdan o\'tdi va @yoldauz guruhiga joylashtirildi. Ko\'proq buyurtmalar uchun kanalingizni kuzatib boring!',
         device_id: null,
         auto_select_device: true,
         last_updated: new Date().toISOString()
@@ -244,6 +246,66 @@ class SemySMSService {
 
     } catch (error) {
       console.error('❌ sendBlockNotificationSMS xatolik:', error.message);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Send SMS to user when message is approved and sent to channel
+   * Called automatically when message is sent to channel
+   */
+  async sendSuccessNotificationSMS(phoneNumber, userName = '', channelUsername = '@yoldauz') {
+    try {
+      const settings = this.getSettings();
+
+      // Check if success SMS sending is enabled
+      if (!settings.success_enabled) {
+        console.log('⏭️ Success SMS o\'chirilgan - skip');
+        return { success: false, reason: 'disabled' };
+      }
+
+      if (!phoneNumber) {
+        console.log('⏭️ Telefon raqam yo\'q - SMS yuborilmaydi');
+        return { success: false, reason: 'no_phone' };
+      }
+
+      // Use success template from settings
+      let message = settings.success_template || 'Tabriklaymiz! Sizning e\'loningiz filtrdan o\'tdi va guruhga joylashtirildi.';
+
+      // Replace placeholders if any
+      message = message
+        .replace('{name}', userName)
+        .replace('{channel}', channelUsername);
+
+      // Send SMS
+      const result = await this.sendSMS(phoneNumber, message);
+
+      // Save to SMS history
+      if (result.success) {
+        this.saveSMSHistory({
+          phone: phoneNumber,
+          message: message,
+          status: 'sent',
+          type: 'success', // Mark as success notification
+          message_id: result.message_id,
+          device_id: result.device_id,
+          sent_at: new Date().toISOString()
+        });
+      } else {
+        this.saveSMSHistory({
+          phone: phoneNumber,
+          message: message,
+          status: 'failed',
+          type: 'success',
+          error: result.error,
+          sent_at: new Date().toISOString()
+        });
+      }
+
+      return result;
+
+    } catch (error) {
+      console.error('❌ sendSuccessNotificationSMS xatolik:', error.message);
       return { success: false, error: error.message };
     }
   }

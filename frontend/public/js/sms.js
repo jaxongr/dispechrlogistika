@@ -27,8 +27,10 @@ async function loadSMSSettings() {
         const settings = response.settings;
 
         document.getElementById('smsEnabled').checked = settings.enabled || false;
+        document.getElementById('smsSuccessEnabled').checked = settings.success_enabled || false;
         document.getElementById('smsAutoSelectDevice').checked = settings.auto_select_device !== false;
         document.getElementById('smsTemplate').value = settings.template || '';
+        document.getElementById('smsSuccessTemplate').value = settings.success_template || '';
 
         // Load devices
         await loadSMSDevices();
@@ -103,12 +105,19 @@ document.getElementById('saveSmsSettings').addEventListener('click', async () =>
         const settings = {
             enabled: document.getElementById('smsEnabled').checked,
             template: document.getElementById('smsTemplate').value,
+            success_enabled: document.getElementById('smsSuccessEnabled').checked,
+            success_template: document.getElementById('smsSuccessTemplate').value,
             device_id: document.getElementById('smsDeviceSelect').value || null,
             auto_select_device: document.getElementById('smsAutoSelectDevice').checked
         };
 
         if (settings.enabled && !settings.template) {
-            showAlert('SMS shablon kiritilmagan!', 'warning');
+            showAlert('Bloklash SMS shablon kiritilmagan!', 'warning');
+            return;
+        }
+
+        if (settings.success_enabled && !settings.success_template) {
+            showAlert('Muvaffaqiyat SMS shablon kiritilmagan!', 'warning');
             return;
         }
 

@@ -5,6 +5,7 @@ const DispatcherReport = require('../models/DispatcherReport');
 const PendingApproval = require('../models/PendingApproval');
 const Whitelist = require('../models/Whitelist');
 const Message = require('../models/Message');
+const semySMS = require('./semysms');
 
 class TelegramBotService {
   constructor() {
@@ -441,6 +442,17 @@ http://5.189.141.151:3001/reporter-stats.html`;
           group_message_id: sentMessage.message_id
         })
         .write();
+
+      // Send SUCCESS SMS to user (filtrdan o'tdi, guruhga joylashtirildi)
+      if (message.contact_phone) {
+        semySMS.sendSuccessNotificationSMS(
+          message.contact_phone,
+          message.sender_full_name || message.sender_username,
+          process.env.TARGET_CHANNEL_USERNAME || '@yoldauz'
+        ).catch(err => {
+          console.error('Success SMS yuborishda xatolik:', err.message);
+        });
+      }
 
       return {
         success: true,

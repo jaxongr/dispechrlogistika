@@ -94,17 +94,34 @@
                         <div class="row">
                             <!-- Left Column: Settings -->
                             <div class="col-md-6">
-                                <!-- Enable/Disable SMS -->
+                                <!-- Enable/Disable Block SMS -->
                                 <div class="mb-4">
-                                    <div class="card">
+                                    <div class="card border-danger">
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <h5 class="mb-1"><i class="bi bi-toggle-on"></i> SMS Yuborishni Yoqish</h5>
+                                                    <h5 class="mb-1"><i class="bi bi-x-circle text-danger"></i> Bloklash SMS</h5>
                                                     <small class="text-muted">Bloklanganda avtomatik SMS yuboriladi</small>
                                                 </div>
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" id="smsEnabled" style="width: 60px; height: 30px;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Enable/Disable Success SMS -->
+                                <div class="mb-4">
+                                    <div class="card border-success">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="mb-1"><i class="bi bi-check-circle text-success"></i> Muvaffaqiyat SMS</h5>
+                                                    <small class="text-muted">Guruhga yuborilganda avtomatik SMS</small>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="smsSuccessEnabled" style="width: 60px; height: 30px;">
                                                 </div>
                                             </div>
                                         </div>
@@ -154,14 +171,25 @@
 
                             <!-- Right Column: Template & Test -->
                             <div class="col-md-6">
-                                <!-- SMS Template -->
+                                <!-- Block SMS Template -->
                                 <div class="mb-4">
-                                    <label class="form-label"><i class="bi bi-chat-text"></i> <strong>SMS Shablon (Matn)</strong></label>
-                                    <textarea class="form-control" id="smsTemplate" rows="8" placeholder="SMS matnini kiriting..."></textarea>
+                                    <label class="form-label"><i class="bi bi-x-circle text-danger"></i> <strong>Bloklash SMS Shablon</strong></label>
+                                    <textarea class="form-control" id="smsTemplate" rows="4" placeholder="Bloklash SMS matnini kiriting..."></textarea>
                                     <small class="text-muted">
-                                        <strong>O'zgaruvchilar:</strong><br>
-                                        • <code>{name}</code> - User ismi<br>
-                                        • <code>{reason}</code> - Bloklash sababi
+                                        <strong>O'zgaruvchilar:</strong>
+                                        <code>{name}</code> - User ismi,
+                                        <code>{reason}</code> - Sabab
+                                    </small>
+                                </div>
+
+                                <!-- Success SMS Template -->
+                                <div class="mb-4">
+                                    <label class="form-label"><i class="bi bi-check-circle text-success"></i> <strong>Muvaffaqiyat SMS Shablon</strong></label>
+                                    <textarea class="form-control" id="smsSuccessTemplate" rows="4" placeholder="Guruhga yuborilgandagi SMS matnini kiriting..."></textarea>
+                                    <small class="text-muted">
+                                        <strong>O'zgaruvchilar:</strong>
+                                        <code>{name}</code> - User ismi,
+                                        <code>{channel}</code> - Kanal nomi
                                     </small>
                                 </div>
 

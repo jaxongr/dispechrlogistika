@@ -31,6 +31,8 @@ db.defaults({
   sms_settings: {         // SemySMS sozlamalari
     enabled: false,
     template: 'Sizning e\'loningiz spam deb topildi va bloklandi. Iltimos, guruhda spam e\'lon tarqatmang!',
+    success_enabled: false,
+    success_template: 'Tabriklaymiz! Sizning e\'loningiz filtrdan o\'tdi va @yoldauz guruhiga joylashtirildi. Ko\'proq buyurtmalar uchun kanalingizni kuzatib boring!',
     device_id: null,
     auto_select_device: true,
     last_updated: new Date().toISOString()
