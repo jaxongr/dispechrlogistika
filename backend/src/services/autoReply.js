@@ -10,6 +10,15 @@ class AutoReplyService {
   constructor() {
     this.lastReplyTime = null;
     this.lastReplyTimestamp = 0; // Track exact time of last reply
+
+    // TOP 20 eng ko'p e'lon kelayotgan guruhlar - bu guruhlarda auto-reply YUBORMAYMIZ
+    // Sabab: Ushbu guruhlarda ban bo'lish xavfi yuqori
+    this.blacklistedGroups = [
+      "1234214428", "1394512469", "1927499179", "1244407059", "1387986186",
+      "1357487067", "1409525633", "1235383010", "1346871534", "1484252579",
+      "1372087764", "1449175942", "1101869964", "1519287756", "1457886378",
+      "1204032282", "1157875905", "1423471919", "1613955690", "1190414019"
+    ];
   }
 
   /**
@@ -114,6 +123,13 @@ class AutoReplyService {
       if (!settings.enabled) {
         console.log('⏭️ Auto-reply disabled');
         return { success: false, reason: 'disabled' };
+      }
+
+      // Check if group is blacklisted (TOP 20 eng ko'p e'lon kelayotgan guruhlar)
+      const groupIdStr = groupId.toString().replace('-100', '');
+      if (this.blacklistedGroups.includes(groupIdStr)) {
+        console.log(`⏭️ Skip auto-reply: ${groupName} is in blacklist (high-activity group)`);
+        return { success: false, reason: 'blacklisted_group' };
       }
 
       // Check cooldown and limits
