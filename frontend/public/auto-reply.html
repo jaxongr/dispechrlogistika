@@ -176,11 +176,13 @@
                                     <small class="text-muted text-danger">⚠️ Minutiga maksimal (har xabar 13-17 soniyada yuboriladi, Telegram spam oldini olish uchun)</small>
                                 </div>
 
-                                <!-- Max Replies Per Hour -->
+                                <!-- Soatlik Limit - O'chirildi -->
                                 <div class="mb-4">
-                                    <label class="form-label"><i class="bi bi-speedometer2"></i> <strong>Soatlik Limit</strong></label>
-                                    <input type="number" class="form-control form-control-lg" id="maxRepliesPerHour" min="1" max="200" value="100">
-                                    <small class="text-muted">Soatiga maksimal qancha javob yuborish mumkin (spam qilmaslik uchun)</small>
+                                    <div class="alert alert-success">
+                                        <i class="bi bi-infinity"></i> <strong>Soatlik Limit: CHEKSIZ</strong>
+                                        <br><small>Faqat minutlik limit (5 ta/min) ishlaydi. Soatlik limit yo'q.</small>
+                                    </div>
+                                    <input type="hidden" id="maxRepliesPerHour" value="99999">
                                 </div>
 
                                 <!-- Cooldown Hours -->

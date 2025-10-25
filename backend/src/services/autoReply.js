@@ -98,21 +98,8 @@ class AutoReplyService {
       };
     }
 
-    // Check hourly limit
-    const oneHourAgo = new Date(now - 60 * 60 * 1000);
-    const repliesLastHour = db.get('dispatcher_auto_replies')
-      .filter(r => new Date(r.replied_at) > oneHourAgo)
-      .size()
-      .value();
-
-    if (repliesLastHour >= settings.max_replies_per_hour) {
-      return {
-        allowed: false,
-        reason: 'hourly_limit',
-        limit: settings.max_replies_per_hour
-      };
-    }
-
+    // NO HOURLY LIMIT - faqat minutlik limit ishlatiladi
+    // Soatlik limit o'chirildi - cheksiz yuborish mumkin (minutlik limit ichida)
     return { allowed: true };
   }
 
