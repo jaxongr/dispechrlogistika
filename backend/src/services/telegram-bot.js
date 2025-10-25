@@ -187,13 +187,25 @@ http://5.189.141.151:3001/reporter-stats.html`;
         return;
       }
 
-      // "Ha bu dispetcher" button handler - block user
+      // "Ha bu dispetcher" button handler - YANGI TIZIM (report confirmation)
+      if (callbackData.startsWith('admin_confirm_dispatcher_')) {
+        await this.handleAdminAction(ctx);
+        return;
+      }
+
+      // "Yo'q bu yukchi" button handler - YANGI TIZIM (report rejection)
+      if (callbackData.startsWith('admin_reject_dispatcher_')) {
+        await this.handleAdminAction(ctx);
+        return;
+      }
+
+      // "Ha bu dispetcher" button handler - ESKI TIZIM (pending approval)
       if (callbackData.startsWith('admin_confirm_')) {
         await this.handleAdminConfirmDispatcher(ctx);
         return;
       }
 
-      // "Yo'q bu yukchi" button handler - add to whitelist
+      // "Yo'q bu yukchi" button handler - ESKI TIZIM (pending approval)
       if (callbackData.startsWith('admin_reject_')) {
         await this.handleAdminRejectDispatcher(ctx);
         return;
