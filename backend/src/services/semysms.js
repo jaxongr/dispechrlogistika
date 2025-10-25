@@ -64,6 +64,8 @@ class SemySMSService {
         timeout: 10000
       });
 
+      console.log('📱 SemySMS API response:', JSON.stringify(response.data).substring(0, 500));
+
       // SemySMS API returns: { code: 0, count: N, data: [...devices...] }
       if (response.data && response.data.data) {
         // Map SemySMS device format to our format
