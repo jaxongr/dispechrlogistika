@@ -28,7 +28,8 @@ async function loadSettings() {
 
         document.getElementById('autoReplyEnabled').checked = settings.enabled || false;
         document.getElementById('checkTargetGroup').checked = settings.check_target_group !== false;
-        document.getElementById('maxRepliesPerHour').value = settings.max_replies_per_hour || 5;
+        document.getElementById('maxRepliesPerMinute').value = settings.max_replies_per_minute || 20;
+        document.getElementById('maxRepliesPerHour').value = settings.max_replies_per_hour || 50;
         document.getElementById('cooldownHours').value = settings.cooldown_hours || 1;
         document.getElementById('messageTemplate').value = settings.template || '';
 
@@ -129,12 +130,18 @@ document.getElementById('saveSettings').addEventListener('click', async () => {
             enabled: document.getElementById('autoReplyEnabled').checked,
             template: document.getElementById('messageTemplate').value,
             check_target_group: document.getElementById('checkTargetGroup').checked,
+            max_replies_per_minute: parseInt(document.getElementById('maxRepliesPerMinute').value),
             max_replies_per_hour: parseInt(document.getElementById('maxRepliesPerHour').value),
             cooldown_hours: parseFloat(document.getElementById('cooldownHours').value)
         };
 
         if (settings.enabled && !settings.template) {
             showAlert('Xabar shabloni kiritilmagan!', 'warning');
+            return;
+        }
+
+        if (settings.max_replies_per_minute < 1 || settings.max_replies_per_minute > 100) {
+            showAlert('Minutlik limit 1-100 orasida bo\'lishi kerak!', 'warning');
             return;
         }
 

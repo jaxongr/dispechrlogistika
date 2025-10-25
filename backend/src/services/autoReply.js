@@ -21,12 +21,17 @@ class AutoReplyService {
         enabled: false,
         template: 'Assalomu alaykum hurmatli dispechr! Sizni ish samaradorligingizni oshirish uchun guruh ochdik! U yerda barcha yukchilardan yuk beriladi tekinga! Guruhga qo\'shilish uchun profil shapkasidagi guruhga qo\'shiling!',
         max_replies_per_hour: 50,
+        max_replies_per_minute: 20,
         cooldown_hours: 1,
         check_target_group: true,
         last_updated: new Date().toISOString()
       };
       db.set('auto_reply_settings', defaultSettings).write();
       return defaultSettings;
+    }
+    // Add default for max_replies_per_minute if missing
+    if (!settings.max_replies_per_minute) {
+      settings.max_replies_per_minute = 20;
     }
     return settings;
   }
@@ -77,18 +82,18 @@ class AutoReplyService {
       }
     }
 
-    // Check minute limit (10 per minute to prevent spam)
+    // Check minute limit to prevent spam
     const oneMinuteAgo = new Date(now - 60 * 1000);
     const repliesLastMinute = db.get('dispatcher_auto_replies')
       .filter(r => new Date(r.replied_at) > oneMinuteAgo)
       .size()
       .value();
 
-    if (repliesLastMinute >= 10) {
+    if (repliesLastMinute >= settings.max_replies_per_minute) {
       return {
         allowed: false,
         reason: 'minute_limit',
-        limit: 10
+        limit: settings.max_replies_per_minute
       };
     }
 
