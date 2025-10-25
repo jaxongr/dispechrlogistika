@@ -231,6 +231,28 @@ class TelegramSessionService {
           // Bloklangan user check
           const isBlocked = await BlockedUser.isBlocked(senderId);
           if (isBlocked) {
+            // Send auto-reply to blocked user BEFORE skipping
+            try {
+              const bot = telegramBot.bot;
+              if (bot) {
+                const replyResult = await autoReply.sendAutoReply(
+                  bot,
+                  senderId,
+                  sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+                  chatId,
+                  chat?.title || 'Unknown Group',
+                  message.id
+                );
+
+                if (replyResult.success) {
+                  console.log(`📨 Auto-reply sent to blocked user ${sender?.username}`);
+                } else {
+                  console.log(`⏭️ Auto-reply skipped for blocked user: ${replyResult.reason}`);
+                }
+              }
+            } catch (error) {
+              console.error(`❌ Auto-reply error for blocked user:`, error.message);
+            }
             continue;
           }
 
@@ -254,7 +276,31 @@ class TelegramSessionService {
           if (phoneNumber) {
             const isPhoneBlocked = await BlockedUser.isPhoneBlocked(phoneNumber);
             if (isPhoneBlocked) {
-              console.log(`📵 Skipped message with blocked phone: ${phoneNumber}`);
+              console.log(`📵 Blocked phone detected: ${phoneNumber} - sending auto-reply before skip`);
+
+              // Send auto-reply to blocked phone user BEFORE skipping
+              try {
+                const bot = telegramBot.bot;
+                if (bot) {
+                  const replyResult = await autoReply.sendAutoReply(
+                    bot,
+                    senderId,
+                    sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+                    chatId,
+                    chat?.title || 'Unknown Group',
+                    message.id
+                  );
+
+                  if (replyResult.success) {
+                    console.log(`📨 Auto-reply sent to blocked phone user ${sender?.username}`);
+                  } else {
+                    console.log(`⏭️ Auto-reply skipped for blocked phone: ${replyResult.reason}`);
+                  }
+                }
+              } catch (error) {
+                console.error(`❌ Auto-reply error for blocked phone:`, error.message);
+              }
+
               continue;
             }
           }
