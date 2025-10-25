@@ -16,7 +16,8 @@ class PendingApproval {
     message_id,
     message_text,
     reason,
-    detected_by
+    detected_by,
+    message_data  // YANGI: To'liq xabar ma'lumotlari (admin approve qilganda reprocess uchun)
   }) {
     const approval = {
       id: Date.now(),
@@ -28,6 +29,7 @@ class PendingApproval {
       message_text: message_text || '',
       reason, // Bloklash sababi
       detected_by, // Qaysi qoida aniqladi
+      message_data: message_data || null, // To'liq xabar ma'lumotlari
       created_at: new Date().toISOString(),
       admin_notified: false,
       admin_response: null, // 'approved' yoki 'rejected'

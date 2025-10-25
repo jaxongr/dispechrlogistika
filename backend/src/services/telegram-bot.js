@@ -1167,6 +1167,49 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
   }
 
   /**
+   * Send block notification to admin (info only, no buttons)
+   * Admin gets notified about auto-block, but no action needed
+   */
+  async sendBlockNotification(userData) {
+    try {
+      const adminId = process.env.ADMIN_USER_ID;
+      if (!adminId) {
+        console.log('⚠️ ADMIN_USER_ID not set - cannot send block notification');
+        return;
+      }
+
+      const message = `
+🚫 <b>AVTOMATIK BLOKLANDI</b>
+
+👤 <b>User:</b> ${this.escapeHtml(userData.full_name || 'N/A')}
+📱 <b>Username:</b> @${this.escapeHtml(userData.username || 'N/A')}
+📞 <b>Tel:</b> ${this.escapeHtml(userData.phone_number || 'N/A')}
+🆔 <b>User ID:</b> <code>${userData.user_id}</code>
+
+🔍 <b>Sabab:</b> ${this.escapeHtml(userData.reason)}
+
+📝 <b>Xabar:</b>
+${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.message_text || '').length > 200 ? '...' : ''}
+
+<i>Bu user avtomatik ravishda bloklandi.</i>
+`;
+
+      await this.bot.telegram.sendMessage(
+        adminId,
+        message,
+        {
+          parse_mode: 'HTML'
+          // No buttons - just info
+        }
+      );
+
+      console.log(`📨 Block notification sent to admin for user ${userData.user_id}`);
+    } catch (error) {
+      console.error('❌ Send block notification error:', error.message);
+    }
+  }
+
+  /**
    * Handle admin confirmation - "Ha bu dispetcher" button
    * Block user and update pending approval
    */
