@@ -201,38 +201,73 @@ class Message {
     const blockedPhones = db.get('blocked_phones').value() || [];
 
     const now = new Date();
+    const oneHourAgo = new Date(now - 60 * 60 * 1000);
     const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
     const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
-
-    // Bugungi sana (00:00:00 dan)
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
 
-    // Guruhga yuborilgan unikal telefon raqamlar
-    const sentMessages = messages.filter(m => m.is_sent_to_channel && m.contact_phone);
-    const uniquePhones = new Set(sentMessages.map(m => m.contact_phone));
+    // OPTIMIZATSIYA: Bir marta loop qilish - barcha statistikalarni bir vaqtda hisoblash
+    let dispatcherCount = 0;
+    let approvedCount = 0;
+    let sentCount = 0;
+    let todayCount = 0;
+    let weekCount = 0;
+    let sentTodayCount = 0;
+    let sentLastHourCount = 0;
+    const uniquePhones = new Set();
 
-    // Bloklangan userlar - avtomatik va qo'lda
-    const autoBlockedUsers = blockedUsers.filter(u => u.blocked_by === 0 || u.blocked_by === null);
-    const manualBlockedUsers = blockedUsers.filter(u => u.blocked_by && u.blocked_by !== 0);
+    for (const m of messages) {
+      if (m.is_dispatcher) dispatcherCount++;
+      if (m.is_approved) approvedCount++;
+      if (m.is_sent_to_channel) {
+        sentCount++;
+        if (m.contact_phone) uniquePhones.add(m.contact_phone);
+
+        const createdAt = new Date(m.created_at || m.sent_at);
+        if (createdAt >= todayStart) sentTodayCount++;
+        if (createdAt >= oneHourAgo) sentLastHourCount++;
+      }
+
+      const msgDate = new Date(m.message_date);
+      if (msgDate > oneDayAgo) todayCount++;
+      if (msgDate > oneWeekAgo) weekCount++;
+    }
+
+    // Bloklangan userlar
+    let autoBlockedCount = 0;
+    let manualBlockedCount = 0;
+    let blockedTodayCount = 0;
+
+    for (const u of blockedUsers) {
+      if (u.blocked_by === 0 || u.blocked_by === null) {
+        autoBlockedCount++;
+      } else {
+        manualBlockedCount++;
+      }
+      if (new Date(u.blocked_at) >= todayStart) blockedTodayCount++;
+    }
 
     return {
       total_messages: messages.length,
-      dispatcher_messages: messages.filter(m => m.is_dispatcher).length,
-      approved_messages: messages.filter(m => m.is_approved).length,
-      sent_messages: messages.filter(m => m.is_sent_to_channel).length,
-      messages_today: messages.filter(m => new Date(m.message_date) > oneDayAgo).length,
-      messages_week: messages.filter(m => new Date(m.message_date) > oneWeekAgo).length,
+      dispatcher_messages: dispatcherCount,
+      approved_messages: approvedCount,
+      sent_messages: sentCount,
+      messages_today: todayCount,
+      messages_week: weekCount,
       blocked_users: blockedUsers.length,
-      
+
       // Yangi statistikalar
       unique_phones_sent: uniquePhones.size,
       blocked_phones: blockedPhones.length,
-      auto_blocked_users: autoBlockedUsers.length,
-      manual_blocked_users: manualBlockedUsers.length,
+      auto_blocked_users: autoBlockedCount,
+      manual_blocked_users: manualBlockedCount,
 
-      // Bugungi statistika (00:00:00 dan hozirgi vaqtgacha)
-      sent_today: messages.filter(m => m.is_sent_to_channel && new Date(m.created_at) >= todayStart).length,
-      blocked_today: blockedUsers.filter(u => new Date(u.blocked_at) >= todayStart).length
+      // Bugungi statistika
+      sent_today: sentTodayCount,
+      blocked_today: blockedTodayCount,
+
+      // YANGI: Oxirgi soat statistikasi
+      sent_last_hour: sentLastHourCount
     };
   }
 }
