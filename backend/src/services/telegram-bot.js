@@ -219,21 +219,21 @@ http://5.189.141.151:3001/reporter-stats.html`;
         return;
       }
 
-      // DELETE THE MESSAGE from group immediately
-      try {
-        await ctx.deleteMessage();
-        console.log(`🗑️ Message deleted from group: ${messageId}`);
-      } catch (err) {
-        console.error('Error deleting message:', err.message);
-      }
-
       // Check if reporter is admin - if yes, auto-block immediately
       const adminId = process.env.ADMIN_USER_ID;
       const isAdmin = adminId && ctx.from.id.toString() === adminId.toString();
 
       if (isAdmin) {
-        // Admin bosgan - to'g'ridan-to'g'ri bloklash
+        // Admin bosgan - to'g'ridan-to'g'ri bloklash VA E'LONNI O'CHIRISH
         console.log(`👑 Admin o'zi blokladi - avtomatik tasdiqlandi`);
+
+        // DELETE THE MESSAGE from group (faqat admin uchun!)
+        try {
+          await ctx.deleteMessage();
+          console.log(`🗑️ Admin blokladi - e'lon o'chirildi: ${messageId}`);
+        } catch (err) {
+          console.error('Error deleting message:', err.message);
+        }
 
         // Block the user
         await BlockedUser.create({
@@ -674,8 +674,15 @@ http://5.189.141.151:3001/reporter-stats.html`;
           console.log(`✅ Admin confirmed dispatcher: ${userId}`);
         }
 
-        // Edit message in group - mark as DISPECHR
-        await this.markMessageAsDispatcher(message, ctx.from);
+        // DELETE the message from group (admin tasdiqladi - o'chirish kerak!)
+        if (message.sent_message_id) {
+          try {
+            await this.bot.telegram.deleteMessage(this.targetGroupId, message.sent_message_id);
+            console.log(`🗑️ Admin tasdiqladi - e'lon o'chirildi: ${message.sent_message_id}`);
+          } catch (err) {
+            console.error('Error deleting message from group:', err.message);
+          }
+        }
 
         // Update report
         await DispatcherReport.updateAdminAction(reportId, 'confirmed_dispatcher');
@@ -1252,6 +1259,19 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
 
       // Update pending approval
       await PendingApproval.updateAdminResponse(approval.id, 'approved');
+
+      // DELETE the message from group if message_id exists
+      if (approval.message_id) {
+        const message = db.get('messages').find({ id: approval.message_id }).value();
+        if (message && message.sent_message_id) {
+          try {
+            await this.bot.telegram.deleteMessage(this.targetGroupId, message.sent_message_id);
+            console.log(`🗑️ Admin tasdiqladi (PendingApproval) - e'lon o'chirildi: ${message.sent_message_id}`);
+          } catch (err) {
+            console.error('Error deleting message from group:', err.message);
+          }
+        }
+      }
 
       // Edit message to show it's been handled
       await ctx.editMessageText(
