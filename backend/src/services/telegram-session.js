@@ -231,7 +231,7 @@ class TelegramSessionService {
           // Bloklangan user check
           const isBlocked = await BlockedUser.isBlocked(senderId);
           if (isBlocked) {
-            // Send auto-reply to blocked user BEFORE skipping (using session)
+            // Send auto-reply to blocked user (using session)
             // DON'T AWAIT - run in background to avoid blocking message processing
             autoReply.sendAutoReply(
               this,
@@ -250,7 +250,9 @@ class TelegramSessionService {
               console.error(`❌ Auto-reply error for blocked user:`, error.message);
             });
 
-            continue;
+            // TUZATISH: CONTINUE O'CHIRILDI - Bloklangan userlar e'lonlari HAM yuboriladi!
+            // Endi auto-reply yuboriladi, lekin e'lon normal process qilinadi
+            // continue; // <-- REMOVED
           }
 
           const messageData = {
@@ -273,9 +275,9 @@ class TelegramSessionService {
           if (phoneNumber) {
             const isPhoneBlocked = await BlockedUser.isPhoneBlocked(phoneNumber);
             if (isPhoneBlocked) {
-              console.log(`📵 Blocked phone detected: ${phoneNumber} - sending auto-reply before skip`);
+              console.log(`📵 Blocked phone detected: ${phoneNumber} - sending auto-reply`);
 
-              // Send auto-reply to blocked phone user BEFORE skipping (using session)
+              // Send auto-reply to blocked phone user (using session)
               // DON'T AWAIT - run in background to avoid blocking message processing
               autoReply.sendAutoReply(
                 this,
@@ -294,7 +296,8 @@ class TelegramSessionService {
                 console.error(`❌ Auto-reply error for blocked phone:`, error.message);
               });
 
-              continue;
+              // TUZATISH: CONTINUE O'CHIRILDI - Blocked phone'lar e'lonlari HAM yuboriladi!
+              // continue; // <-- REMOVED
             }
           }
 
