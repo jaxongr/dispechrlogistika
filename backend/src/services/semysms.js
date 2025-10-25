@@ -64,10 +64,21 @@ class SemySMSService {
         timeout: 10000
       });
 
-      if (response.data && response.data.response === 1) {
-        return response.data.devices || [];
+      // SemySMS API returns: { code: 0, count: N, data: [...devices...] }
+      if (response.data && response.data.data) {
+        // Map SemySMS device format to our format
+        return response.data.data.map(d => ({
+          device_id: d.id,
+          device_name: d.device_name || d.dop_name || 'Unknown',
+          device_model: d.manufacturer ? `${d.manufacturer} ${d.android_version}` : 'Unknown',
+          online: d.power === 1 && d.is_work === 1 ? 1 : 0,
+          battery: d.bat || 0,
+          device_status: d.is_arhive === 0 && d.power === 1 ? 'active' : 'inactive',
+          mobile_operator: d.mobile_operator || '',
+          date_last_active: d.date_last_active
+        }));
       } else {
-        throw new Error(response.data.msg || 'Qurilmalarni olishda xatolik');
+        throw new Error(response.data.msg || 'Qurilmalar topilmadi');
       }
     } catch (error) {
       console.error('❌ SemySMS getDevices xatolik:', error.message);
