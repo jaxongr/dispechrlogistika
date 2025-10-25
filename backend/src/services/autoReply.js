@@ -201,6 +201,16 @@ class AutoReplyService {
 
     } catch (error) {
       console.error(`❌ Auto-reply error for ${username}:`, error.message);
+
+      // Agar USER_BANNED_IN_CHANNEL error bo'lsa, guruhni blacklist'ga qo'shamiz
+      if (error.message && error.message.includes('USER_BANNED_IN_CHANNEL')) {
+        const groupIdStr = groupId.toString().replace('-100', '');
+        if (!this.blacklistedGroups.includes(groupIdStr)) {
+          this.blacklistedGroups.push(groupIdStr);
+          console.log(`🚫 AUTO-BLACKLISTED: ${groupName} (ID: ${groupIdStr}) - USER_BANNED_IN_CHANNEL`);
+        }
+      }
+
       return { success: false, error: error.message };
     }
   }
