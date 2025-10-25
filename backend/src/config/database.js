@@ -37,7 +37,16 @@ db.defaults({
     auto_select_device: true,
     last_updated: new Date().toISOString()
   },
-  sms_history: []         // SMS yuborish tarixi
+  sms_history: [],         // SMS yuborish tarixi
+  auto_reply_settings: {   // Dispatcher auto-reply sozlamalari
+    enabled: false,
+    template: 'Assalomu alaykum hurmatli dispechr! Sizni ish samaradorligingizni oshirish uchun guruh ochdik! U yerda barcha yukchilardan yuk beriladi tekinga! Guruhga qo\'shilish uchun profil shapkasidagi guruhga qo\'shiling!',
+    max_replies_per_hour: 5,
+    cooldown_hours: 1,
+    check_target_group: true,
+    last_updated: new Date().toISOString()
+  },
+  dispatcher_auto_replies: []  // Auto-reply tarixi
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);

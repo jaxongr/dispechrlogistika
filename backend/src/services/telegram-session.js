@@ -19,6 +19,7 @@ const dispatcherDetector = require('./dispatcher-detector');
 const messageFilter = require('./message-filter');
 const telegramBot = require('./telegram-bot');
 const semySMS = require('./semysms');
+const autoReply = require('./autoReply');
 
 class TelegramSessionService {
   constructor() {
@@ -424,6 +425,33 @@ class TelegramSessionService {
               console.log(`⏭️ Skipped duplicate: ${savedMessage.id} - ${sendResult.error}`);
             } else {
               console.error(`❌ Auto-send error for ${savedMessage.id}:`, sendResult.error);
+            }
+          }
+
+          // AUTO-REPLY to dispatcher messages
+          if (detection.isDispatcher && messageData.sender_user_id) {
+            try {
+              // Get bot instance from telegramBot service
+              const bot = telegramBot.bot;
+
+              if (bot) {
+                const replyResult = await autoReply.sendAutoReply(
+                  bot,
+                  messageData.sender_user_id,
+                  messageData.sender_username || messageData.sender_full_name,
+                  chatId,
+                  chat?.title || 'Unknown Group',
+                  messageData.telegram_message_id
+                );
+
+                if (replyResult.success) {
+                  console.log(`📨 Auto-reply sent to dispatcher ${messageData.sender_username}`);
+                } else {
+                  console.log(`⏭️ Auto-reply skipped for ${messageData.sender_username}: ${replyResult.reason}`);
+                }
+              }
+            } catch (error) {
+              console.error(`❌ Auto-reply error for ${messageData.sender_username}:`, error.message);
             }
           }
 
