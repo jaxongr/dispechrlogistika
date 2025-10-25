@@ -32,3 +32,8 @@ build/
 # Database dumps
 *.sql.backup
 dumps/
+
+# LowDB Database (runtime data - should not be tracked)
+database/db.json
+database/*.backup
+database/*.json.backup
