@@ -326,6 +326,19 @@ class MessageFilter {
       };
     }
 
+    // 1.2. YANGI: Ko'p @mention spam (2+ mention = dispatcher reklama)
+    // Dispatcherlar o'zlarini va do'stlarini tag qilish orqali reklama qilishadi
+    const mentionPattern = /@[\w]+/g;
+    const mentionMatches = message_text.match(mentionPattern) || [];
+    if (mentionMatches.length >= 2) {
+      return {
+        shouldBlock: true,
+        reason: `Ko'p @mention spam (${mentionMatches.length} ta mention)`,
+        isDispatcher: true,
+        autoBlock: false  // Admin tasdiq kutiladi
+      };
+    }
+
     // 2. Xabar uzunligi (200+ belgi = dispatcher)
     if (message_text.length > 200) {
       return {

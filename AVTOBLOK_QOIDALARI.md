@@ -143,6 +143,32 @@ if (lowerText.includes('россия') || lowerText.includes('москва') || 
 
 ---
 
+### 4️⃣A **KO'P @MENTION SPAM (2+ MENTION) - YANGI!**
+
+**Qoida:** Xabarda 2 yoki undan ko'p @username mention bo'lsa.
+
+**Sabab:** Dispatcherlar o'zlarini va do'stlarini tag qilish orqali reklama qilishadi.
+
+**Misol:**
+```
+Привет @S234433778 @Logistic3043 @log_service @jovoxirbek222 @OEGlogistic111...
+```
+
+**Tekshirish:**
+```javascript
+const mentionPattern = /@[\w]+/g;
+const mentionMatches = message_text.match(mentionPattern) || [];
+if (mentionMatches.length >= 2) {
+  BLOCK: "Ko'p @mention spam (${mentionMatches.length} ta mention)"
+}
+```
+
+**Natija:** ✅ AVTOBLOK + Admin xabar
+
+**Muhim:** Haqiqiy yuk e'lonlarida 0-1 ta @mention bo'ladi. 2+ mention = spam!
+
+---
+
 ### 5️⃣ **XABAR UZUNLIGI (200+ BELGI)**
 
 **Qoida:** Xabar 200 belgidan uzun bo'lsa.
