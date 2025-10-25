@@ -1226,12 +1226,16 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
       const callbackData = ctx.callbackQuery.data;
       const userId = callbackData.replace('admin_confirm_', '');
 
-      console.log(`👑 Admin confirmed dispatcher: ${userId}`);
+      console.log(`👑 Admin confirmed dispatcher (OLD SYSTEM): ${userId}`);
 
       // Get pending approval
       const approvals = await PendingApproval.findByUserId(userId);
       if (!approvals || approvals.length === 0) {
-        await ctx.answerCbQuery('❌ Pending approval not found');
+        await ctx.answerCbQuery('⚠️ Bu eski xabar - yangi tizim ishlatiladi');
+        await ctx.editMessageText(
+          ctx.callbackQuery.message.text + '\n\n⚠️ <b>Bu eski xabar - yangi avtoblok tizimi ishlatiladi</b>\n\nYangi bloklashlar avtomatik bo\'ladi va sizga info yuboriladi.',
+          { parse_mode: 'HTML' }
+        );
         return;
       }
 
@@ -1280,12 +1284,16 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
       const callbackData = ctx.callbackQuery.data;
       const userId = callbackData.replace('admin_reject_', '');
 
-      console.log(`👑 Admin rejected (cargo owner): ${userId}`);
+      console.log(`👑 Admin rejected (cargo owner) (OLD SYSTEM): ${userId}`);
 
       // Get pending approval
       const approvals = await PendingApproval.findByUserId(userId);
       if (!approvals || approvals.length === 0) {
-        await ctx.answerCbQuery('❌ Pending approval not found');
+        await ctx.answerCbQuery('⚠️ Bu eski xabar - yangi tizim ishlatiladi');
+        await ctx.editMessageText(
+          ctx.callbackQuery.message.text + '\n\n⚠️ <b>Bu eski xabar - yangi avtoblok tizimi ishlatiladi</b>\n\nYangi bloklashlar avtomatik bo\'ladi va sizga info yuboriladi.',
+          { parse_mode: 'HTML' }
+        );
         return;
       }
 
