@@ -204,12 +204,16 @@ class AutoReplyService {
 
       history.push(reply);
 
-      // Keep only last 1000 replies
-      if (history.length > 1000) {
+      // Keep only last 5000 replies (history uchun)
+      if (history.length > 5000) {
         history.shift();
       }
 
       db.set('dispatcher_auto_replies', history).write();
+
+      // Alohida total counter (hech qachon o'chmaydigan)
+      const totalCount = db.get('auto_reply_total_count').value() || 0;
+      db.set('auto_reply_total_count', totalCount + 1).write();
     } catch (error) {
       console.error('❌ Save reply history error:', error.message);
     }
@@ -240,8 +244,11 @@ class AutoReplyService {
       const oneHourAgo = new Date(now - 60 * 60 * 1000);
       const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
 
+      // Total counter (hech qachon o'chmaydigan)
+      const totalCount = db.get('auto_reply_total_count').value() || history.length;
+
       return {
-        total_replies: history.length,
+        total_replies: totalCount, // REAL total - history.length emas!
         replies_last_hour: history.filter(r => new Date(r.replied_at) > oneHourAgo).length,
         replies_last_24h: history.filter(r => new Date(r.replied_at) > oneDayAgo).length,
         unique_users: new Set(history.map(r => r.user_id)).size,
