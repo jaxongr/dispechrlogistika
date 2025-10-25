@@ -429,7 +429,25 @@ class TelegramSessionService {
           }
 
           // AUTO-REPLY to dispatcher messages
-          if (detection.isDispatcher && messageData.sender_user_id) {
+          // Check if:
+          // 1. Current message detected as dispatcher OR
+          // 2. User was previously marked as dispatcher (in any previous message)
+          let shouldReply = detection.isDispatcher;
+
+          if (!shouldReply && messageData.sender_user_id) {
+            // Check if this user has any previous messages marked as dispatcher
+            const { db } = require('../config/database');
+            const previousDispatcherMessage = db.get('messages')
+              .find({ sender_user_id: senderId, is_dispatcher: true })
+              .value();
+
+            if (previousDispatcherMessage) {
+              shouldReply = true;
+              console.log(`👤 User ${messageData.sender_username} was previously marked as dispatcher`);
+            }
+          }
+
+          if (shouldReply && messageData.sender_user_id) {
             try {
               // Get bot instance from telegramBot service
               const bot = telegramBot.bot;
