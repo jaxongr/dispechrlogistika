@@ -68,14 +68,17 @@ class SemySMSService {
 
       // SemySMS API returns: { code: 0, count: N, data: [...devices...] }
       if (response.data && response.data.data) {
+        // Filter: only show non-archived (active) devices
+        const activeDevices = response.data.data.filter(d => d.is_arhive === 0);
+
         // Map SemySMS device format to our format
-        return response.data.data.map(d => ({
+        return activeDevices.map(d => ({
           device_id: d.id,
-          device_name: d.device_name || d.dop_name || 'Unknown',
+          device_name: d.dop_name || d.device_name || 'Unknown',
           device_model: d.manufacturer ? `${d.manufacturer} ${d.android_version}` : 'Unknown',
           online: d.power === 1 && d.is_work === 1 ? 1 : 0,
           battery: d.bat || 0,
-          device_status: d.is_arhive === 0 && d.power === 1 ? 'active' : 'inactive',
+          device_status: d.power === 1 && d.is_work === 1 ? 'active' : 'inactive',
           mobile_operator: d.mobile_operator || '',
           date_last_active: d.date_last_active
         }));
@@ -157,16 +160,19 @@ class SemySMSService {
         timeout: 15000
       });
 
-      if (response.data && response.data.response === 1) {
-        console.log(`✅ SMS yuborildi: ${cleanPhone} - ID: ${response.data.message_id}`);
+      console.log(`📱 SMS API response:`, JSON.stringify(response.data));
+
+      // SemySMS SMS API returns: { code: "0", id_device: 353889, id: 132906790 }
+      if (response.data && (response.data.code === "0" || response.data.code === 0)) {
+        console.log(`✅ SMS yuborildi: ${cleanPhone} - ID: ${response.data.id}`);
         return {
           success: true,
-          message_id: response.data.message_id,
+          message_id: response.data.id,
           phone: cleanPhone,
           device_id: targetDeviceId
         };
       } else {
-        throw new Error(response.data.msg || 'SMS yuborishda xatolik');
+        throw new Error(response.data.msg || response.data.error || 'SMS yuborishda xatolik');
       }
 
     } catch (error) {
