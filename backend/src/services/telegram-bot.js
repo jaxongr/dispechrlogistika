@@ -219,6 +219,15 @@ http://5.189.141.151:3001/reporter-stats.html`;
         return;
       }
 
+      // SHOW THE FULL MESSAGE to the user who clicked the button
+      try {
+        const fullMessageText = `📋 <b>E'LON MATNI:</b>\n\n${this.escapeHtml(message.message_text)}\n\n👤 <b>Yuboruvchi:</b> ${this.escapeHtml(message.sender_full_name || message.sender_username || 'N/A')}\n📍 <b>Guruh:</b> ${this.escapeHtml(message.group_name || 'N/A')}`;
+
+        await ctx.reply(fullMessageText, { parse_mode: 'HTML' });
+      } catch (err) {
+        console.error('Error sending full message:', err.message);
+      }
+
       // Check if reporter is admin - if yes, auto-block immediately
       const adminId = process.env.ADMIN_USER_ID;
       const isAdmin = adminId && ctx.from.id.toString() === adminId.toString();
