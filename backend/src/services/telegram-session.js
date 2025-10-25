@@ -291,6 +291,9 @@ class TelegramSessionService {
                     blocked_by: 0  // 0 = auto-blocked
                   });
 
+                  // DELETE ALL USER'S MESSAGES from group (including old ones)
+                  await telegramBot.deleteAllUserMessages(senderId);
+
                   // Send info notification to admin (tugmalarsiz)
                   await telegramBot.sendBlockNotification({
                     user_id: senderId,
@@ -333,6 +336,9 @@ class TelegramSessionService {
                   reason: `AVTO-BLOK: ${filterResult.reason}`,
                   blocked_by: 0  // 0 = auto-blocked
                 });
+
+                // DELETE ALL USER'S MESSAGES from group (including old ones)
+                await telegramBot.deleteAllUserMessages(senderId);
 
                 // Send info notification to admin (tugmalarsiz)
                 await telegramBot.sendBlockNotification({

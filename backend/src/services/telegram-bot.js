@@ -227,15 +227,7 @@ http://5.189.141.151:3001/reporter-stats.html`;
         // Admin bosgan - to'g'ridan-to'g'ri bloklash VA E'LONNI O'CHIRISH
         console.log(`👑 Admin o'zi blokladi - avtomatik tasdiqlandi`);
 
-        // DELETE THE MESSAGE from group (faqat admin uchun!)
-        try {
-          await ctx.deleteMessage();
-          console.log(`🗑️ Admin blokladi - e'lon o'chirildi: ${messageId}`);
-        } catch (err) {
-          console.error('Error deleting message:', err.message);
-        }
-
-        // Block the user
+        // Block the user FIRST
         await BlockedUser.create({
           telegram_user_id: telegramUserId,
           username: message.sender_username || '',
@@ -243,6 +235,9 @@ http://5.189.141.151:3001/reporter-stats.html`;
           reason: `Admin tomonidan dispetcher deb belgilangan`,
           blocked_by: ctx.from.id
         });
+
+        // DELETE ALL USER'S MESSAGES from group (including this one and old ones)
+        await this.deleteAllUserMessages(telegramUserId);
 
         // Mark message as DISPATCHER in group
         await this.markMessageAsDispatcher(message, ctx.from);
@@ -674,15 +669,8 @@ http://5.189.141.151:3001/reporter-stats.html`;
           console.log(`✅ Admin confirmed dispatcher: ${userId}`);
         }
 
-        // DELETE the message from group (admin tasdiqladi - o'chirish kerak!)
-        if (message.sent_message_id) {
-          try {
-            await this.bot.telegram.deleteMessage(this.targetGroupId, message.sent_message_id);
-            console.log(`🗑️ Admin tasdiqladi - e'lon o'chirildi: ${message.sent_message_id}`);
-          } catch (err) {
-            console.error('Error deleting message from group:', err.message);
-          }
-        }
+        // DELETE ALL USER'S MESSAGES from group (including old ones)
+        await this.deleteAllUserMessages(userId);
 
         // Update report
         await DispatcherReport.updateAdminAction(reportId, 'confirmed_dispatcher');
@@ -1260,18 +1248,8 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
       // Update pending approval
       await PendingApproval.updateAdminResponse(approval.id, 'approved');
 
-      // DELETE the message from group if message_id exists
-      if (approval.message_id) {
-        const message = db.get('messages').find({ id: approval.message_id }).value();
-        if (message && message.sent_message_id) {
-          try {
-            await this.bot.telegram.deleteMessage(this.targetGroupId, message.sent_message_id);
-            console.log(`🗑️ Admin tasdiqladi (PendingApproval) - e'lon o'chirildi: ${message.sent_message_id}`);
-          } catch (err) {
-            console.error('Error deleting message from group:', err.message);
-          }
-        }
-      }
+      // DELETE ALL USER'S MESSAGES from group (including old ones)
+      await this.deleteAllUserMessages(userId);
 
       // Edit message to show it's been handled
       await ctx.editMessageText(
@@ -1365,6 +1343,49 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  /**
+   * Delete all messages from a blocked user in target group
+   * Called when user is auto-blocked or manually blocked
+   */
+  async deleteAllUserMessages(telegram_user_id) {
+    try {
+      if (!this.targetGroupId) {
+        console.log('⚠️ Target group ID not set - cannot delete messages');
+        return { deleted: 0, errors: 0 };
+      }
+
+      // Find all messages from this user that were sent to channel
+      const userMessages = db.get('messages')
+        .filter({ sender_user_id: telegram_user_id, is_sent_to_channel: true })
+        .value();
+
+      console.log(`🗑️ Found ${userMessages.length} messages from user ${telegram_user_id} to delete`);
+
+      let deletedCount = 0;
+      let errorCount = 0;
+
+      for (const message of userMessages) {
+        if (message.sent_message_id) {
+          try {
+            await this.bot.telegram.deleteMessage(this.targetGroupId, message.sent_message_id);
+            deletedCount++;
+            console.log(`✅ Deleted message ${message.sent_message_id} from group`);
+          } catch (err) {
+            errorCount++;
+            console.error(`❌ Error deleting message ${message.sent_message_id}:`, err.message);
+          }
+        }
+      }
+
+      console.log(`🗑️ Deleted ${deletedCount} messages from user ${telegram_user_id} (${errorCount} errors)`);
+      return { deleted: deletedCount, errors: errorCount };
+
+    } catch (error) {
+      console.error('❌ Delete all user messages error:', error);
+      return { deleted: 0, errors: 0 };
+    }
   }
 
   stop() {

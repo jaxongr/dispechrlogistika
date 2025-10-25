@@ -158,6 +158,10 @@ class MessageController {
         blocked_by: req.user.id
       });
 
+      // DELETE ALL USER'S MESSAGES from group (including old ones)
+      const telegramBot = require('../services/telegram-bot');
+      await telegramBot.deleteAllUserMessages(message.sender_user_id);
+
       // Block all phone numbers from this user's messages
       await BlockedUser.blockUserPhoneNumbers(
         message.sender_user_id,
