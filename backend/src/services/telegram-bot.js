@@ -1380,14 +1380,14 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
       let errorCount = 0;
 
       for (const message of userMessages) {
-        if (message.sent_message_id) {
+        if (message.group_message_id) {
           try {
-            await this.bot.telegram.deleteMessage(this.targetGroupId, message.sent_message_id);
+            await this.bot.telegram.deleteMessage(this.targetGroupId, message.group_message_id);
             deletedCount++;
-            console.log(`✅ Deleted message ${message.sent_message_id} from group`);
+            console.log(`✅ Deleted message ${message.group_message_id} from group`);
           } catch (err) {
             errorCount++;
-            console.error(`❌ Error deleting message ${message.sent_message_id}:`, err.message);
+            console.error(`❌ Error deleting message ${message.group_message_id}:`, err.message);
           }
         }
       }
