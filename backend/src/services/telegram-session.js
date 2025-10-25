@@ -250,9 +250,8 @@ class TelegramSessionService {
               console.error(`❌ Auto-reply error for blocked user:`, error.message);
             });
 
-            // TUZATISH: CONTINUE O'CHIRILDI - Bloklangan userlar e'lonlari HAM yuboriladi!
-            // Endi auto-reply yuboriladi, lekin e'lon normal process qilinadi
-            // continue; // <-- REMOVED
+            // Bloklangan user - xabarni skip qilamiz
+            continue;
           }
 
           const messageData = {
@@ -296,8 +295,8 @@ class TelegramSessionService {
                 console.error(`❌ Auto-reply error for blocked phone:`, error.message);
               });
 
-              // TUZATISH: CONTINUE O'CHIRILDI - Blocked phone'lar e'lonlari HAM yuboriladi!
-              // continue; // <-- REMOVED
+              // Bloklangan telefon - xabarni skip qilamiz
+              continue;
             }
           }
 
