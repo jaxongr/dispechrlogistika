@@ -151,12 +151,17 @@ class SemySMSService {
 
       console.log(`📤 Sending SMS to ${cleanPhone} via device ${targetDeviceId}`);
 
-      const response = await axios.post(`${this.baseUrl}/sms.php`, {
-        token: this.apiToken,
-        device: targetDeviceId,
-        phone: cleanPhone,
-        msg: message
-      }, {
+      // SemySMS requires form-urlencoded, not JSON
+      const formData = new URLSearchParams();
+      formData.append('token', this.apiToken);
+      formData.append('device', targetDeviceId);
+      formData.append('phone', cleanPhone);
+      formData.append('msg', message);
+
+      const response = await axios.post(`${this.baseUrl}/sms.php`, formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
         timeout: 15000
       });
 
