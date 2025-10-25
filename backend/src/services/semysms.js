@@ -228,6 +228,7 @@ class SemySMSService {
           phone: phoneNumber,
           message: message,
           status: 'sent',
+          type: 'block', // Mark as block notification
           message_id: result.message_id,
           device_id: result.device_id,
           sent_at: new Date().toISOString()
@@ -237,6 +238,7 @@ class SemySMSService {
           phone: phoneNumber,
           message: message,
           status: 'failed',
+          type: 'block',
           error: result.error,
           sent_at: new Date().toISOString()
         });

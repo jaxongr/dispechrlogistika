@@ -187,70 +187,94 @@ document.getElementById('sendTestSmsBtn').addEventListener('click', async () => 
 // Load SMS history
 async function loadSMSHistory() {
     try {
-        const response = await apiRequest('/sms/history?limit=50');
+        const response = await apiRequest('/sms/history?limit=100');
         const history = response.history;
 
-        const container = document.getElementById('smsHistoryContainer');
+        // Separate block and success SMS
+        const blockSMS = history.filter(sms => sms.type !== 'success');
+        const successSMS = history.filter(sms => sms.type === 'success');
 
-        if (history.length === 0) {
-            container.innerHTML = `
-                <div class="text-center text-muted py-5">
-                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                    <p class="mt-2">Hali SMS yuborilmagan</p>
-                </div>
-            `;
-            return;
-        }
+        // Update counts in tabs
+        document.getElementById('blockSmsCount').textContent = blockSMS.length;
+        document.getElementById('successSmsCount').textContent = successSMS.length;
 
-        let html = '<div class="table-responsive"><table class="table table-hover">';
-        html += `
-            <thead>
-                <tr>
-                    <th>Vaqt</th>
-                    <th>Telefon</th>
-                    <th>Xabar</th>
-                    <th>Status</th>
-                    <th>Qurilma</th>
-                </tr>
-            </thead>
-            <tbody>
-        `;
+        // Render block SMS history
+        renderSMSHistoryTable(blockSMS, 'blockSmsHistoryContainer', 'danger', 'Bloklash SMS yuborilmagan');
 
-        history.forEach(sms => {
-            const date = new Date(sms.sent_at).toLocaleString('uz-UZ', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            const statusBadge = sms.status === 'sent'
-                ? '<span class="badge bg-success">✅ Yuborildi</span>'
-                : '<span class="badge bg-danger">❌ Xatolik</span>';
-
-            const deviceId = sms.device_id || 'N/A';
-            const errorMsg = sms.error ? `<br><small class="text-danger">${sms.error}</small>` : '';
-
-            html += `
-                <tr>
-                    <td><small>${date}</small></td>
-                    <td><strong>${sms.phone}</strong></td>
-                    <td><small>${truncate(sms.message, 80)}</small>${errorMsg}</td>
-                    <td>${statusBadge}</td>
-                    <td><small class="text-muted">${deviceId}</small></td>
-                </tr>
-            `;
-        });
-
-        html += '</tbody></table></div>';
-        container.innerHTML = html;
+        // Render success SMS history
+        renderSMSHistoryTable(successSMS, 'successSmsHistoryContainer', 'success', 'Muvaffaqiyat SMS yuborilmagan');
 
     } catch (error) {
         console.error('SMS tarixini yuklashda xatolik:', error);
-        document.getElementById('smsHistoryContainer').innerHTML =
+        document.getElementById('blockSmsHistoryContainer').innerHTML =
+            '<div class="alert alert-danger">Tarixni yuklashda xatolik</div>';
+        document.getElementById('successSmsHistoryContainer').innerHTML =
             '<div class="alert alert-danger">Tarixni yuklashda xatolik</div>';
     }
+}
+
+// Render SMS history table
+function renderSMSHistoryTable(smsHistory, containerId, type, emptyMessage) {
+    const container = document.getElementById(containerId);
+
+    if (smsHistory.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                <p class="mt-2">${emptyMessage}</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '<div class="table-responsive"><table class="table table-hover">';
+    html += `
+        <thead>
+            <tr>
+                <th>Vaqt</th>
+                <th>Telefon</th>
+                <th>Xabar</th>
+                <th>Status</th>
+                <th>Qurilma</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    smsHistory.forEach(sms => {
+        const date = new Date(sms.sent_at).toLocaleString('uz-UZ', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const statusBadge = sms.status === 'sent'
+            ? '<span class="badge bg-success">✅ Yuborildi</span>'
+            : '<span class="badge bg-danger">❌ Xatolik</span>';
+
+        const deviceId = sms.device_id || 'N/A';
+        const errorMsg = sms.error ? `<br><small class="text-danger">${sms.error}</small>` : '';
+
+        // Add type badge
+        const typeBadge = sms.type === 'success'
+            ? '<span class="badge bg-success me-1">Muvaffaqiyat</span>'
+            : '<span class="badge bg-danger me-1">Bloklash</span>';
+
+        html += `
+            <tr>
+                <td><small>${date}</small></td>
+                <td><strong>${sms.phone}</strong></td>
+                <td>${typeBadge}<small>${truncate(sms.message, 70)}</small>${errorMsg}</td>
+                <td>${statusBadge}</td>
+                <td><small class="text-muted">${deviceId}</small></td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
 }
 
 // Helper function to show alerts

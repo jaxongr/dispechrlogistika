@@ -226,10 +226,41 @@
                         <h5 class="mb-0"><i class="bi bi-clock-history"></i> SMS Yuborish Tarixi</h5>
                     </div>
                     <div class="card-body">
-                        <div id="smsHistoryContainer">
-                            <div class="text-center py-5">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Yuklanmoqda...</span>
+                        <!-- Tabs for Block and Success SMS -->
+                        <ul class="nav nav-tabs mb-3" id="smsHistoryTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="block-sms-tab" data-bs-toggle="tab" data-bs-target="#block-sms-history" type="button" role="tab">
+                                    <i class="bi bi-x-circle text-danger"></i> Bloklash SMS <span class="badge bg-danger" id="blockSmsCount">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="success-sms-tab" data-bs-toggle="tab" data-bs-target="#success-sms-history" type="button" role="tab">
+                                    <i class="bi bi-check-circle text-success"></i> Muvaffaqiyat SMS <span class="badge bg-success" id="successSmsCount">0</span>
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="smsHistoryTabContent">
+                            <!-- Block SMS History -->
+                            <div class="tab-pane fade show active" id="block-sms-history" role="tabpanel">
+                                <div id="blockSmsHistoryContainer">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-danger" role="status">
+                                            <span class="visually-hidden">Yuklanmoqda...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Success SMS History -->
+                            <div class="tab-pane fade" id="success-sms-history" role="tabpanel">
+                                <div id="successSmsHistoryContainer">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-success" role="status">
+                                            <span class="visually-hidden">Yuklanmoqda...</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
