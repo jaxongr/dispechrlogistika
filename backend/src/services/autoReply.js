@@ -77,6 +77,21 @@ class AutoReplyService {
       }
     }
 
+    // Check minute limit (10 per minute to prevent spam)
+    const oneMinuteAgo = new Date(now - 60 * 1000);
+    const repliesLastMinute = db.get('dispatcher_auto_replies')
+      .filter(r => new Date(r.replied_at) > oneMinuteAgo)
+      .size()
+      .value();
+
+    if (repliesLastMinute >= 10) {
+      return {
+        allowed: false,
+        reason: 'minute_limit',
+        limit: 10
+      };
+    }
+
     // Check hourly limit
     const oneHourAgo = new Date(now - 60 * 60 * 1000);
     const repliesLastHour = db.get('dispatcher_auto_replies')
