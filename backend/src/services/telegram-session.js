@@ -232,24 +232,24 @@ class TelegramSessionService {
           const isBlocked = await BlockedUser.isBlocked(senderId);
           if (isBlocked) {
             // Send auto-reply to blocked user BEFORE skipping (using session)
-            try {
-              const replyResult = await autoReply.sendAutoReply(
-                this,
-                senderId,
-                sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
-                chatId,
-                chat?.title || 'Unknown Group',
-                message.id
-              );
-
+            // DON'T AWAIT - run in background to avoid blocking message processing
+            autoReply.sendAutoReply(
+              this,
+              senderId,
+              sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+              chatId,
+              chat?.title || 'Unknown Group',
+              message.id
+            ).then(replyResult => {
               if (replyResult.success) {
                 console.log(`📨 Auto-reply sent to blocked user ${sender?.username}`);
               } else {
                 console.log(`⏭️ Auto-reply skipped for blocked user: ${replyResult.reason}`);
               }
-            } catch (error) {
+            }).catch(error => {
               console.error(`❌ Auto-reply error for blocked user:`, error.message);
-            }
+            });
+
             continue;
           }
 
@@ -276,24 +276,23 @@ class TelegramSessionService {
               console.log(`📵 Blocked phone detected: ${phoneNumber} - sending auto-reply before skip`);
 
               // Send auto-reply to blocked phone user BEFORE skipping (using session)
-              try {
-                const replyResult = await autoReply.sendAutoReply(
-                  this,
-                  senderId,
-                  sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
-                  chatId,
-                  chat?.title || 'Unknown Group',
-                  message.id
-                );
-
+              // DON'T AWAIT - run in background to avoid blocking message processing
+              autoReply.sendAutoReply(
+                this,
+                senderId,
+                sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+                chatId,
+                chat?.title || 'Unknown Group',
+                message.id
+              ).then(replyResult => {
                 if (replyResult.success) {
                   console.log(`📨 Auto-reply sent to blocked phone user ${sender?.username}`);
                 } else {
                   console.log(`⏭️ Auto-reply skipped for blocked phone: ${replyResult.reason}`);
                 }
-              } catch (error) {
+              }).catch(error => {
                 console.error(`❌ Auto-reply error for blocked phone:`, error.message);
-              }
+              });
 
               continue;
             }
@@ -500,25 +499,24 @@ class TelegramSessionService {
           }
 
           if (shouldReply && messageData.sender_user_id) {
-            try {
-              // Send auto-reply using Telegram Session
-              const replyResult = await autoReply.sendAutoReply(
-                this,
-                messageData.sender_user_id,
-                messageData.sender_username || messageData.sender_full_name,
-                chatId,
-                chat?.title || 'Unknown Group',
-                messageData.telegram_message_id
-              );
-
+            // Send auto-reply using Telegram Session
+            // DON'T AWAIT - run in background to avoid blocking message processing
+            autoReply.sendAutoReply(
+              this,
+              messageData.sender_user_id,
+              messageData.sender_username || messageData.sender_full_name,
+              chatId,
+              chat?.title || 'Unknown Group',
+              messageData.telegram_message_id
+            ).then(replyResult => {
               if (replyResult.success) {
                 console.log(`📨 Auto-reply sent to dispatcher ${messageData.sender_username}`);
               } else {
                 console.log(`⏭️ Auto-reply skipped for ${messageData.sender_username}: ${replyResult.reason}`);
               }
-            } catch (error) {
+            }).catch(error => {
               console.error(`❌ Auto-reply error for ${messageData.sender_username}:`, error.message);
-            }
+            });
           }
 
         } catch (error) {
