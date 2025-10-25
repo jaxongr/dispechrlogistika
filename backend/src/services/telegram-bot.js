@@ -227,7 +227,15 @@ http://5.189.141.151:3001/reporter-stats.html`;
         // Admin bosgan - to'g'ridan-to'g'ri bloklash VA E'LONNI O'CHIRISH
         console.log(`👑 Admin o'zi blokladi - avtomatik tasdiqlandi`);
 
-        // Block the user FIRST
+        // DELETE THE CURRENT MESSAGE IMMEDIATELY (admin bosgan e'lon)
+        try {
+          await ctx.deleteMessage();
+          console.log(`🗑️ Admin blokladi - HOZIRGI e'lon o'chirildi: ${messageId}`);
+        } catch (err) {
+          console.error('Error deleting current message:', err.message);
+        }
+
+        // Block the user
         await BlockedUser.create({
           telegram_user_id: telegramUserId,
           username: message.sender_username || '',
@@ -236,11 +244,8 @@ http://5.189.141.151:3001/reporter-stats.html`;
           blocked_by: ctx.from.id
         });
 
-        // DELETE ALL USER'S MESSAGES from group (including this one and old ones)
+        // DELETE ALL USER'S OLD MESSAGES from group (barcha eski e'lonlar)
         await this.deleteAllUserMessages(telegramUserId);
-
-        // Mark message as DISPATCHER in group
-        await this.markMessageAsDispatcher(message, ctx.from);
 
         // Update database
         db.get('messages')
