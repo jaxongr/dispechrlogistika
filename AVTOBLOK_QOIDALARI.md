@@ -222,55 +222,53 @@ if (messageCount > 10) {
 
 ---
 
-### 🔟 **DUBLIKAT XABAR (20 DAQIQA ICHIDA)**
+### 🔟 **TELEFON SPAM (10 DAQIQADA 15+ GURUHDA) - YANGI!**
 
-**Qoida:** User 20 daqiqa ichida bir xil xabarni qayta yozgan bo'lsa.
+**Qoida:** Bir xil telefon raqam 10 daqiqa ichida 15+ turli guruhda aniqlangan bo'lsa.
+
+**SABAB:** Dispatcherlar har xil e'lon yozadi, lekin telefon raqami doim bir xil!
 
 **QANDAY ISHLAYDI:**
 
-1. **10:00** - User 1234567 yozadi:
+1. **10:00** - Guruh-1 da:
    ```
    Toshkentdan Samarqandga 10 tonna yuk bor
    998901234567
    ```
-   ✅ **O'TADI** - birinchi marta
+   ✅ **O'TADI** - birinchi guruh
 
-2. **10:05** - HUDDI SHU user yana yozadi:
+2. **10:02** - Guruh-2 da:
    ```
-   Toshkentdan Samarqandga 10 tonna yuk bor
-   998901234567
+   Farg'onadan Buxoroga 5 tonna meva
+   998901234567  (HUDDI SHU RAQAM!)
    ```
-   ❌ **BLOKLANADI** - 5 daqiqa o'tgan (< 20 daqiqa) = DUBLIKAT!
+   ✅ **O'TADI** - 2-guruh (hali 15 ta emas)
 
-3. **10:25** - HUDDI SHU user yana yozadi:
+3. **10:08** - Guruh-15 da:
    ```
-   Toshkentdan Samarqandga 10 tonna yuk bor
-   998901234567
+   Andijondagi yuk Xorazmga ketadi
+   998901234567  (YANA SHU RAQAM!)
    ```
-   ✅ **O'TADI** - 25 daqiqa o'tgan (> 20 daqiqa) = Dublikat emas
+   ❌ **BLOKLANADI** - 15-guruhda paydo bo'ldi = DISPATCHER!
 
 **MUHIM:**
-- Faqat **BIR USER** tekshiriladi (boshqa user yozsa o'tadi)
-- Faqat **20 DAQIQA** ichida (21 daqiqada yana yozsa o'tadi)
-- **Xabar matni BIR XIL** bo'lsa (1 ta harf o'zgartsa ham o'tadi)
-- Emoji va bo'shliqlar e'tiborga olinmaydi (normalize qilinadi)
+- **Xabar matni HAR XIL bo'lishi mumkin** (bu normal)
+- **Telefon raqami BIR XIL** = Dispatcher belgisi
+- **10 daqiqa** ichida hisoblanadi (11-daqiqada reset)
+- **15+ turli guruh** = Aniq dispatcher
 
 ```javascript
-// Xabar hash yaratish (emoji va bo'shliqsiz)
-const hash = message
-  .replace(/[\u{1F600}-\u{1F9FF}...]/gu, '') // emoji o'chirish
-  .replace(/\s+/g, ' ')                      // bo'shliqlar normalize
-  .trim()
-  .toLowerCase()
-  .substring(0, 200);                         // Birinchi 200 belgi
+// Telefon raqamni ajratish
+const phonePattern = /\+?998\d{9}|\+?7\d{10}|\b\d{9,12}\b/g;
+const phoneNumber = message.match(phonePattern)[0];
 
-const key = `${userId}:${hash}`;
-if (recentMessages.has(key) && timeDiff < 20min) {
-  BLOCK: "Dublikat xabar (20 daqiqa ichida)"
+// 10 daqiqada nechta guruhda paydo bo'lgan?
+if (phoneGroupTracker.get(phoneNumber).groups.size >= 15) {
+  BLOCK: "Dispatcher telefon spam: XX ta guruhda (10 daqiqada)"
 }
 ```
 
-**Tracking:** In-memory cache (har 30 daqiqada tozalanadi)
+**Tracking:** In-memory cache (har 10 daqiqada tozalanadi)
 
 **Natija:** ✅ AVTOBLOK + Admin xabar
 
@@ -367,9 +365,9 @@ if (BLOCK) {
 ### **In-Memory Cache**
 ```javascript
 {
-  userMessageCount: Map<userId, {count, lastReset}>,  // 5 daqiqa
-  recentMessages: Map<hash, timestamp>,                // 20 daqiqa
-  userGroupCount: Map<userId, Set<groupId>>            // Doimiy
+  userMessageCount: Map<userId, {count, lastReset}>,        // 5 daqiqa
+  phoneGroupTracker: Map<phone, {groups, firstSeen}>,       // 10 daqiqa (YANGI!)
+  userGroupCount: Map<userId, Set<groupId>>                 // Doimiy
 }
 ```
 
@@ -407,12 +405,13 @@ const CONFIG = {
   MAX_GROUPS_PER_USER: 15,
   MAX_MESSAGES_PER_5MIN: 10,
 
-  // Telefon spam
+  // Telefon spam (YANGI QOIDA!)
+  PHONE_SPAM_GROUP_THRESHOLD_FAST: 15, // 10 daqiqada 15+ guruh
+  PHONE_SPAM_TIME_WINDOW_FAST: 10 * 60 * 1000, // 10 daqiqa
+
+  // Telefon spam (katta qoida)
   PHONE_SPAM_GROUP_THRESHOLD: 20,
   PHONE_SPAM_TIME_WINDOW: 30 * 60 * 1000, // 30 daqiqa
-
-  // Dublikat
-  DUPLICATE_TIME_WINDOW: 20 * 60 * 1000, // 20 daqiqa
 
   // Cleanup
   CLEANUP_INTERVAL: 5 * 60 * 1000, // 5 daqiqa

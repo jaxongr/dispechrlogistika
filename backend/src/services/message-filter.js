@@ -9,6 +9,7 @@ class MessageFilter {
     this.userMessageCount = new Map(); // user_id -> { count, lastReset }
     this.recentMessages = new Map(); // message_hash -> timestamp
     this.userGroupCount = new Map(); // user_id -> Set of group_ids
+    this.phoneGroupTracker = new Map(); // phone -> { groups: Set, firstSeen: timestamp }
 
     // Load dispatcher keywords
     try {
@@ -221,23 +222,48 @@ class MessageFilter {
   }
 
   /**
-   * Dublikat xabar tekshirish (20 daqiqa)
+   * Telefon spam tekshirish (10 daqiqada 15+ guruhda bir xil raqam)
+   * Dispatcherlar har xil e'lon yozadi lekin telefon raqami bir xil
    */
-  isDuplicateMessage(text, userId) {
-    const hash = this.getMessageHash(text);
-    const key = `${userId}:${hash}`;
-    const now = Date.now();
-    const twentyMinutes = 20 * 60 * 1000;
+  isPhoneSpamming(phoneNumber, groupId) {
+    if (!phoneNumber) return false;
 
-    if (this.recentMessages.has(key)) {
-      const lastTime = this.recentMessages.get(key);
-      if (now - lastTime < twentyMinutes) {
-        return true; // Duplicate within 20 minutes
-      }
+    const now = Date.now();
+    const tenMinutes = 10 * 60 * 1000;
+
+    // Extract clean phone number (only digits)
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    if (!cleanPhone) return false;
+
+    if (!this.phoneGroupTracker.has(cleanPhone)) {
+      // First time seeing this phone
+      this.phoneGroupTracker.set(cleanPhone, {
+        groups: new Set([groupId]),
+        firstSeen: now
+      });
+      return false;
     }
 
-    // Save this message
-    this.recentMessages.set(key, now);
+    const phoneData = this.phoneGroupTracker.get(cleanPhone);
+
+    // Check if 10 minutes passed since first seen
+    if (now - phoneData.firstSeen > tenMinutes) {
+      // Reset tracking after 10 minutes
+      this.phoneGroupTracker.set(cleanPhone, {
+        groups: new Set([groupId]),
+        firstSeen: now
+      });
+      return false;
+    }
+
+    // Add current group
+    phoneData.groups.add(groupId);
+
+    // Check if phone appeared in 15+ different groups
+    if (phoneData.groups.size >= 15) {
+      return true; // This is phone spam!
+    }
+
     return false;
   }
 
@@ -365,13 +391,25 @@ class MessageFilter {
       };
     }
 
-    // 5. Dublikat tekshirish (20 daqiqa ichida)
-    if (this.isDuplicateMessage(message_text, sender_user_id)) {
-      return {
-        shouldBlock: true,
-        reason: 'Dublikat xabar (20 daqiqa ichida)',
-        isDispatcher: false
-      };
+    // 5. YANGI: Telefon spam tekshirish (10 daqiqada 15+ guruhda bir xil raqam)
+    // Dispatcherlar har xil e'lon yozadi, lekin telefon raqami bir xil
+    // Avval xabardan telefon raqamni ajratib olamiz
+    const phonePattern = /\+?998\d{9}|\+?7\d{10}|\b\d{9,12}\b/g;
+    const phoneMatches = message_text.match(phonePattern);
+
+    if (phoneMatches && phoneMatches.length > 0) {
+      // Birinchi topilgan telefon raqamni olish
+      const phoneNumber = phoneMatches[0];
+
+      if (this.isPhoneSpamming(phoneNumber, group_id)) {
+        const phoneData = this.phoneGroupTracker.get(phoneNumber.replace(/\D/g, ''));
+        return {
+          shouldBlock: true,
+          reason: `Dispatcher telefon spam: ${phoneData.groups.size} ta guruhda (10 daqiqada)`,
+          isDispatcher: true,
+          autoBlock: false  // Admin tasdiq kutiladi
+        };
+      }
     }
 
     // Hammasi OK
@@ -388,8 +426,16 @@ class MessageFilter {
   cleanup() {
     const now = Date.now();
     const thirtyMinutes = 30 * 60 * 1000;
+    const tenMinutes = 10 * 60 * 1000;
 
-    // Clean old messages
+    // Clean old phone tracking data (older than 10 minutes)
+    for (const [phone, data] of this.phoneGroupTracker.entries()) {
+      if (now - data.firstSeen > tenMinutes) {
+        this.phoneGroupTracker.delete(phone);
+      }
+    }
+
+    // Clean old messages (if still needed for other purposes)
     for (const [key, timestamp] of this.recentMessages.entries()) {
       if (now - timestamp > thirtyMinutes) {
         this.recentMessages.delete(key);
@@ -404,7 +450,7 @@ class MessageFilter {
       }
     }
 
-    console.log(`🧹 Cleanup: ${this.recentMessages.size} messages, ${this.userMessageCount.size} users tracked`);
+    console.log(`🧹 Cleanup: ${this.phoneGroupTracker.size} phones, ${this.userMessageCount.size} users tracked`);
   }
 
   /**
