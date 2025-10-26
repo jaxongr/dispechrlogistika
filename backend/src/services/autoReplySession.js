@@ -385,9 +385,9 @@ class AutoReplySessionService {
             const waitMatch = error.message.match(/(\d+)/);
             const waitSeconds = waitMatch ? parseInt(waitMatch[1]) : 60;
 
-            console.log(`⏳ FloodWait: ${waitSeconds}s for ${item.groupName}`);
+            console.log(`⏳ FloodWait: ${waitSeconds}s for ${item.groupName} - SKIP qilinyapti`);
 
-            // Mark as restricted
+            // Mark as restricted (for tracking only)
             this.restrictedGroups.set(item.chatId, {
               until: Date.now() + (waitSeconds * 1000),
               reason: 'FLOOD_WAIT'
@@ -395,18 +395,19 @@ class AutoReplySessionService {
 
             this.broadcastProgress.restricted++;
 
-            // Re-add to queue for retry later
-            this.broadcastQueue.push({
-              ...item,
-              retries: item.retries + 1
-            });
+            // DON'T re-add to queue - just skip it!
+            // Commented out to prevent blocking:
+            // this.broadcastQueue.push({
+            //   ...item,
+            //   retries: item.retries + 1
+            // });
 
           } else if (error.message.includes('USER_BANNED')) {
-            console.log(`❌ Banned in ${item.groupName}`);
+            console.log(`❌ Banned in ${item.groupName} - SKIP`);
             this.broadcastProgress.failed++;
 
           } else {
-            console.log(`❌ Failed: ${item.groupName} - ${error.message}`);
+            console.log(`❌ Failed: ${item.groupName} - ${error.message} - SKIP`);
             this.broadcastProgress.failed++;
           }
         }
