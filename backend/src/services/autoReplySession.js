@@ -12,6 +12,7 @@
 
 const { TelegramClient } = require('telegram');
 const { StringSession } = require('telegram/sessions');
+const input = require('input');
 
 class AutoReplySessionService {
   constructor() {
@@ -480,6 +481,206 @@ class AutoReplySessionService {
         reason: r.reason
       }))
     };
+  }
+
+  /**
+   * ============================================
+   * SESSION CREATION METHODS (Dashboard)
+   * ============================================
+   */
+
+  /**
+   * Create new auto-reply session (Step 1: Send code)
+   * @param {string} phoneNumber - Phone number with country code (e.g., +998901234567)
+   * @returns {object} - Session creation job info
+   */
+  async createSessionStep1(phoneNumber) {
+    try {
+      const apiId = parseInt(process.env.TELEGRAM_API_ID);
+      const apiHash = process.env.TELEGRAM_API_HASH;
+
+      if (!apiId || !apiHash) {
+        throw new Error('TELEGRAM_API_ID va TELEGRAM_API_HASH .env da topilmadi');
+      }
+
+      // Create new session
+      const stringSession = new StringSession('');
+      const tempClient = new TelegramClient(stringSession, apiId, apiHash, {
+        connectionRetries: 5,
+      });
+
+      console.log(`📱 Auto-reply session yaratish boshlandi: ${phoneNumber}`);
+
+      await tempClient.connect();
+
+      // Send code
+      await tempClient.sendCode(
+        {
+          apiId: apiId,
+          apiHash: apiHash,
+        },
+        phoneNumber
+      );
+
+      // Store temp client for step 2
+      this.tempSessionClient = tempClient;
+      this.tempSessionPhone = phoneNumber;
+
+      console.log(`✅ Kod yuborildi: ${phoneNumber}`);
+
+      return {
+        success: true,
+        message: 'SMS kod yuborildi',
+        phoneNumber: phoneNumber
+      };
+
+    } catch (error) {
+      console.error('❌ Session yaratish (step 1) xatolik:', error.message);
+      throw new Error(`Kod yuborishda xatolik: ${error.message}`);
+    }
+  }
+
+  /**
+   * Create new auto-reply session (Step 2: Verify code and save)
+   * @param {string} code - SMS code
+   * @param {string} password - 2FA password (optional)
+   * @returns {object} - Session string
+   */
+  async createSessionStep2(code, password = '') {
+    try {
+      if (!this.tempSessionClient) {
+        throw new Error('Session yaratish jarayoni topilmadi. Avval telefon raqamni yuboring.');
+      }
+
+      console.log(`🔐 Kod tasdiqlash: ${this.tempSessionPhone}`);
+
+      // Sign in with code
+      try {
+        await this.tempSessionClient.invoke(
+          new (require('telegram/tl').Api.auth.SignIn)({
+            phoneNumber: this.tempSessionPhone,
+            phoneCodeHash: this.tempSessionClient._phoneCodeHash,
+            phoneCode: code,
+          })
+        );
+      } catch (error) {
+        // If 2FA enabled, sign in with password
+        if (error.message.includes('SESSION_PASSWORD_NEEDED')) {
+          if (!password) {
+            throw new Error('2FA yoqilgan. Parolni kiriting.');
+          }
+
+          await this.tempSessionClient.invoke(
+            new (require('telegram/tl').Api.auth.CheckPassword)({
+              password: await this.tempSessionClient.computeCheck(password),
+            })
+          );
+        } else {
+          throw error;
+        }
+      }
+
+      // Get session string
+      const sessionString = this.tempSessionClient.session.save();
+
+      // Get user info
+      const me = await this.tempSessionClient.getMe();
+      const userInfo = {
+        id: me.id?.toString(),
+        firstName: me.firstName || '',
+        lastName: me.lastName || '',
+        username: me.username || '',
+        phone: me.phone || this.tempSessionPhone
+      };
+
+      console.log(`✅ Session yaratildi: ${userInfo.firstName} ${userInfo.phone}`);
+
+      // Disconnect temp client
+      await this.tempSessionClient.disconnect();
+      this.tempSessionClient = null;
+      this.tempSessionPhone = null;
+
+      return {
+        success: true,
+        sessionString: sessionString,
+        userInfo: userInfo,
+        message: 'Session muvaffaqiyatli yaratildi'
+      };
+
+    } catch (error) {
+      console.error('❌ Session yaratish (step 2) xatolik:', error.message);
+
+      // Cleanup
+      if (this.tempSessionClient) {
+        try {
+          await this.tempSessionClient.disconnect();
+        } catch (e) {
+          // Ignore disconnect errors
+        }
+        this.tempSessionClient = null;
+        this.tempSessionPhone = null;
+      }
+
+      throw new Error(`Kod tasdiqlashda xatolik: ${error.message}`);
+    }
+  }
+
+  /**
+   * Save session string to .env file
+   * @param {string} sessionString - Session string to save
+   * @returns {object} - Save result
+   */
+  async saveSessionToEnv(sessionString) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const envPath = path.join(__dirname, '../../../.env');
+
+      // Read current .env
+      let envContent = fs.readFileSync(envPath, 'utf8');
+
+      // Check if AUTOREPLY_SESSION_STRING exists
+      if (envContent.includes('AUTOREPLY_SESSION_STRING=')) {
+        // Replace existing
+        envContent = envContent.replace(
+          /AUTOREPLY_SESSION_STRING=.*/,
+          `AUTOREPLY_SESSION_STRING=${sessionString}`
+        );
+      } else {
+        // Add new
+        envContent += `\n\n# Auto-Reply Session (Dashboard'dan qo'shildi)\nAUTOREPLY_SESSION_STRING=${sessionString}\n`;
+      }
+
+      // Write back
+      fs.writeFileSync(envPath, envContent, 'utf8');
+
+      console.log('✅ Session .env fayliga saqlandi');
+
+      return {
+        success: true,
+        message: 'Session .env ga saqlandi. PM2 ni restart qiling.'
+      };
+
+    } catch (error) {
+      console.error('❌ .env ga saqlashda xatolik:', error.message);
+      throw new Error(`.env ga saqlashda xatolik: ${error.message}`);
+    }
+  }
+
+  /**
+   * Cancel session creation
+   */
+  cancelSessionCreation() {
+    if (this.tempSessionClient) {
+      try {
+        this.tempSessionClient.disconnect();
+      } catch (e) {
+        // Ignore
+      }
+      this.tempSessionClient = null;
+      this.tempSessionPhone = null;
+      console.log('🔌 Session yaratish bekor qilindi');
+    }
   }
 }
 

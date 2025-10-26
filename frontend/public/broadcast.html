@@ -124,7 +124,9 @@
         <div id="statusCheck" class="alert alert-danger" style="display: none;">
             <i class="bi bi-x-circle"></i>
             <strong>XATO:</strong> Auto-reply session ulanmagan.
-            <code>AUTOREPLY_SESSION_STRING</code> ni <code>.env</code> fayliga qo'shing va serverni qayta ishga tushiring.
+            <button class="btn btn-sm btn-light ms-3" onclick="showSessionModal()">
+                <i class="bi bi-plus-circle"></i> Session Yaratish
+            </button>
         </div>
 
         <!-- Broadcast Form -->
@@ -219,6 +221,94 @@
                     <h6>Cheklangan Guruhlar (keyinroq qayta uriniladi):</h6>
                     <div class="restricted-groups-list" id="restrictedGroupsList">
                         <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Creation Modal -->
+        <div class="modal fade" id="sessionModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-person-plus"></i> Auto-Reply Session Yaratish
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Step 1: Phone Number -->
+                        <div id="sessionStep1" class="session-step">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Diqqat:</strong> Monitoring session'dan BOSHQA telefon raqam kiriting!
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Telefon Raqam</label>
+                                <input type="text" class="form-control" id="phoneNumber"
+                                       placeholder="+998901234567" />
+                                <small class="text-muted">Misol: +998901234567 (+ bilan boshlang)</small>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="sendCode()">
+                                <i class="bi bi-send"></i> SMS Kod Yuborish
+                            </button>
+                        </div>
+
+                        <!-- Step 2: Code Verification -->
+                        <div id="sessionStep2" class="session-step" style="display: none;">
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle"></i>
+                                SMS kod yuborildi: <strong id="sentPhone"></strong>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">SMS Kod</label>
+                                <input type="text" class="form-control" id="smsCode"
+                                       placeholder="12345" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">2FA Parol (ixtiyoriy)</label>
+                                <input type="password" class="form-control" id="password2fa"
+                                       placeholder="Agar 2FA yoqilgan bo'lsa" />
+                                <small class="text-muted">2FA bo'lmasa bo'sh qoldiring</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-secondary flex-grow-1" onclick="backToStep1()">
+                                    <i class="bi bi-arrow-left"></i> Orqaga
+                                </button>
+                                <button class="btn btn-primary flex-grow-1" onclick="verifyCode()">
+                                    <i class="bi bi-check"></i> Tasdiqlash
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Success -->
+                        <div id="sessionStep3" class="session-step" style="display: none;">
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle"></i>
+                                <strong>Muvaffaqiyatli!</strong> Session yaratildi.
+                            </div>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6>Account Ma'lumotlari:</h6>
+                                    <p class="mb-1"><strong>Ism:</strong> <span id="accountName"></span></p>
+                                    <p class="mb-1"><strong>Telefon:</strong> <span id="accountPhone"></span></p>
+                                    <p class="mb-0"><strong>ID:</strong> <span id="accountId"></span></p>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-success w-100" onclick="saveAndRestart()">
+                                    <i class="bi bi-save"></i> Saqlash va Restart Qilish
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Loading -->
+                        <div id="sessionLoading" style="display: none;">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2">Kutilmoqda...</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -415,6 +505,196 @@
         function hideProgress() {
             document.getElementById('broadcastForm').style.display = 'block';
             document.getElementById('progressCard').classList.remove('active');
+        }
+
+        /**
+         * ============================================
+         * SESSION CREATION FUNCTIONS
+         * ============================================
+         */
+
+        let sessionModal = null;
+        let currentSessionString = '';
+
+        function showSessionModal() {
+            if (!sessionModal) {
+                sessionModal = new bootstrap.Modal(document.getElementById('sessionModal'));
+            }
+
+            // Reset to step 1
+            document.getElementById('sessionStep1').style.display = 'block';
+            document.getElementById('sessionStep2').style.display = 'none';
+            document.getElementById('sessionStep3').style.display = 'none';
+            document.getElementById('sessionLoading').style.display = 'none';
+
+            // Clear inputs
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('smsCode').value = '';
+            document.getElementById('password2fa').value = '';
+
+            sessionModal.show();
+        }
+
+        function showLoading(show) {
+            document.getElementById('sessionLoading').style.display = show ? 'block' : 'none';
+            document.getElementById('sessionStep1').style.display = show ? 'none' : 'block';
+            document.getElementById('sessionStep2').style.display = 'none';
+            document.getElementById('sessionStep3').style.display = 'none';
+        }
+
+        async function sendCode() {
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+
+            if (!phoneNumber) {
+                alert('Telefon raqam kiriting!');
+                return;
+            }
+
+            if (!phoneNumber.startsWith('+')) {
+                alert('Telefon raqam + belgisi bilan boshlanishi kerak!\nMisol: +998901234567');
+                return;
+            }
+
+            try {
+                showLoading(true);
+
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/session/create-step1', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ phoneNumber })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error);
+                }
+
+                // Move to step 2
+                document.getElementById('sentPhone').textContent = phoneNumber;
+                document.getElementById('sessionStep1').style.display = 'none';
+                document.getElementById('sessionStep2').style.display = 'block';
+                document.getElementById('sessionLoading').style.display = 'none';
+
+                alert('✅ SMS kod yuborildi! Telefoningizni tekshiring.');
+
+            } catch (error) {
+                console.error('Send code error:', error);
+                alert('Xatolik: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        async function verifyCode() {
+            const code = document.getElementById('smsCode').value.trim();
+            const password = document.getElementById('password2fa').value.trim();
+
+            if (!code) {
+                alert('SMS kodni kiriting!');
+                return;
+            }
+
+            try {
+                showLoading(true);
+
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/session/create-step2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ code, password })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error);
+                }
+
+                // Store session string
+                currentSessionString = data.sessionString;
+
+                // Show step 3
+                document.getElementById('accountName').textContent =
+                    `${data.userInfo.firstName} ${data.userInfo.lastName || ''}`.trim();
+                document.getElementById('accountPhone').textContent = data.userInfo.phone;
+                document.getElementById('accountId').textContent = data.userInfo.id;
+
+                document.getElementById('sessionStep1').style.display = 'none';
+                document.getElementById('sessionStep2').style.display = 'none';
+                document.getElementById('sessionStep3').style.display = 'block';
+                document.getElementById('sessionLoading').style.display = 'none';
+
+            } catch (error) {
+                console.error('Verify code error:', error);
+                alert('Xatolik: ' + error.message);
+                showLoading(false);
+                document.getElementById('sessionStep2').style.display = 'block';
+            }
+        }
+
+        async function saveAndRestart() {
+            if (!confirm('Session .env ga saqlanadi va PM2 restart qilinadi. Davom ettirasizmi?')) {
+                return;
+            }
+
+            try {
+                showLoading(true);
+
+                const token = localStorage.getItem('token');
+
+                // Save to .env
+                const saveResponse = await fetch('/api/broadcast/session/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ sessionString: currentSessionString })
+                });
+
+                const saveData = await saveResponse.json();
+
+                if (!saveData.success) {
+                    throw new Error(saveData.error);
+                }
+
+                alert('✅ Session saqlandi!\n\nEndi PM2 ni restart qilish kerak:\nssh root@5.189.141.151 "pm2 restart dispatchr-logistics"');
+
+                // Close modal
+                sessionModal.hide();
+
+                // Reload page after 2 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+
+            } catch (error) {
+                console.error('Save session error:', error);
+                alert('Xatolik: ' + error.message);
+                showLoading(false);
+                document.getElementById('sessionStep3').style.display = 'block';
+            }
+        }
+
+        function backToStep1() {
+            document.getElementById('sessionStep1').style.display = 'block';
+            document.getElementById('sessionStep2').style.display = 'none';
+
+            // Cancel session on backend
+            const token = localStorage.getItem('token');
+            fetch('/api/broadcast/session/cancel', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
         }
     </script>
 </body>
