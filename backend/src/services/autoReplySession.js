@@ -147,16 +147,55 @@ class AutoReplySessionService {
 
       for (const reply of batch) {
         try {
+          // Check if group is restricted (FloodWait)
+          const restriction = this.restrictedGroups.get(reply.chatId);
+          if (restriction && Date.now() < restriction.until) {
+            const remainingMs = restriction.until - Date.now();
+            const remainingMin = Math.ceil(remainingMs / 60000);
+            console.log(`⏸️  Auto-reply: ${reply.groupName} cheklangan (${remainingMin} min) - SKIP`);
+            continue; // Skip this group
+          }
+
           await this.sendReply(reply);
           await this.sleep(2000); // 2 second delay between replies
         } catch (error) {
           console.error(`❌ Auto-reply error for ${reply.username}:`, error.message);
 
-          // If USER_BANNED, this session is banned, but main session is safe
-          if (error.message.includes('USER_BANNED')) {
-            console.log(`⚠️  Auto-reply session banned in ${reply.groupName}`);
-            console.log('   Asosiy session xavfsiz - monitoring davom etmoqda');
+          // FloodWait - skip this group temporarily
+          if (error.message.includes('FLOOD_WAIT')) {
+            const match = error.message.match(/A wait of (\d+) seconds/);
+            const waitSeconds = match ? parseInt(match[1]) : 300; // Default 5 min
+            console.log(`⏳ FloodWait: ${waitSeconds}s for ${reply.groupName} - SKIP qilinyapti`);
+            this.restrictedGroups.set(reply.chatId, {
+              until: Date.now() + (waitSeconds * 1000),
+              reason: 'FLOOD_WAIT'
+            });
+            continue; // Skip and don't re-add to queue
           }
+
+          // USER_BANNED - skip permanently
+          if (error.message.includes('USER_BANNED')) {
+            console.log(`❌ Banned in ${reply.groupName} - SKIP`);
+            console.log('   Asosiy session xavfsiz - monitoring davom etmoqda');
+            continue; // Skip and don't re-add to queue
+          }
+
+          // CHAT_WRITE_FORBIDDEN - skip permanently
+          if (error.message.includes('CHAT_WRITE_FORBIDDEN') ||
+              error.message.includes('CHAT_SEND_PLAIN_FORBIDDEN') ||
+              error.message.includes('CHAT_RESTRICTED')) {
+            console.log(`🚫 Write forbidden in ${reply.groupName} - SKIP`);
+            continue; // Skip and don't re-add to queue
+          }
+
+          // Could not find entity - skip permanently
+          if (error.message.includes('Could not find the input entity')) {
+            console.log(`⚠️  Entity not found: ${reply.username} - SKIP`);
+            continue; // Skip and don't re-add to queue
+          }
+
+          // Other errors - log and skip
+          console.log(`⚠️  Other error in ${reply.groupName} - SKIP`);
         }
       }
 
