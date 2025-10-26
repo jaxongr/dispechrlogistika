@@ -5,14 +5,14 @@
 
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
+const { authenticate } = require('../middlewares/auth');
 const autoReplySession = require('../services/autoReplySession');
 
 /**
  * POST /api/broadcast/send
  * Start mass messaging
  */
-router.post('/send', authenticateToken, async (req, res) => {
+router.post('/send', authenticate, async (req, res) => {
   try {
     const { message, speed } = req.body;
 
@@ -53,7 +53,7 @@ router.post('/send', authenticateToken, async (req, res) => {
  * POST /api/broadcast/stop
  * Stop current broadcast
  */
-router.post('/stop', authenticateToken, async (req, res) => {
+router.post('/stop', authenticate, async (req, res) => {
   try {
     const result = autoReplySession.stopBroadcast();
 
@@ -72,7 +72,7 @@ router.post('/stop', authenticateToken, async (req, res) => {
  * GET /api/broadcast/progress
  * Get broadcast progress
  */
-router.get('/progress', authenticateToken, async (req, res) => {
+router.get('/progress', authenticate, async (req, res) => {
   try {
     const progress = autoReplySession.getBroadcastProgress();
 
@@ -94,7 +94,7 @@ router.get('/progress', authenticateToken, async (req, res) => {
  * GET /api/broadcast/status
  * Get broadcast service status
  */
-router.get('/status', authenticateToken, async (req, res) => {
+router.get('/status', authenticate, async (req, res) => {
   try {
     const status = autoReplySession.getStatus();
 
