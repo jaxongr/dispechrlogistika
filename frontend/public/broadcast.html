@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ommaviy Xabar - Dispetchr Filter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin-top: 30px;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+
+        .message-textarea {
+            min-height: 150px;
+            font-size: 16px;
+        }
+
+        .progress-card {
+            display: none;
+        }
+
+        .progress-card.active {
+            display: block;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .stat-box h3 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .stat-box p {
+            margin: 5px 0 0 0;
+            color: #6c757d;
+        }
+
+        .btn-broadcast {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+        }
+
+        .btn-broadcast:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-stop {
+            background: #dc3545;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+        }
+
+        .alert-warning {
+            border-left: 4px solid #ffc107;
+        }
+
+        .alert-danger {
+            border-left: 4px solid #dc3545;
+        }
+
+        .restricted-groups-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0"><i class="bi bi-megaphone"></i> Ommaviy Xabar Yuborish</h4>
+                        <small>Barcha guruhlarga bir vaqtda xabar yuboring</small>
+                    </div>
+                    <a href="index.html" class="btn btn-light"><i class="bi bi-house"></i> Bosh sahifa</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warning -->
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>OGOHLANTIRISH:</strong> Bu funksiya <strong>FAQAT AUTO-REPLY SESSION</strong> guruhlariga xabar yuboradi.
+            Asosiy monitoring session xavfsiz!
+        </div>
+
+        <!-- Status Check -->
+        <div id="statusCheck" class="alert alert-danger" style="display: none;">
+            <i class="bi bi-x-circle"></i>
+            <strong>XATO:</strong> Auto-reply session ulanmagan.
+            <code>AUTOREPLY_SESSION_STRING</code> ni <code>.env</code> fayliga qo'shing va serverni qayta ishga tushiring.
+        </div>
+
+        <!-- Broadcast Form -->
+        <div class="card" id="broadcastForm">
+            <div class="card-body">
+                <h5 class="card-title">Xabar Matn</h5>
+                <textarea class="form-control message-textarea" id="messageText" placeholder="Xabar matni..."></textarea>
+
+                <div class="mt-3">
+                    <h6>Yuborish Tezligi:</h6>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="speed" id="speedSafe" value="safe" checked>
+                        <label class="form-check-label" for="speedSafe">
+                            <strong>Xavfsiz</strong> (3 xabar/sek)
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="speed" id="speedFast" value="fast">
+                        <label class="form-check-label" for="speedFast">
+                            <strong>Tez</strong> (5 xabar/sek)
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="speed" id="speedTurbo" value="turbo">
+                        <label class="form-check-label" for="speedTurbo">
+                            <strong>Turbo</strong> (10 xabar/sek - xavfli!)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button class="btn btn-broadcast btn-primary flex-grow-1" onclick="startBroadcast()">
+                        <i class="bi bi-send"></i> Yuborishni Boshlash
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Card -->
+        <div class="card progress-card" id="progressCard">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Jarayon</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <h3 id="totalGroups" class="text-primary">0</h3>
+                            <p>Jami guruhlar</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <h3 id="sentCount" class="text-success">0</h3>
+                            <p>Yuborildi</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <h3 id="failedCount" class="text-danger">0</h3>
+                            <p>Muvaffaqiyatsiz</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <h3 id="restrictedCount" class="text-warning">0</h3>
+                            <p>Cheklangan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <div class="progress" style="height: 30px;">
+                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                             role="progressbar" style="width: 0%">0%</div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <p><strong>Xabar:</strong> <span id="currentMessage">-</span></p>
+                    <p><strong>Qolgan:</strong> <span id="remainingCount">-</span></p>
+                </div>
+
+                <div class="mt-3">
+                    <button class="btn btn-stop btn-danger" onclick="stopBroadcast()">
+                        <i class="bi bi-stop-circle"></i> To'xtatish
+                    </button>
+                </div>
+
+                <!-- Restricted Groups -->
+                <div class="mt-3" id="restrictedGroupsSection" style="display: none;">
+                    <h6>Cheklangan Guruhlar (keyinroq qayta uriniladi):</h6>
+                    <div class="restricted-groups-list" id="restrictedGroupsList">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let progressInterval = null;
+
+        // Check status on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            await checkStatus();
+        });
+
+        async function checkStatus() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/status', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!data.isConnected) {
+                    document.getElementById('statusCheck').style.display = 'block';
+                    document.getElementById('broadcastForm').style.display = 'none';
+                    return false;
+                }
+
+                // Check if broadcast is already in progress
+                if (data.broadcastInProgress) {
+                    showProgress();
+                    startProgressPolling();
+                }
+
+                return true;
+
+            } catch (error) {
+                console.error('Status check error:', error);
+                alert('Status tekshirishda xatolik: ' + error.message);
+                return false;
+            }
+        }
+
+        async function startBroadcast() {
+            const message = document.getElementById('messageText').value.trim();
+            const speed = document.querySelector('input[name="speed"]:checked').value;
+
+            if (!message) {
+                alert('Xabar matnini kiriting!');
+                return;
+            }
+
+            if (!confirm(`Haqiqatan ham ${message.length} belgili xabarni barcha guruhlarga yubormoqchimisiz?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message, speed })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error);
+                }
+
+                alert(`✅ Broadcast boshlandi!\nJami: ${data.total} guruh\nCheklangan: ${data.restricted} guruh`);
+
+                showProgress();
+                startProgressPolling();
+
+            } catch (error) {
+                console.error('Broadcast error:', error);
+                alert('Xatolik: ' + error.message);
+            }
+        }
+
+        async function stopBroadcast() {
+            if (!confirm('Haqiqatan ham to\'xtatmoqchimisiz?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/stop', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`✅ To'xtatildi!\nYuborildi: ${data.sent}\nBekor qilindi: ${data.cancelled}`);
+                    hideProgress();
+                    stopProgressPolling();
+                } else {
+                    alert(data.message);
+                }
+
+            } catch (error) {
+                console.error('Stop error:', error);
+                alert('Xatolik: ' + error.message);
+            }
+        }
+
+        function startProgressPolling() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+            }
+
+            progressInterval = setInterval(async () => {
+                await updateProgress();
+            }, 1000);
+        }
+
+        function stopProgressPolling() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        async function updateProgress() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/progress', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    return;
+                }
+
+                // Update stats
+                document.getElementById('totalGroups').textContent = data.total || 0;
+                document.getElementById('sentCount').textContent = data.sent || 0;
+                document.getElementById('failedCount').textContent = data.failed || 0;
+                document.getElementById('restrictedCount').textContent = data.restricted || 0;
+                document.getElementById('remainingCount').textContent = data.remaining || 0;
+                document.getElementById('currentMessage').textContent = data.currentMessage || '-';
+
+                // Update progress bar
+                const percentage = data.total > 0 ? Math.round((data.sent / data.total) * 100) : 0;
+                document.getElementById('progressBar').style.width = percentage + '%';
+                document.getElementById('progressBar').textContent = percentage + '%';
+
+                // Update restricted groups
+                if (data.restrictedGroups && data.restrictedGroups.length > 0) {
+                    document.getElementById('restrictedGroupsSection').style.display = 'block';
+                    const list = data.restrictedGroups.map(g =>
+                        `<div class="small">${g.chatId} - ${g.reason} - ${new Date(g.until).toLocaleTimeString('uz-UZ')}</div>`
+                    ).join('');
+                    document.getElementById('restrictedGroupsList').innerHTML = list;
+                } else {
+                    document.getElementById('restrictedGroupsSection').style.display = 'none';
+                }
+
+                // If completed, stop polling
+                if (!data.inProgress) {
+                    stopProgressPolling();
+                    alert(`✅ Broadcast tugadi!\nYuborildi: ${data.sent}/${data.total}`);
+                    setTimeout(() => {
+                        hideProgress();
+                    }, 5000);
+                }
+
+            } catch (error) {
+                console.error('Progress update error:', error);
+            }
+        }
+
+        function showProgress() {
+            document.getElementById('broadcastForm').style.display = 'none';
+            document.getElementById('progressCard').classList.add('active');
+        }
+
+        function hideProgress() {
+            document.getElementById('broadcastForm').style.display = 'block';
+            document.getElementById('progressCard').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

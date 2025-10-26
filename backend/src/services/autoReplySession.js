@@ -21,8 +21,26 @@ class AutoReplySessionService {
     this.processing = false;
     this.sessionString = '';
 
-    // Process queue every 5 seconds
+    // Mass messaging state
+    this.broadcastQueue = [];
+    this.broadcastInProgress = false;
+    this.restrictedGroups = new Map(); // chatId -> {until: timestamp, reason: string}
+    this.broadcastProgress = {
+      total: 0,
+      sent: 0,
+      failed: 0,
+      restricted: 0,
+      currentMessage: null
+    };
+
+    // Process reply queue every 5 seconds
     setInterval(() => this.processQueue(), 5000);
+
+    // Process broadcast queue every 1 second (faster for mass sending)
+    setInterval(() => this.processBroadcastQueue(), 1000);
+
+    // Check restricted groups every minute
+    setInterval(() => this.checkRestrictedGroups(), 60000);
   }
 
   /**
@@ -193,7 +211,274 @@ class AutoReplySessionService {
     return {
       isConnected: this.isConnected,
       queueLength: this.replyQueue.length,
-      processing: this.processing
+      processing: this.processing,
+      broadcastInProgress: this.broadcastInProgress,
+      broadcastQueueLength: this.broadcastQueue.length,
+      broadcastProgress: this.broadcastProgress,
+      restrictedGroupsCount: this.restrictedGroups.size
+    };
+  }
+
+  /**
+   * ============================================
+   * MASS MESSAGING (BROADCAST) METHODS
+   * ============================================
+   */
+
+  /**
+   * Start mass messaging to all groups in THIS session
+   * @param {string} message - Message to broadcast
+   * @param {object} options - Broadcast options
+   * @returns {object} - Broadcast job info
+   */
+  async startBroadcast(message, options = {}) {
+    if (!this.isConnected) {
+      throw new Error('Auto-reply session not connected. Set AUTOREPLY_SESSION_STRING in .env');
+    }
+
+    if (this.broadcastInProgress) {
+      throw new Error('Broadcast already in progress');
+    }
+
+    if (!message || message.trim().length === 0) {
+      throw new Error('Message cannot be empty');
+    }
+
+    console.log('\n📢 ========================================');
+    console.log('   MASS MESSAGING STARTED');
+    console.log('========================================\n');
+
+    try {
+      // Get all groups from THIS session (not monitoring session!)
+      console.log('📥 Getting groups from auto-reply session...');
+      const dialogs = await this.client.getDialogs({ limit: 500 });
+      const groups = dialogs.filter(d => d.isGroup || d.isChannel);
+
+      console.log(`✅ Found ${groups.length} groups in auto-reply session`);
+
+      // Filter out restricted groups
+      const availableGroups = [];
+      const currentlyRestricted = [];
+
+      for (const dialog of groups) {
+        const chatId = dialog.id?.toString();
+        if (!chatId) continue;
+
+        // Check if restricted
+        const restriction = this.restrictedGroups.get(chatId);
+        if (restriction && restriction.until > Date.now()) {
+          currentlyRestricted.push({
+            chatId,
+            name: dialog.title,
+            until: restriction.until
+          });
+        } else {
+          availableGroups.push({
+            chatId,
+            name: dialog.title,
+            username: dialog.entity?.username || ''
+          });
+        }
+      }
+
+      console.log(`✅ Available groups: ${availableGroups.length}`);
+      console.log(`⏳ Currently restricted: ${currentlyRestricted.length}`);
+
+      if (availableGroups.length === 0) {
+        throw new Error('No available groups to send messages');
+      }
+
+      // Initialize progress
+      this.broadcastProgress = {
+        total: availableGroups.length,
+        sent: 0,
+        failed: 0,
+        restricted: 0,
+        currentMessage: message,
+        startedAt: new Date().toISOString()
+      };
+
+      // Add to broadcast queue
+      this.broadcastQueue = availableGroups.map(g => ({
+        chatId: g.chatId,
+        groupName: g.name,
+        message: message,
+        retries: 0
+      }));
+
+      this.broadcastInProgress = true;
+
+      console.log('\n🚀 Broadcast queued!');
+      console.log(`   Total groups: ${availableGroups.length}`);
+      console.log(`   Speed: ${options.speed || 'safe'} mode`);
+      console.log('========================================\n');
+
+      return {
+        success: true,
+        total: availableGroups.length,
+        restricted: currentlyRestricted.length,
+        message: message
+      };
+
+    } catch (error) {
+      console.error('❌ Broadcast start error:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Process broadcast queue
+   * Sends messages at controlled rate
+   */
+  async processBroadcastQueue() {
+    if (!this.isConnected || !this.broadcastInProgress || this.broadcastQueue.length === 0) {
+      // If queue is empty but broadcast was in progress, mark as complete
+      if (this.broadcastInProgress && this.broadcastQueue.length === 0) {
+        this.broadcastInProgress = false;
+        console.log('\n✅ ========================================');
+        console.log('   BROADCAST COMPLETED');
+        console.log('========================================');
+        console.log(`   Total: ${this.broadcastProgress.total}`);
+        console.log(`   Sent: ${this.broadcastProgress.sent}`);
+        console.log(`   Failed: ${this.broadcastProgress.failed}`);
+        console.log(`   Restricted: ${this.broadcastProgress.restricted}`);
+        console.log('========================================\n');
+      }
+      return;
+    }
+
+    try {
+      // Process 3 messages per second (safe mode)
+      // You can adjust this: 1 = slow, 3 = safe, 5 = aggressive, 10 = turbo (risky)
+      const batchSize = 3;
+      const batch = this.broadcastQueue.splice(0, batchSize);
+
+      for (const item of batch) {
+        try {
+          await this.sendBroadcastMessage(item);
+          this.broadcastProgress.sent++;
+
+          // Log progress every 10 messages
+          if (this.broadcastProgress.sent % 10 === 0) {
+            console.log(`📊 Progress: ${this.broadcastProgress.sent}/${this.broadcastProgress.total} sent`);
+          }
+
+          // Small delay between messages (333ms for 3/sec)
+          await this.sleep(333);
+
+        } catch (error) {
+          // Handle FloodWaitError
+          if (error.message.includes('FLOOD_WAIT') || error.message.includes('A wait of')) {
+            const waitMatch = error.message.match(/(\d+)/);
+            const waitSeconds = waitMatch ? parseInt(waitMatch[1]) : 60;
+
+            console.log(`⏳ FloodWait: ${waitSeconds}s for ${item.groupName}`);
+
+            // Mark as restricted
+            this.restrictedGroups.set(item.chatId, {
+              until: Date.now() + (waitSeconds * 1000),
+              reason: 'FLOOD_WAIT'
+            });
+
+            this.broadcastProgress.restricted++;
+
+            // Re-add to queue for retry later
+            this.broadcastQueue.push({
+              ...item,
+              retries: item.retries + 1
+            });
+
+          } else if (error.message.includes('USER_BANNED')) {
+            console.log(`❌ Banned in ${item.groupName}`);
+            this.broadcastProgress.failed++;
+
+          } else {
+            console.log(`❌ Failed: ${item.groupName} - ${error.message}`);
+            this.broadcastProgress.failed++;
+          }
+        }
+      }
+
+    } catch (error) {
+      console.error('❌ Broadcast queue processing error:', error.message);
+    }
+  }
+
+  /**
+   * Send single broadcast message
+   */
+  async sendBroadcastMessage(item) {
+    if (!this.client || !this.isConnected) {
+      throw new Error('Client not connected');
+    }
+
+    const { chatId, groupName, message } = item;
+
+    try {
+      await this.client.sendMessage(chatId, {
+        message: message
+      });
+
+      return true;
+
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Check restricted groups and remove expired restrictions
+   */
+  checkRestrictedGroups() {
+    const now = Date.now();
+    let freedCount = 0;
+
+    for (const [chatId, restriction] of this.restrictedGroups.entries()) {
+      if (restriction.until <= now) {
+        this.restrictedGroups.delete(chatId);
+        freedCount++;
+      }
+    }
+
+    if (freedCount > 0) {
+      console.log(`✅ ${freedCount} groups freed from restrictions`);
+    }
+  }
+
+  /**
+   * Stop current broadcast
+   */
+  stopBroadcast() {
+    if (!this.broadcastInProgress) {
+      return { success: false, message: 'No broadcast in progress' };
+    }
+
+    const remaining = this.broadcastQueue.length;
+    this.broadcastQueue = [];
+    this.broadcastInProgress = false;
+
+    console.log(`🛑 Broadcast stopped. ${remaining} messages cancelled.`);
+
+    return {
+      success: true,
+      cancelled: remaining,
+      sent: this.broadcastProgress.sent
+    };
+  }
+
+  /**
+   * Get broadcast progress
+   */
+  getBroadcastProgress() {
+    return {
+      ...this.broadcastProgress,
+      inProgress: this.broadcastInProgress,
+      remaining: this.broadcastQueue.length,
+      restrictedGroups: Array.from(this.restrictedGroups.entries()).map(([chatId, r]) => ({
+        chatId,
+        until: new Date(r.until).toISOString(),
+        reason: r.reason
+      }))
     };
   }
 }
