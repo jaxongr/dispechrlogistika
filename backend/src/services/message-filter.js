@@ -82,6 +82,27 @@ class MessageFilter {
 
     console.log(`✅ Loaded ${this.foreignLocations.length} foreign locations for blocking`);
 
+    // Ayollar ismlari ro'yxati (Dispatcher fake account'lar)
+    this.femaleNames = [
+      // Rus ayol ismlari
+      'диана', 'diana', 'наташа', 'natasha', 'марина', 'marina', 'елена', 'elena', 'олга', 'olga',
+      'светлана', 'svetlana', 'ирина', 'irina', 'татьяна', 'tatyana', 'анна', 'anna', 'мария', 'maria',
+      'екатерина', 'ekaterina', 'юлия', 'julia', 'виктория', 'viktoria', 'алина', 'alina',
+      'дарья', 'darya', 'полина', 'polina', 'кристина', 'kristina', 'анастасия', 'anastasia',
+      'валентина', 'valentina', 'людмила', 'lyudmila', 'галина', 'galina', 'вера', 'vera',
+
+      // O'zbek ayol ismlari
+      'guli', 'gul', 'гули', 'гул', 'nigora', 'нигора', 'dilnoza', 'дильноза',
+      'feruza', 'фируза', 'malika', 'малика', 'madina', 'мадина', 'nodira', 'нодира',
+      'aziza', 'азиза', 'dildora', 'дилдора', 'nargiza', 'наргиза', 'shaxnoza', 'шахноза',
+
+      // Boshqa ayol ismlari
+      'angela', 'анжела', 'jessica', 'джессика', 'sophia', 'софия', 'isabella', 'изабелла',
+      'victoria', 'виктория', 'natalia', 'наталья', 'katerina', 'катерина'
+    ];
+
+    console.log(`✅ Loaded ${this.femaleNames.length} female names for dispatcher detection`);
+
     // Cleanup old data every 5 minutes
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
@@ -98,6 +119,27 @@ class MessageFilter {
     for (const keyword of this.dispatcherKeywords) {
       if (textToCheck.includes(keyword)) {
         return { found: true, keyword: keyword };
+      }
+    }
+
+    return { found: false };
+  }
+
+  /**
+   * Check if username/fullname contains female name (dispatcher fake account)
+   */
+  hasFemaleNameInProfile(username, fullName) {
+    if (!username && !fullName) return false;
+
+    const textToCheck = `${username || ''} ${fullName || ''}`.toLowerCase();
+
+    // Check each female name
+    for (const femaleName of this.femaleNames) {
+      // Use word boundary to avoid partial matches
+      // For example, "diana" should match "Diana Logistika" but not "indiana"
+      const regex = new RegExp(`\\b${femaleName}\\b`, 'i');
+      if (regex.test(textToCheck)) {
+        return { found: true, name: femaleName };
       }
     }
 
@@ -280,6 +322,17 @@ class MessageFilter {
       return {
         shouldBlock: true,
         reason: `Username/Bio'da kalit so'z: "${keywordCheck.keyword}"`,
+        isDispatcher: true,
+        autoBlock: false  // Admin tasdiq kutiladi
+      };
+    }
+
+    // 0.0. YANGI: Ayol ismi bor mi? (Dispatcher fake account)
+    const femaleNameCheck = this.hasFemaleNameInProfile(sender_username, sender_full_name);
+    if (femaleNameCheck.found) {
+      return {
+        shouldBlock: true,
+        reason: `Ayol ismi profilda: "${femaleNameCheck.name}" (dispatcher fake account)`,
         isDispatcher: true,
         autoBlock: false  // Admin tasdiq kutiladi
       };

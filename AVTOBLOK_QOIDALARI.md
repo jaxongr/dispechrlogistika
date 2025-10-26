@@ -53,6 +53,47 @@ if (textToCheck.includes(keyword)) {
 
 ---
 
+### 2️⃣A **AYOL ISMI PROFILDA (YANGI!) - DISPATCHER FAKE ACCOUNT**
+
+**Qoida:** Username yoki Full Name'da ayol ismi bo'lsa - dispatcher fake account.
+
+**Sabab:** Dispatcherlar ko'pincha ayol ismlari bilan fake account ochishadi.
+
+**Ayol Ismlari Ro'yxati:**
+```javascript
+// Rus ayol ismlari
+'диана', 'diana', 'наташа', 'natasha', 'марина', 'marina', 'елена', 'elena'
+'светлана', 'svetlana', 'ирина', 'irina', 'татьяна', 'tatyana', 'анна', 'anna'
+'екатерина', 'ekaterina', 'юлия', 'julia', 'виктория', 'viktoria', 'алина', 'alina'
+'дарья', 'darya', 'полина', 'polina', 'кристина', 'kristina', 'анастасия', 'anastasia'
+
+// O'zbek ayol ismlari
+'guli', 'gul', 'nigora', 'dilnoza', 'feruza', 'malika', 'madina', 'nodira'
+'aziza', 'dildora', 'nargiza', 'shaxnoza'
+
+// Va boshqalar... (~60+ ism)
+```
+
+**Tekshirish:**
+```javascript
+const textToCheck = `${username} ${fullName}`.toLowerCase();
+const regex = new RegExp(`\\b${femaleName}\\b`, 'i');
+if (regex.test(textToCheck)) {
+  BLOCK: "Ayol ismi profilda: '{name}' (dispatcher fake account)"
+}
+```
+
+**Misollar:**
+- ❌ "Диана Жвикова" → BLOK (Diana ismi bor)
+- ❌ "Natasha Logistika" → BLOK (Natasha ismi bor)
+- ❌ "Marina Transport" → BLOK (Marina ismi bor)
+- ✅ "Абдулла Юсупов" → O'TADI (erkak ismi)
+- ✅ "Yuk Markazi" → O'TADI (ayol ismi yo'q)
+
+**Natija:** ✅ AVTOBLOK + Admin xabar
+
+---
+
 ### 3️⃣ **SHUBHALI PROFIL (SODDALASHTIRILDI!)**
 
 **FAQAT BU QOIDA QOLDI:**
