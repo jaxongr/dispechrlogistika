@@ -20,6 +20,7 @@ const messageFilter = require('./message-filter');
 const telegramBot = require('./telegram-bot');
 const semySMS = require('./semysms');
 const autoReply = require('./autoReply');
+const autoReplySession = require('./autoReplySession');
 
 class TelegramSessionService {
   constructor() {
@@ -231,23 +232,14 @@ class TelegramSessionService {
           // Bloklangan user check
           const isBlocked = await BlockedUser.isBlocked(senderId);
           if (isBlocked) {
-            // AUTO-REPLY O'CHIRILGAN
-            // autoReply.sendAutoReply(
-            //   this,
-            //   senderId,
-            //   sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
-            //   chatId,
-            //   chat?.title || 'Unknown Group',
-            //   message.id
-            // ).then(replyResult => {
-            //   if (replyResult.success) {
-            //     console.log(`📨 Auto-reply sent to blocked user ${sender?.username}`);
-            //   } else {
-            //     console.log(`⏭️ Auto-reply skipped for blocked user: ${replyResult.reason}`);
-            //   }
-            // }).catch(error => {
-            //   console.error(`❌ Auto-reply error for blocked user:`, error.message);
-            // });
+            // ALOHIDA SESSIONDAN AUTO-REPLY YUBORISH
+            autoReplySession.addToQueue({
+              userId: senderId,
+              username: sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+              chatId: chatId,
+              groupName: chat?.title || 'Unknown Group',
+              messageId: message.id
+            });
 
             // Bloklangan user - xabarni skip qilamiz
             continue;
@@ -275,23 +267,14 @@ class TelegramSessionService {
             if (isPhoneBlocked) {
               console.log(`📵 Blocked phone detected: ${phoneNumber}`);
 
-              // AUTO-REPLY O'CHIRILGAN
-              // autoReply.sendAutoReply(
-              //   this,
-              //   senderId,
-              //   sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
-              //   chatId,
-              //   chat?.title || 'Unknown Group',
-              //   message.id
-              // ).then(replyResult => {
-              //   if (replyResult.success) {
-              //     console.log(`📨 Auto-reply sent to blocked phone user ${sender?.username}`);
-              //   } else {
-              //     console.log(`⏭️ Auto-reply skipped for blocked phone: ${replyResult.reason}`);
-              //   }
-              // }).catch(error => {
-              //   console.error(`❌ Auto-reply error for blocked phone:`, error.message);
-              // });
+              // ALOHIDA SESSIONDAN AUTO-REPLY YUBORISH
+              autoReplySession.addToQueue({
+                userId: senderId,
+                username: sender?.username || `${sender?.firstName || ''} ${sender?.lastName || ''}`.trim(),
+                chatId: chatId,
+                groupName: chat?.title || 'Unknown Group',
+                messageId: message.id
+              });
 
               // Bloklangan telefon - xabarni skip qilamiz
               continue;
@@ -499,23 +482,14 @@ class TelegramSessionService {
           }
 
           if (shouldReply && messageData.sender_user_id) {
-            // AUTO-REPLY O'CHIRILGAN
-            // autoReply.sendAutoReply(
-            //   this,
-            //   messageData.sender_user_id,
-            //   messageData.sender_username || messageData.sender_full_name,
-            //   chatId,
-            //   chat?.title || 'Unknown Group',
-            //   messageData.telegram_message_id
-            // ).then(replyResult => {
-            //   if (replyResult.success) {
-            //     console.log(`📨 Auto-reply sent to dispatcher ${messageData.sender_username}`);
-            //   } else {
-            //     console.log(`⏭️ Auto-reply skipped for ${messageData.sender_username}: ${replyResult.reason}`);
-            //   }
-            // }).catch(error => {
-            //   console.error(`❌ Auto-reply error for ${messageData.sender_username}:`, error.message);
-            // });
+            // ALOHIDA SESSIONDAN AUTO-REPLY YUBORISH
+            autoReplySession.addToQueue({
+              userId: messageData.sender_user_id,
+              username: messageData.sender_username || messageData.sender_full_name,
+              chatId: chatId,
+              groupName: chat?.title || 'Unknown Group',
+              messageId: messageData.telegram_message_id
+            });
           }
 
         } catch (error) {

@@ -15,6 +15,7 @@ require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 // Services
 const telegramSession = require('./services/telegram-session');
 const telegramBot = require('./services/telegram-bot');
+const autoReplySession = require('./services/autoReplySession');
 const { startDailyStatisticsScheduler } = require('./services/daily-statistics-scheduler');
 
 // Routes
@@ -136,6 +137,13 @@ async function startServer() {
       console.log('   npm run create-session\n');
     }
 
+    // Start Auto-Reply Session (ALOHIDA SESSION - ixtiyoriy)
+    console.log('\n💬 Auto-reply session ishga tushmoqda...');
+    autoReplySession.connect().catch(err => {
+      // Bu xato critical emas - auto-reply shunchaki o'chiriladi
+      console.log('   Auto-reply o\'chirilgan - faqat monitoring ishlaydi');
+    });
+
     // Start Daily Statistics Scheduler
     console.log('\n📅 Kunlik statistika scheduler ishga tushmoqda...');
     startDailyStatisticsScheduler();
@@ -157,6 +165,7 @@ process.on('SIGINT', async () => {
 
   try {
     await telegramSession.disconnect();
+    await autoReplySession.disconnect();
     telegramBot.stop();
     console.log('✅ Barcha xizmatlar to\'xtatildi');
     process.exit(0);
