@@ -34,6 +34,15 @@ class AutoReplySessionService {
       currentMessage: null
     };
 
+    // Session creation state (persistent across requests)
+    this.sessionCreationState = {
+      client: null,
+      phoneNumber: null,
+      phoneCodeHash: null,
+      createdAt: null,
+      timeout: 5 * 60 * 1000 // 5 minutes timeout
+    };
+
     // Process reply queue every 5 seconds
     setInterval(() => this.processQueue(), 5000);
 
@@ -42,6 +51,9 @@ class AutoReplySessionService {
 
     // Check restricted groups every minute
     setInterval(() => this.checkRestrictedGroups(), 60000);
+
+    // Cleanup expired session creation state every minute
+    setInterval(() => this.cleanupExpiredSessionState(), 60000);
   }
 
   /**
@@ -503,6 +515,15 @@ class AutoReplySessionService {
         throw new Error('TELEGRAM_API_ID va TELEGRAM_API_HASH .env da topilmadi');
       }
 
+      // Cleanup old session creation if exists
+      if (this.sessionCreationState.client) {
+        try {
+          await this.sessionCreationState.client.disconnect();
+        } catch (e) {
+          // Ignore
+        }
+      }
+
       // Create new session
       const stringSession = new StringSession('');
       const tempClient = new TelegramClient(stringSession, apiId, apiHash, {
@@ -514,7 +535,7 @@ class AutoReplySessionService {
       await tempClient.connect();
 
       // Send code
-      await tempClient.sendCode(
+      const result = await tempClient.sendCode(
         {
           apiId: apiId,
           apiHash: apiHash,
@@ -522,20 +543,28 @@ class AutoReplySessionService {
         phoneNumber
       );
 
-      // Store temp client for step 2
-      this.tempSessionClient = tempClient;
-      this.tempSessionPhone = phoneNumber;
+      // Store state (persistent across requests)
+      this.sessionCreationState = {
+        client: tempClient,
+        phoneNumber: phoneNumber,
+        phoneCodeHash: result.phoneCodeHash,
+        createdAt: Date.now(),
+        timeout: 5 * 60 * 1000 // 5 minutes
+      };
 
       console.log(`✅ Kod yuborildi: ${phoneNumber}`);
+      console.log(`   phoneCodeHash: ${result.phoneCodeHash}`);
 
       return {
         success: true,
         message: 'SMS kod yuborildi',
-        phoneNumber: phoneNumber
+        phoneNumber: phoneNumber,
+        expiresIn: 300 // 5 minutes in seconds
       };
 
     } catch (error) {
       console.error('❌ Session yaratish (step 1) xatolik:', error.message);
+      this.cleanupSessionCreationState();
       throw new Error(`Kod yuborishda xatolik: ${error.message}`);
     }
   }
@@ -548,18 +577,32 @@ class AutoReplySessionService {
    */
   async createSessionStep2(code, password = '') {
     try {
-      if (!this.tempSessionClient) {
+      // Check if session creation state exists
+      if (!this.sessionCreationState.client || !this.sessionCreationState.phoneNumber) {
         throw new Error('Session yaratish jarayoni topilmadi. Avval telefon raqamni yuboring.');
       }
 
-      console.log(`🔐 Kod tasdiqlash: ${this.tempSessionPhone}`);
+      // Check if expired (5 minutes timeout)
+      const now = Date.now();
+      const elapsed = now - this.sessionCreationState.createdAt;
+      if (elapsed > this.sessionCreationState.timeout) {
+        this.cleanupSessionCreationState();
+        throw new Error('Session yaratish vaqti tugadi (5 daqiqa). Qaytadan boshlang.');
+      }
+
+      console.log(`🔐 Kod tasdiqlash: ${this.sessionCreationState.phoneNumber}`);
+      console.log(`   phoneCodeHash: ${this.sessionCreationState.phoneCodeHash}`);
+
+      const client = this.sessionCreationState.client;
+      const phoneNumber = this.sessionCreationState.phoneNumber;
+      const phoneCodeHash = this.sessionCreationState.phoneCodeHash;
 
       // Sign in with code
       try {
-        await this.tempSessionClient.invoke(
+        await client.invoke(
           new (require('telegram/tl').Api.auth.SignIn)({
-            phoneNumber: this.tempSessionPhone,
-            phoneCodeHash: this.tempSessionClient._phoneCodeHash,
+            phoneNumber: phoneNumber,
+            phoneCodeHash: phoneCodeHash,
             phoneCode: code,
           })
         );
@@ -570,9 +613,10 @@ class AutoReplySessionService {
             throw new Error('2FA yoqilgan. Parolni kiriting.');
           }
 
-          await this.tempSessionClient.invoke(
+          console.log('🔐 2FA parol bilan kirish...');
+          await client.invoke(
             new (require('telegram/tl').Api.auth.CheckPassword)({
-              password: await this.tempSessionClient.computeCheck(password),
+              password: await client.computeCheck(password),
             })
           );
         } else {
@@ -581,24 +625,23 @@ class AutoReplySessionService {
       }
 
       // Get session string
-      const sessionString = this.tempSessionClient.session.save();
+      const sessionString = client.session.save();
 
       // Get user info
-      const me = await this.tempSessionClient.getMe();
+      const me = await client.getMe();
       const userInfo = {
         id: me.id?.toString(),
         firstName: me.firstName || '',
         lastName: me.lastName || '',
         username: me.username || '',
-        phone: me.phone || this.tempSessionPhone
+        phone: me.phone || phoneNumber
       };
 
       console.log(`✅ Session yaratildi: ${userInfo.firstName} ${userInfo.phone}`);
 
-      // Disconnect temp client
-      await this.tempSessionClient.disconnect();
-      this.tempSessionClient = null;
-      this.tempSessionPhone = null;
+      // Disconnect and cleanup
+      await client.disconnect();
+      this.cleanupSessionCreationState();
 
       return {
         success: true,
@@ -610,16 +653,8 @@ class AutoReplySessionService {
     } catch (error) {
       console.error('❌ Session yaratish (step 2) xatolik:', error.message);
 
-      // Cleanup
-      if (this.tempSessionClient) {
-        try {
-          await this.tempSessionClient.disconnect();
-        } catch (e) {
-          // Ignore disconnect errors
-        }
-        this.tempSessionClient = null;
-        this.tempSessionPhone = null;
-      }
+      // Cleanup on error
+      this.cleanupSessionCreationState();
 
       throw new Error(`Kod tasdiqlashda xatolik: ${error.message}`);
     }
@@ -671,15 +706,45 @@ class AutoReplySessionService {
    * Cancel session creation
    */
   cancelSessionCreation() {
-    if (this.tempSessionClient) {
+    this.cleanupSessionCreationState();
+    console.log('🔌 Session yaratish bekor qilindi');
+  }
+
+  /**
+   * Cleanup session creation state
+   */
+  cleanupSessionCreationState() {
+    if (this.sessionCreationState.client) {
       try {
-        this.tempSessionClient.disconnect();
+        this.sessionCreationState.client.disconnect();
       } catch (e) {
-        // Ignore
+        // Ignore disconnect errors
       }
-      this.tempSessionClient = null;
-      this.tempSessionPhone = null;
-      console.log('🔌 Session yaratish bekor qilindi');
+    }
+
+    this.sessionCreationState = {
+      client: null,
+      phoneNumber: null,
+      phoneCodeHash: null,
+      createdAt: null,
+      timeout: 5 * 60 * 1000
+    };
+  }
+
+  /**
+   * Cleanup expired session creation state (runs every minute)
+   */
+  cleanupExpiredSessionState() {
+    if (!this.sessionCreationState.createdAt) {
+      return;
+    }
+
+    const now = Date.now();
+    const elapsed = now - this.sessionCreationState.createdAt;
+
+    if (elapsed > this.sessionCreationState.timeout) {
+      console.log('🧹 Cleaning up expired session creation state...');
+      this.cleanupSessionCreationState();
     }
   }
 }
