@@ -53,53 +53,25 @@ if (textToCheck.includes(keyword)) {
 
 ---
 
-### 3️⃣ **SHUBHALI PROFIL (YANGI!)**
+### 3️⃣ **SHUBHALI PROFIL (SODDALASHTIRILDI!)**
 
-**3.1. Juda Uzun Username/FullName**
-```javascript
-if (fullText.length > 100) {
-  BLOCK: "Juda uzun username/fullname (XXX belgi)"
-}
-```
+**FAQAT BU QOIDA QOLDI:**
 
-**3.2. Takrorlanuvchi Belgilar**
+**Takrorlanuvchi Belgilar (30+ marta)**
 ```javascript
-// Bir xil belgi 10+ marta ketma-ket
-if (/(.)\1{9,}/.test(fullText)) {
-  BLOCK: "Takrorlanuvchi belgilar (spam)"
-}
-```
-
-**3.3. Noodatiy Unicode Belgilar**
-```javascript
-// Cuneiform, Egyptian Hieroglyphs va boshqa noodatiy belgilar
-const unusualPattern = /[\u{12000}-\u{1247F}\u{13000}-\u{1342F}\u{1D000}-\u{1F9FF}]/u;
-if (unusualPattern.test(fullText)) {
-  BLOCK: "Noodatiy Unicode belgilar"
+// Bir xil belgi 30+ marta ketma-ket
+if (/(.)\1{29,}/.test(fullText)) {
+  BLOCK: "Spam: XX ta takrorlanuvchi belgi"
 }
 ```
 
 **Misol:**
-- `𒀀𒀁𒀂𒀃` (Cuneiform)
-- `𓀀𓀁𓀂` (Egyptian Hieroglyphs)
-- `....𒐫𒐫𒐫𒐫𒐫𒐫` (Ko'p cuneiform)
+- ❌ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" → BLOK (30+ ta 'a')
+- ❌ "................................" → BLOK (30+ ta nuqta)
+- ✅ "Abdullayev Logistika" → O'TADI (normal nom)
+- ✅ "🚛🚛🚛 Yuk Markazi 🚛🚛🚛" → O'TADI (6 ta emoji, 30 ta emas)
 
-**3.4. Ko'p Emoji (15+)**
-```javascript
-const emojiPattern = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu;
-const emojiCount = text.match(emojiPattern).length;
-if (emojiCount > 15) {
-  BLOCK: "Ko'p emoji (XXta)"
-}
-```
-
-**3.5. Faqat Maxsus Belgilar (Harf Yo'q)**
-```javascript
-// 10+ belgidan iborat, lekin harf yo'q
-if (!hasLetters.test(fullText) && fullText.length > 10) {
-  BLOCK: "Faqat maxsus belgilar (harf yo'q)"
-}
-```
+**Sabab:** Faqat aniq spam'larni bloklash
 
 **Natija:** ✅ AVTOBLOK + Admin xabar
 
@@ -254,14 +226,43 @@ if (messageCount > 10) {
 
 **Qoida:** User 20 daqiqa ichida bir xil xabarni qayta yozgan bo'lsa.
 
+**QANDAY ISHLAYDI:**
+
+1. **10:00** - User 1234567 yozadi:
+   ```
+   Toshkentdan Samarqandga 10 tonna yuk bor
+   998901234567
+   ```
+   ✅ **O'TADI** - birinchi marta
+
+2. **10:05** - HUDDI SHU user yana yozadi:
+   ```
+   Toshkentdan Samarqandga 10 tonna yuk bor
+   998901234567
+   ```
+   ❌ **BLOKLANADI** - 5 daqiqa o'tgan (< 20 daqiqa) = DUBLIKAT!
+
+3. **10:25** - HUDDI SHU user yana yozadi:
+   ```
+   Toshkentdan Samarqandga 10 tonna yuk bor
+   998901234567
+   ```
+   ✅ **O'TADI** - 25 daqiqa o'tgan (> 20 daqiqa) = Dublikat emas
+
+**MUHIM:**
+- Faqat **BIR USER** tekshiriladi (boshqa user yozsa o'tadi)
+- Faqat **20 DAQIQA** ichida (21 daqiqada yana yozsa o'tadi)
+- **Xabar matni BIR XIL** bo'lsa (1 ta harf o'zgartsa ham o'tadi)
+- Emoji va bo'shliqlar e'tiborga olinmaydi (normalize qilinadi)
+
 ```javascript
 // Xabar hash yaratish (emoji va bo'shliqsiz)
 const hash = message
   .replace(/[\u{1F600}-\u{1F9FF}...]/gu, '') // emoji o'chirish
-  .replace(/\s+/g, ' ')
+  .replace(/\s+/g, ' ')                      // bo'shliqlar normalize
   .trim()
   .toLowerCase()
-  .substring(0, 200); // Birinchi 200 belgi
+  .substring(0, 200);                         // Birinchi 200 belgi
 
 const key = `${userId}:${hash}`;
 if (recentMessages.has(key) && timeDiff < 20min) {
