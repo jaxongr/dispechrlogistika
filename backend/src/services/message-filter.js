@@ -103,6 +103,13 @@ class MessageFilter {
 
     console.log(`✅ Loaded ${this.femaleNames.length} female names for dispatcher detection`);
 
+    // Whitelist user IDs (o'z session account va boshqalar)
+    this.whitelistUserIds = [
+      '8466237148', // Guli❤️ - Bizning session account
+    ];
+
+    console.log(`✅ Whitelist: ${this.whitelistUserIds.length} user ID`);
+
     // Cleanup old data every 5 minutes
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
@@ -315,6 +322,15 @@ class MessageFilter {
    */
   checkMessage(messageData) {
     const { message_text, sender_user_id, sender_username, sender_full_name, group_id } = messageData;
+
+    // WHITELIST: O'z session account va boshqa ishonchli userlar
+    if (this.whitelistUserIds.includes(sender_user_id?.toString())) {
+      return {
+        shouldBlock: false,
+        reason: 'Whitelist user',
+        isDispatcher: false
+      };
+    }
 
     // 0. Username yoki full name'da kalit so'z bor mi?
     const keywordCheck = this.hasDispatcherKeywordsInProfile(sender_username, sender_full_name);
