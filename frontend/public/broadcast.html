@@ -584,7 +584,30 @@
 
             } catch (error) {
                 console.error('Send code error:', error);
-                alert('Xatolik: ' + error.message);
+
+                // Check if FloodWait error
+                if (error.message.includes('A wait of')) {
+                    const match = error.message.match(/A wait of (\d+) seconds/);
+                    if (match) {
+                        const waitSeconds = parseInt(match[1]);
+                        const waitMinutes = Math.ceil(waitSeconds / 60);
+                        alert(`⏳ Telegram FloodWait!\n\n` +
+                              `Kutish kerak: ${waitMinutes} daqiqa (~${waitSeconds} sekund)\n\n` +
+                              `Sabab: Juda ko'p marta SMS kod so'ragan bo'lsangiz.\n\n` +
+                              `Yechim:\n` +
+                              `1. ${waitMinutes} daqiqa kuting\n` +
+                              `2. Yoki boshqa telefon raqam ishlating\n` +
+                              `3. Yoki SSH orqali yarating:\n` +
+                              `   ssh root@5.189.141.151\n` +
+                              `   cd /var/www/dispatchr-logistics/backend\n` +
+                              `   node create-session.js`);
+                    } else {
+                        alert('Xatolik: ' + error.message);
+                    }
+                } else {
+                    alert('Xatolik: ' + error.message);
+                }
+
                 showLoading(false);
             }
         }
