@@ -3,112 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ommaviy Xabar - Dispetchr Filter</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin-top: 30px;
-        }
-
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px 15px 0 0 !important;
-            padding: 20px;
-        }
-
-        .message-textarea {
-            min-height: 150px;
-            font-size: 16px;
-        }
-
-        .progress-card {
-            display: none;
-        }
-
-        .progress-card.active {
-            display: block;
-        }
-
-        .stat-box {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .stat-box h3 {
-            margin: 0;
-            font-size: 32px;
-            font-weight: bold;
-        }
-
-        .stat-box p {
-            margin: 5px 0 0 0;
-            color: #6c757d;
-        }
-
-        .btn-broadcast {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            border-radius: 10px;
-        }
-
-        .btn-broadcast:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-stop {
-            background: #dc3545;
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            border-radius: 10px;
-        }
-
-        .alert-warning {
-            border-left: 4px solid #ffc107;
-        }
-
-        .alert-danger {
-            border-left: 4px solid #dc3545;
-        }
-
-        .restricted-groups-list {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-    </style>
+    <title>Ommaviy Xabar - Logistika Filter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h4 class="mb-0"><i class="bi bi-megaphone"></i> Ommaviy Xabar Yuborish</h4>
-                        <small>Barcha guruhlarga bir vaqtda xabar yuboring</small>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard.html">
+                <i class="bi bi-truck"></i> Logistika Filter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard.html">
+                            <i class="bi bi-house"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/messages.html">
+                            <i class="bi bi-envelope"></i> E'lonlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/phones.html">
+                            <i class="bi bi-telephone"></i> Telefon Raqamlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/blocked.html">
+                            <i class="bi bi-ban"></i> Bloklangan
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/groups.html">
+                            <i class="bi bi-people"></i> Guruhlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sms.html">
+                            <i class="bi bi-phone-vibrate"></i> SMS
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auto-reply.html">
+                            <i class="bi bi-reply-all"></i> Auto-Reply
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/broadcast.html">
+                            <i class="bi bi-megaphone"></i> Ommaviy Xabar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/settings.html">
+                            <i class="bi bi-gear"></i> Sozlamalar
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center text-white">
+                    <span class="me-3" id="userInfo">
+                        <i class="bi bi-person-circle"></i> <span id="username"></span>
+                    </span>
+                    <button class="btn btn-outline-light btn-sm" id="logoutBtn">
+                        <i class="bi bi-box-arrow-right"></i> Chiqish
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+
+        <!-- Statistika Kartalar -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Jami Yuborilgan</h6>
+                                <h2 id="totalSent">0</h2>
+                            </div>
+                            <i class="bi bi-send-check" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
                     </div>
-                    <a href="index.html" class="btn btn-light"><i class="bi bi-house"></i> Bosh sahifa</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Scheduled</h6>
+                                <h2 id="totalScheduled">0</h2>
+                            </div>
+                            <i class="bi bi-calendar-check" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Lichka Javoblar</h6>
+                                <h2 id="totalPrivateReplies">0</h2>
+                            </div>
+                            <i class="bi bi-chat-dots" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Guruhlar</h6>
+                                <h2 id="totalBroadcastGroups">0</h2>
+                            </div>
+                            <i class="bi bi-people" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -469,12 +493,52 @@
                     startProgressPolling();
                 }
 
+                // Load statistics
+                loadStatistics();
+
                 return true;
 
             } catch (error) {
                 console.error('Status check error:', error);
                 alert('Status tekshirishda xatolik: ' + error.message);
                 return false;
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                const token = localStorage.getItem('token');
+
+                // Get progress for total sent
+                const progressRes = await fetch('/api/broadcast/progress', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const progressData = await progressRes.json();
+                document.getElementById('totalSent').textContent = progressData.sent || 0;
+
+                // Get scheduled broadcasts count
+                const schedulesRes = await fetch('/api/broadcast/schedule/list', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const schedulesData = await schedulesRes.json();
+                document.getElementById('totalScheduled').textContent = schedulesData.schedules?.length || 0;
+
+                // Get private reply count
+                const privateRes = await fetch('/api/broadcast/private-reply/settings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const privateData = await privateRes.json();
+                document.getElementById('totalPrivateReplies').textContent = privateData.settings?.repliedCount || 0;
+
+                // Get status for groups count
+                const statusRes = await fetch('/api/broadcast/status', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const statusData = await statusRes.json();
+                document.getElementById('totalBroadcastGroups').textContent = statusData.broadcastProgress?.total || 0;
+
+            } catch (error) {
+                console.error('Statistics load error:', error);
             }
         }
 
