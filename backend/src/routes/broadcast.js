@@ -232,4 +232,191 @@ router.post('/session/cancel', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * ============================================
+ * SCHEDULED BROADCAST ROUTES
+ * ============================================
+ */
+
+/**
+ * POST /api/broadcast/schedule/create
+ * Create scheduled broadcast
+ */
+router.post('/schedule/create', authenticate, async (req, res) => {
+  try {
+    const { message, cronExpression, enabled } = req.body;
+
+    if (!message || message.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Xabar matni kiritilmagan'
+      });
+    }
+
+    if (!cronExpression) {
+      return res.status(400).json({
+        success: false,
+        error: 'Schedule qiymati kiritilmagan'
+      });
+    }
+
+    const schedule = autoReplySession.addScheduledBroadcast({
+      message,
+      cronExpression,
+      enabled
+    });
+
+    res.json({
+      success: true,
+      schedule
+    });
+
+  } catch (error) {
+    console.error('Schedule create error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/broadcast/schedule/list
+ * Get all scheduled broadcasts
+ */
+router.get('/schedule/list', authenticate, async (req, res) => {
+  try {
+    const schedules = autoReplySession.getScheduledBroadcasts();
+
+    res.json({
+      success: true,
+      schedules
+    });
+
+  } catch (error) {
+    console.error('Schedule list error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/broadcast/schedule/:id
+ * Update scheduled broadcast
+ */
+router.put('/schedule/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const schedule = autoReplySession.updateScheduledBroadcast(id, updates);
+
+    res.json({
+      success: true,
+      schedule
+    });
+
+  } catch (error) {
+    console.error('Schedule update error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * DELETE /api/broadcast/schedule/:id
+ * Delete scheduled broadcast
+ */
+router.delete('/schedule/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = autoReplySession.deleteScheduledBroadcast(id);
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Schedule delete error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * ============================================
+ * PRIVATE MESSAGE AUTO-REPLY ROUTES
+ * ============================================
+ */
+
+/**
+ * GET /api/broadcast/private-reply/settings
+ * Get private message auto-reply settings
+ */
+router.get('/private-reply/settings', authenticate, async (req, res) => {
+  try {
+    const settings = autoReplySession.getPrivateMessageAutoReply();
+
+    res.json({
+      success: true,
+      settings
+    });
+
+  } catch (error) {
+    console.error('Private reply settings error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/private-reply/update
+ * Update private message auto-reply settings
+ */
+router.post('/private-reply/update', authenticate, async (req, res) => {
+  try {
+    const { enabled, template } = req.body;
+
+    const result = autoReplySession.updatePrivateMessageAutoReply({
+      enabled,
+      template
+    });
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Private reply update error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/private-reply/clear
+ * Clear replied users list
+ */
+router.post('/private-reply/clear', authenticate, async (req, res) => {
+  try {
+    const result = autoReplySession.clearRepliedUsers();
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Private reply clear error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

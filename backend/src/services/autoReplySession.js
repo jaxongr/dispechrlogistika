@@ -43,6 +43,35 @@ class AutoReplySessionService {
       timeout: 5 * 60 * 1000 // 5 minutes timeout
     };
 
+    // Scheduled broadcasts
+    this.scheduledBroadcasts = [];
+    this.scheduledBroadcastsEnabled = true;
+
+    // Private message auto-reply
+    this.privateMessageAutoReply = {
+      enabled: false,
+      template: `Assalomu alaykum! 👋
+
+🚛 Siz bizning DISPETCHERLAR uchun mo'ljallangan guruhimizga xabar yubordingiz!
+
+📢 Bizning asosiy guruhimiz: @yoldauz
+
+✅ Bu guruh O'ZBEKISTON va XALQARO LOGISTIKA bo'yicha eng yaxshi va ishonchli platformalardan biri!
+
+🌟 Nima uchun bizning guruhga qo'shilishingiz kerak:
+   • 100+ faol guruhlardan e'lonlar
+   • AI filtrlangan SIFATLI yuklar
+   • Dispetcher spamidan tozalangan
+   • Tez javob va professional yondashuv
+
+👥 Guruhga qo'shiling: @yoldauz
+
+📞 Savol-javob uchun: @admin_username
+
+Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
+      repliedUsers: new Set() // Track who we replied to (session only)
+    };
+
     // Process reply queue every 5 seconds
     setInterval(() => this.processQueue(), 5000);
 
@@ -54,6 +83,12 @@ class AutoReplySessionService {
 
     // Cleanup expired session creation state every minute
     setInterval(() => this.cleanupExpiredSessionState(), 60000);
+
+    // Check scheduled broadcasts every minute
+    setInterval(() => this.checkScheduledBroadcasts(), 60000);
+
+    // Listen for private messages
+    this.setupPrivateMessageListener();
   }
 
   /**
@@ -786,6 +821,256 @@ class AutoReplySessionService {
       console.log('🧹 Cleaning up expired session creation state...');
       this.cleanupSessionCreationState();
     }
+  }
+
+  /**
+   * ============================================
+   * SCHEDULED BROADCAST METHODS
+   * ============================================
+   */
+
+  /**
+   * Add scheduled broadcast
+   * @param {object} schedule - {message, cronExpression, enabled}
+   * @returns {object} - Created schedule with ID
+   */
+  addScheduledBroadcast(schedule) {
+    const newSchedule = {
+      id: Date.now().toString(),
+      message: schedule.message,
+      cronExpression: schedule.cronExpression,
+      enabled: schedule.enabled !== false,
+      lastRun: null,
+      nextRun: this.calculateNextRun(schedule.cronExpression),
+      createdAt: Date.now()
+    };
+
+    this.scheduledBroadcasts.push(newSchedule);
+    console.log(`📅 Scheduled broadcast added: ${newSchedule.id} - Next run: ${new Date(newSchedule.nextRun)}`);
+
+    return newSchedule;
+  }
+
+  /**
+   * Calculate next run time based on cron expression
+   * Simple implementation: supports "every X minutes/hours"
+   */
+  calculateNextRun(cronExpression) {
+    const now = Date.now();
+
+    // Parse simple cron: "*/5 * * * *" (every 5 minutes)
+    // Or custom format: "every:5:minutes", "every:1:hours"
+    if (cronExpression.startsWith('every:')) {
+      const parts = cronExpression.split(':');
+      const interval = parseInt(parts[1]);
+      const unit = parts[2]; // 'minutes' or 'hours'
+
+      if (unit === 'minutes') {
+        return now + (interval * 60 * 1000);
+      } else if (unit === 'hours') {
+        return now + (interval * 60 * 60 * 1000);
+      }
+    }
+
+    // Default: 1 hour
+    return now + (60 * 60 * 1000);
+  }
+
+  /**
+   * Check and run scheduled broadcasts (runs every minute)
+   */
+  async checkScheduledBroadcasts() {
+    if (!this.scheduledBroadcastsEnabled || !this.isConnected) {
+      return;
+    }
+
+    const now = Date.now();
+
+    for (const schedule of this.scheduledBroadcasts) {
+      if (!schedule.enabled) {
+        continue;
+      }
+
+      // Check if it's time to run
+      if (schedule.nextRun && now >= schedule.nextRun) {
+        console.log(`🕐 Running scheduled broadcast: ${schedule.id}`);
+
+        try {
+          // Start broadcast
+          await this.startBroadcast(schedule.message, { speed: 'safe' });
+
+          // Update last run and calculate next run
+          schedule.lastRun = now;
+          schedule.nextRun = this.calculateNextRun(schedule.cronExpression);
+
+          console.log(`✅ Scheduled broadcast sent. Next run: ${new Date(schedule.nextRun)}`);
+        } catch (error) {
+          console.error(`❌ Scheduled broadcast error:`, error.message);
+        }
+      }
+    }
+  }
+
+  /**
+   * Get all scheduled broadcasts
+   */
+  getScheduledBroadcasts() {
+    return this.scheduledBroadcasts.map(s => ({
+      ...s,
+      nextRunFormatted: s.nextRun ? new Date(s.nextRun).toISOString() : null
+    }));
+  }
+
+  /**
+   * Update scheduled broadcast
+   */
+  updateScheduledBroadcast(id, updates) {
+    const schedule = this.scheduledBroadcasts.find(s => s.id === id);
+    if (!schedule) {
+      throw new Error('Schedule not found');
+    }
+
+    if (updates.message) schedule.message = updates.message;
+    if (updates.cronExpression) {
+      schedule.cronExpression = updates.cronExpression;
+      schedule.nextRun = this.calculateNextRun(updates.cronExpression);
+    }
+    if (updates.enabled !== undefined) schedule.enabled = updates.enabled;
+
+    return schedule;
+  }
+
+  /**
+   * Delete scheduled broadcast
+   */
+  deleteScheduledBroadcast(id) {
+    const index = this.scheduledBroadcasts.findIndex(s => s.id === id);
+    if (index === -1) {
+      throw new Error('Schedule not found');
+    }
+
+    this.scheduledBroadcasts.splice(index, 1);
+    return { success: true, message: 'Schedule deleted' };
+  }
+
+  /**
+   * ============================================
+   * PRIVATE MESSAGE AUTO-REPLY METHODS
+   * ============================================
+   */
+
+  /**
+   * Setup private message listener
+   */
+  async setupPrivateMessageListener() {
+    // Wait for client to connect
+    setTimeout(async () => {
+      if (!this.client || !this.isConnected) {
+        return;
+      }
+
+      try {
+        const { Api } = require('telegram');
+
+        // Listen for new messages
+        this.client.addEventHandler(async (event) => {
+          try {
+            const message = event.message;
+            if (!message || !message.message) {
+              return;
+            }
+
+            // Check if it's a private message (not from group/channel)
+            const isPrivate = message.isPrivate;
+            if (!isPrivate) {
+              return;
+            }
+
+            // Check if auto-reply is enabled
+            if (!this.privateMessageAutoReply.enabled) {
+              return;
+            }
+
+            // Get sender ID
+            const senderId = message.senderId?.toString();
+            if (!senderId) {
+              return;
+            }
+
+            // Check if we already replied to this user (in this session)
+            if (this.privateMessageAutoReply.repliedUsers.has(senderId)) {
+              console.log(`⏭️  Already replied to ${senderId} - skipping`);
+              return;
+            }
+
+            // Get sender info
+            const sender = await message.getSender();
+            const senderName = sender?.firstName || sender?.username || 'User';
+
+            console.log(`💬 Private message from ${senderName} (${senderId})`);
+
+            // Send auto-reply
+            await this.client.sendMessage(senderId, {
+              message: this.privateMessageAutoReply.template
+            });
+
+            // Mark as replied
+            this.privateMessageAutoReply.repliedUsers.add(senderId);
+
+            console.log(`✅ Private auto-reply sent to ${senderName}`);
+
+          } catch (error) {
+            console.error('❌ Private message handler error:', error.message);
+          }
+        }, new Api.events.NewMessage({}));
+
+        console.log('✅ Private message listener activated');
+
+      } catch (error) {
+        console.error('❌ Failed to setup private message listener:', error.message);
+      }
+    }, 5000); // Wait 5 seconds for client to be ready
+  }
+
+  /**
+   * Update private message auto-reply settings
+   */
+  updatePrivateMessageAutoReply(settings) {
+    if (settings.enabled !== undefined) {
+      this.privateMessageAutoReply.enabled = settings.enabled;
+    }
+
+    if (settings.template) {
+      this.privateMessageAutoReply.template = settings.template;
+    }
+
+    return {
+      success: true,
+      settings: {
+        enabled: this.privateMessageAutoReply.enabled,
+        template: this.privateMessageAutoReply.template,
+        repliedCount: this.privateMessageAutoReply.repliedUsers.size
+      }
+    };
+  }
+
+  /**
+   * Get private message auto-reply settings
+   */
+  getPrivateMessageAutoReply() {
+    return {
+      enabled: this.privateMessageAutoReply.enabled,
+      template: this.privateMessageAutoReply.template,
+      repliedCount: this.privateMessageAutoReply.repliedUsers.size
+    };
+  }
+
+  /**
+   * Clear replied users list (reset)
+   */
+  clearRepliedUsers() {
+    this.privateMessageAutoReply.repliedUsers.clear();
+    return { success: true, message: 'Replied users list cleared' };
   }
 }
 
