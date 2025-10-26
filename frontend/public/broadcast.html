@@ -129,6 +129,30 @@
             </button>
         </div>
 
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" id="broadcastTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="instant-tab" data-bs-toggle="tab" data-bs-target="#instant" type="button">
+                    <i class="bi bi-send"></i> Darhol Yuborish
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="scheduled-tab" data-bs-toggle="tab" data-bs-target="#scheduled" type="button">
+                    <i class="bi bi-calendar-check"></i> Rejalashtirilgan
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="private-tab" data-bs-toggle="tab" data-bs-target="#private" type="button">
+                    <i class="bi bi-chat-dots"></i> Lichka Javob
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="broadcastTabContent">
+            <!-- Instant Broadcast Tab -->
+            <div class="tab-pane fade show active" id="instant" role="tabpanel">
+
         <!-- Broadcast Form -->
         <div class="card" id="broadcastForm">
             <div class="card-body">
@@ -225,6 +249,104 @@
                 </div>
             </div>
         </div>
+
+            </div>
+            <!-- End Instant Broadcast Tab -->
+
+            <!-- Scheduled Broadcast Tab -->
+            <div class="tab-pane fade" id="scheduled" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-calendar-plus"></i> Yangi Rejalashtirilgan Xabar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Xabar Matni</label>
+                            <textarea class="form-control" id="scheduledMessage" rows="5" placeholder="Avtomatik yuboriladi gan xabar..."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Interval</label>
+                                <input type="number" class="form-control" id="scheduleInterval" value="30" min="1">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Birlik</label>
+                                <select class="form-select" id="scheduleUnit">
+                                    <option value="minutes">Daqiqa</option>
+                                    <option value="hours">Soat</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" onclick="addSchedule()">
+                                <i class="bi bi-plus-circle"></i> Qo'shish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-list-check"></i> Rejalashtirilgan Xabarlar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="schedulesList">
+                            <p class="text-muted">Yuklanmoqda...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Scheduled Broadcast Tab -->
+
+            <!-- Private Message Auto-Reply Tab -->
+            <div class="tab-pane fade" id="private" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Lichka Avtomatik Javob</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Qanday ishlaydi:</strong> Kimdir auto-reply sessionga lichkada yozsa, avtomatik javob yuboriladi. @yoldauz guruhiga qo'shilishga undaydi.
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="privateReplyEnabled" style="width: 60px; height: 30px;">
+                                <label class="form-check-label ms-2" for="privateReplyEnabled">
+                                    <strong>Lichka Javobni Yoqish</strong>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Javob Shabloni</label>
+                            <textarea class="form-control" id="privateReplyTemplate" rows="15"></textarea>
+                            <small class="text-muted">Bu shablon lichkaga yozgan userga yuboriladi</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <button class="btn btn-primary" onclick="savePrivateReply()">
+                                <i class="bi bi-save"></i> Saqlash
+                            </button>
+                            <button class="btn btn-outline-secondary ms-2" onclick="loadDefaultTemplate()">
+                                <i class="bi bi-arrow-clockwise"></i> Default Shablon
+                            </button>
+                        </div>
+
+                        <div class="alert alert-success">
+                            <strong>Javob berilganlar:</strong> <span id="repliedUsersCount">0</span> ta user
+                            <button class="btn btn-sm btn-outline-danger ms-3" onclick="clearRepliedUsers()">
+                                <i class="bi bi-trash"></i> Tozalash
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Private Message Auto-Reply Tab -->
+
+        </div>
+        <!-- End Tab Content -->
 
         <!-- Session Creation Modal -->
         <div class="modal fade" id="sessionModal" tabindex="-1">
@@ -719,6 +841,211 @@
                 }
             });
         }
+
+        // ============================================
+        // SCHEDULED BROADCAST FUNCTIONS
+        // ============================================
+
+        async function addSchedule() {
+            const message = document.getElementById('scheduledMessage').value;
+            const interval = document.getElementById('scheduleInterval').value;
+            const unit = document.getElementById('scheduleUnit').value;
+
+            if (!message.trim()) {
+                alert('Xabar matni kiriting!');
+                return;
+            }
+
+            const cronExpression = `every:${interval}:${unit}`;
+
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/broadcast/schedule/create', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message,
+                    cronExpression,
+                    enabled: true
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Schedule qo\'shildi!');
+                document.getElementById('scheduledMessage').value = '';
+                loadSchedules();
+            } else {
+                alert('❌ Xatolik: ' + data.error);
+            }
+        }
+
+        async function loadSchedules() {
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/broadcast/schedule/list', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                const list = document.getElementById('schedulesList');
+                if (data.schedules.length === 0) {
+                    list.innerHTML = '<p class="text-muted">Rejalashtirilgan xabarlar yo\'q</p>';
+                    return;
+                }
+
+                list.innerHTML = data.schedules.map(s => `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <p class="mb-1"><strong>Xabar:</strong> ${s.message.substring(0, 100)}...</p>
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-clock"></i> ${s.cronExpression}
+                                    </p>
+                                    <p class="mb-0 text-success">
+                                        <i class="bi bi-calendar-check"></i> Keyingi: ${new Date(s.nextRun).toLocaleString('uz-UZ')}
+                                    </p>
+                                </div>
+                                <div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox"
+                                               ${s.enabled ? 'checked' : ''}
+                                               onchange="toggleSchedule('${s.id}', this.checked)">
+                                    </div>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteSchedule('${s.id}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function toggleSchedule(id, enabled) {
+            const token = localStorage.getItem('token');
+            await fetch(`/api/broadcast/schedule/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ enabled })
+            });
+            loadSchedules();
+        }
+
+        async function deleteSchedule(id) {
+            if (!confirm('Rostdan o\'chirmoqchimisiz?')) return;
+
+            const token = localStorage.getItem('token');
+            await fetch(`/api/broadcast/schedule/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            loadSchedules();
+        }
+
+        // ============================================
+        // PRIVATE MESSAGE AUTO-REPLY FUNCTIONS
+        // ============================================
+
+        async function loadPrivateReply() {
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/broadcast/private-reply/settings', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                document.getElementById('privateReplyEnabled').checked = data.settings.enabled;
+                document.getElementById('privateReplyTemplate').value = data.settings.template;
+                document.getElementById('repliedUsersCount').textContent = data.settings.repliedCount;
+            }
+        }
+
+        async function savePrivateReply() {
+            const enabled = document.getElementById('privateReplyEnabled').checked;
+            const template = document.getElementById('privateReplyTemplate').value;
+
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/broadcast/private-reply/update', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ enabled, template })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Saqlandi!');
+                loadPrivateReply();
+            } else {
+                alert('❌ Xatolik: ' + data.error);
+            }
+        }
+
+        function loadDefaultTemplate() {
+            const defaultTemplate = `Assalomu alaykum! 👋
+
+🚛 Siz bizning DISPETCHERLAR uchun mo'ljallangan guruhimizga xabar yubordingiz!
+
+📢 Bizning asosiy guruhimiz: @yoldauz
+
+✅ Bu guruh O'ZBEKISTON va XALQARO LOGISTIKA bo'yicha eng yaxshi va ishonchli platformalardan biri!
+
+🌟 Nima uchun bizning guruhga qo'shilishingiz kerak:
+   • 100+ faol guruhlardan e'lonlar
+   • AI filtrlangan SIFATLI yuklar
+   • Dispetcher spamidan tozalangan
+   • Tez javob va professional yondashuv
+
+👥 Guruhga qo'shiling: @yoldauz
+
+📞 Savol-javob uchun: @admin_username
+
+Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`;
+            document.getElementById('privateReplyTemplate').value = defaultTemplate;
+        }
+
+        async function clearRepliedUsers() {
+            if (!confirm('Javob berilgan userlar ro\'yxatini tozalamoqchimisiz?')) return;
+
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/broadcast/private-reply/clear', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert('✅ Tozalandi!');
+                loadPrivateReply();
+            }
+        }
+
+        // Load on tab switch
+        document.getElementById('scheduled-tab').addEventListener('click', loadSchedules);
+        document.getElementById('private-tab').addEventListener('click', loadPrivateReply);
+
     </script>
 </body>
 </html>
