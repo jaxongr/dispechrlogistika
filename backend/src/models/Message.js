@@ -1,6 +1,51 @@
 const { db } = require('../config/database');
 
+// CACHE: User group counts cache (5 daqiqa)
+const userGroupCountsCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let cacheTimestamp = 0;
+
 class Message {
+  // OPTIMIZATION: Get user group counts with caching
+  static _getUserGroupCounts(userIds) {
+    const now = Date.now();
+
+    // Clear cache if expired
+    if (now - cacheTimestamp > CACHE_TTL) {
+      userGroupCountsCache.clear();
+      cacheTimestamp = now;
+    }
+
+    const result = new Map();
+    const uncachedIds = [];
+
+    // Check cache first
+    userIds.forEach(userId => {
+      if (userGroupCountsCache.has(userId)) {
+        result.set(userId, userGroupCountsCache.get(userId));
+      } else {
+        uncachedIds.push(userId);
+      }
+    });
+
+    // Calculate for uncached users only
+    if (uncachedIds.length > 0) {
+      const allMessages = db.get('messages').value();
+
+      uncachedIds.forEach(userId => {
+        const userGroupIds = new Set(
+          allMessages
+            .filter(msg => msg.sender_user_id === userId)
+            .map(msg => msg.group_id)
+        );
+        const count = userGroupIds.size;
+        userGroupCountsCache.set(userId, count);
+        result.set(userId, count);
+      });
+    }
+
+    return result;
+  }
   static async create(messageData) {
     const {
       telegram_message_id,
@@ -102,18 +147,8 @@ class Message {
     // Get unique user IDs from current page only
     const uniqueUserIds = [...new Set(messages.map(m => m.sender_user_id))];
 
-    // Pre-calculate user group counts for only these users
-    const allMessages = db.get('messages').value();
-    const userGroupCountsMap = new Map();
-
-    uniqueUserIds.forEach(userId => {
-      const userGroupIds = new Set(
-        allMessages
-          .filter(msg => msg.sender_user_id === userId)
-          .map(msg => msg.group_id)
-      );
-      userGroupCountsMap.set(userId, userGroupIds.size);
-    });
+    // OPTIMIZED: Use cached user group counts
+    const userGroupCountsMap = this._getUserGroupCounts(uniqueUserIds);
 
     // Enrich messages with group info and user group count
     messages = messages.map(m => {
@@ -141,19 +176,14 @@ class Message {
       .find({ id: message.group_id })
       .value();
 
-    // Count user's groups
-    const allMessages = db.get('messages').value();
-    const userGroupIds = new Set(
-      allMessages
-        .filter(msg => msg.sender_user_id === message.sender_user_id)
-        .map(msg => msg.group_id)
-    );
+    // OPTIMIZED: Use cached user group counts
+    const userGroupCountsMap = this._getUserGroupCounts([message.sender_user_id]);
 
     return {
       ...message,
       group_name: group ? group.group_name : null,
       group_username: group ? group.group_username : null,
-      user_group_count: userGroupIds.size
+      user_group_count: userGroupCountsMap.get(message.sender_user_id) || 0
     };
   }
 
