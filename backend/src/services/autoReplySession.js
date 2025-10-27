@@ -461,7 +461,13 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
           console.log('\n🔁 ========================================');
           console.log('   LOOP MODE: RESTARTING BROADCAST');
           console.log(`   Loop Count: ${this.broadcastProgress.loopCount}`);
+          console.log('   ⏸️  2 DAQIQA DAM OLINMOQDA...');
           console.log('========================================\n');
+
+          // 2 DAQIQA DAM OLISH - Telegram limitlarini oldini olish uchun
+          await this.sleep(120000); // 2 daqiqa = 120,000ms
+
+          console.log('✅ Dam olish tugadi, qayta boshlanyapti...\n');
 
           // Filter out restricted groups
           const availableGroups = this.broadcastAllGroups.filter(g => {
@@ -525,11 +531,14 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
             console.log(`📊 Progress: ${this.broadcastProgress.sent}/${this.broadcastProgress.total} sent`);
           }
 
-          // Delay based on speed setting (from startBroadcast options)
-          const delayMs = this.broadcastSpeed === 'safe' ? 3000 :    // 20/min = 10 daqiqa
-                         this.broadcastSpeed === 'fast' ? 2000 :     // 30/min = 7 daqiqa
-                         this.broadcastSpeed === 'turbo' ? 1250 :    // 48/min = 5 daqiqa
-                         3000; // default to safe
+          // YANGILANGAN TEZLIKLAR - Xavfsizroq
+          // safe: 12 guruh/min (5s delay) = 15 daqiqa (100 guruh) - ENG XAVFSIZ
+          // fast: 15 guruh/min (4s delay) = 12 daqiqa (100 guruh)
+          // turbo: 20 guruh/min (3s delay) = 10 daqiqa (100 guruh)
+          const delayMs = this.broadcastSpeed === 'safe' ? 5000 :    // 5 soniya - xavfsiz
+                         this.broadcastSpeed === 'fast' ? 4000 :     // 4 soniya
+                         this.broadcastSpeed === 'turbo' ? 3000 :    // 3 soniya
+                         5000; // default to safe
 
           await this.sleep(delayMs);
 
