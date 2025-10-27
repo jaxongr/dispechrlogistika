@@ -25,6 +25,7 @@ class AutoReplySessionService {
     // Mass messaging state
     this.broadcastQueue = [];
     this.broadcastInProgress = false;
+    this.broadcastSpeed = 'safe'; // safe, fast, turbo
     this.restrictedGroups = new Map(); // chatId -> {until: timestamp, reason: string}
     this.broadcastProgress = {
       total: 0,
@@ -344,8 +345,12 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
       throw new Error('Message cannot be empty');
     }
 
+    // Set broadcast speed
+    this.broadcastSpeed = options.speed || 'safe';
+
     console.log('\n📢 ========================================');
     console.log('   MASS MESSAGING STARTED');
+    console.log(`   Speed: ${this.broadcastSpeed.toUpperCase()}`);
     console.log('========================================\n');
 
     try {
@@ -448,10 +453,13 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
     }
 
     try {
-      // Process 3 messages per second (safe mode)
-      // You can adjust this: 1 = slow, 3 = safe, 5 = aggressive, 10 = turbo (risky)
-      const batchSize = 3;
-      const batch = this.broadcastQueue.splice(0, batchSize);
+      // YANGI TEZLIKLAR - Telegram limitlari asosida
+      // safe: 20 guruh/min (3s delay) = 10 daqiqa (200 guruh)
+      // fast: 30 guruh/min (2s delay) = 6.6 daqiqa (200 guruh)
+      // turbo: 40 guruh/min (1.5s delay) = 5 daqiqa (200 guruh) - XAVFLI!
+
+      // FAQAT 1 xabar bir vaqtda (batch = 1)
+      const batch = this.broadcastQueue.splice(0, 1);
 
       for (const item of batch) {
         try {
@@ -463,8 +471,13 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
             console.log(`📊 Progress: ${this.broadcastProgress.sent}/${this.broadcastProgress.total} sent`);
           }
 
-          // Small delay between messages (333ms for 3/sec)
-          await this.sleep(333);
+          // Delay based on speed setting (from startBroadcast options)
+          const delayMs = this.broadcastSpeed === 'safe' ? 3000 :    // 20/min
+                         this.broadcastSpeed === 'fast' ? 2000 :     // 30/min
+                         this.broadcastSpeed === 'turbo' ? 1500 :    // 40/min
+                         3000; // default to safe
+
+          await this.sleep(delayMs);
 
         } catch (error) {
           // Handle FloodWaitError
