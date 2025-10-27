@@ -673,7 +673,14 @@
         async function startBroadcast() {
             const message = document.getElementById('messageText').value.trim();
             const speed = document.querySelector('input[name="speed"]:checked').value;
-            const loop = document.getElementById('loopMode').checked;
+            const loopCheckbox = document.getElementById('loopMode');
+            const loop = loopCheckbox ? loopCheckbox.checked : false;
+
+            console.log('🔍 START BROADCAST DEBUG:');
+            console.log('   Loop checkbox element:', loopCheckbox);
+            console.log('   Loop checkbox.checked:', loop);
+            console.log('   Message:', message.substring(0, 50));
+            console.log('   Speed:', speed);
 
             if (!message) {
                 alert('Xabar matnini kiriting!');
@@ -691,13 +698,16 @@
 
             try {
                 const token = localStorage.getItem('token');
+                const payload = { message, speed, loop };
+                console.log('📤 Sending payload:', payload);
+
                 const response = await fetch('/api/broadcast/send', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ message, speed, loop })
+                    body: JSON.stringify(payload)
                 });
 
                 const data = await response.json();
