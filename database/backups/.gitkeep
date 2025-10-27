@@ -1,0 +1,2 @@
+# This directory stores automatic database backups
+# Backups are created every hour by auto-backup-db.sh script
