@@ -102,7 +102,33 @@ class MessageFilter {
       'victoria', 'виктория', 'natalia', 'наталья', 'katerina', 'катерина'
     ];
 
-    console.log(`✅ Loaded ${this.femaleNames.length} female names for dispatcher detection`);
+    // Ayol familyalari (dispatcher fake accounts)
+    this.femaleSurnames = [
+      // Rus ayol familyalari (-ova, -eva, -skaya, -aya tugashi)
+      'ivanova', 'иванова', 'petrova', 'петрова', 'smirnova', 'смирнова',
+      'kuznetsova', 'кузнецова', 'popova', 'попова', 'sokolova', 'соколова',
+      'lebedeva', 'лебедева', 'kozlova', 'козлова', 'novikova', 'новикова',
+      'morozova', 'морозова', 'volkova', 'волкова', 'solovyova', 'соловьёва',
+      'vasilieva', 'васильева', 'zaitseva', 'зайцева', 'pavlova', 'павлова',
+      'semyonova', 'семёнова', 'golubeva', 'голубева', 'vinogradova', 'виноградова',
+      'bogdanova', 'богданова', 'vorobyova', 'воробьёва', 'fyodorova', 'фёдорова',
+      'mikhailova', 'михайлова', 'belyaeva', 'беляева', 'tarasova', 'тарасова',
+      'belova', 'белова', 'komarova', 'комарова', 'orlova', 'орлова',
+      'medvedeva', 'медведева', 'egorova', 'егорова', 'romanova', 'романова',
+
+      // O'zbek ayol familyalari (-va, -yeva tugashi)
+      'karimova', 'каримова', 'rahimova', 'рахимова', 'abdullayeva', 'абдуллаева',
+      'yusupova', 'юсупова', 'aliyeva', 'алиева', 'umarova', 'умарова',
+      'ismoilova', 'исмоилова', 'sharipova', 'шарипова', 'nazarova', 'назарова',
+      'ergasheva', 'эргашева', 'tursunova', 'турсунова', 'sultanova', 'султанова',
+      'azimova', 'азимова', 'hasanova', 'хасанова', 'rashidova', 'рашидова',
+
+      // Qozoq/Tojik ayol familyalari
+      'ismailova', 'исмаилова', 'muratova', 'муратова', 'kasimova', 'касимова',
+      'saidova', 'саидова', 'ahmedova', 'ахмедова', 'ibragimova', 'ибрагимова'
+    ];
+
+    console.log(`✅ Loaded ${this.femaleNames.length} female names + ${this.femaleSurnames.length} surnames for dispatcher detection`);
 
     // Whitelist user IDs (o'z session account va boshqalar)
     this.whitelistUserIds = [
@@ -134,7 +160,7 @@ class MessageFilter {
   }
 
   /**
-   * Check if username/fullname contains female name (dispatcher fake account)
+   * Check if username/fullname contains female name or surname (dispatcher fake account)
    */
   hasFemaleNameInProfile(username, fullName) {
     if (!username && !fullName) return false;
@@ -147,7 +173,15 @@ class MessageFilter {
       // For example, "diana" should match "Diana Logistika" but not "indiana"
       const regex = new RegExp(`\\b${femaleName}\\b`, 'i');
       if (regex.test(textToCheck)) {
-        return { found: true, name: femaleName };
+        return { found: true, name: femaleName, type: 'ism' };
+      }
+    }
+
+    // Check each female surname
+    for (const femaleSurname of this.femaleSurnames) {
+      const regex = new RegExp(`\\b${femaleSurname}\\b`, 'i');
+      if (regex.test(textToCheck)) {
+        return { found: true, name: femaleSurname, type: 'familya' };
       }
     }
 
@@ -374,12 +408,13 @@ class MessageFilter {
       };
     }
 
-    // 0.0. YANGI: Ayol ismi bor mi? (Dispatcher fake account)
+    // 0.0. YANGI: Ayol ismi yoki familyasi bor mi? (Dispatcher fake account)
     const femaleNameCheck = this.hasFemaleNameInProfile(sender_username, sender_full_name);
     if (femaleNameCheck.found) {
+      const typeText = femaleNameCheck.type === 'familya' ? 'Ayol familyasi' : 'Ayol ismi';
       return {
         shouldBlock: true,
-        reason: `Ayol ismi profilda: "${femaleNameCheck.name}" (dispatcher fake account)`,
+        reason: `${typeText} profilda: "${femaleNameCheck.name}" (dispatcher fake account)`,
         isDispatcher: true,
         autoBlock: true  // Avtomatik bloklanadi
       };
