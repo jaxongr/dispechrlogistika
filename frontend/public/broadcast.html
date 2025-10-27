@@ -1275,10 +1275,13 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`;
                 if (data.success) {
                     alert('✅ Session o\'chirildi!\n\nTizim qayta ishga tushirilmoqda...');
 
-                    // Wait 2 seconds for restart
+                    // Update UI immediately to show disconnected state
+                    updateSessionStatus({ isConnected: false });
+
+                    // Wait 5 seconds for restart, then reload
                     setTimeout(() => {
                         window.location.reload();
-                    }, 2000);
+                    }, 5000);
                 } else {
                     alert('❌ Xatolik: ' + data.error);
                 }
