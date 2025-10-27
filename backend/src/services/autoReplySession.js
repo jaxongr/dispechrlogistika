@@ -178,7 +178,7 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
     this.processing = true;
 
     try {
-      const batch = this.replyQueue.splice(0, 10); // Process 10 at a time
+      const batch = this.replyQueue.splice(0, 2); // Process 2 at a time (SAFE - 24/min)
 
       for (const reply of batch) {
         try {
@@ -192,7 +192,7 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
           }
 
           await this.sendReply(reply);
-          await this.sleep(2000); // 2 second delay between replies
+          await this.sleep(3000); // 3 second delay between replies (SAFE)
         } catch (error) {
           console.error(`❌ Auto-reply error for ${reply.username}:`, error.message);
 
@@ -227,6 +227,12 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
           if (error.message.includes('Could not find the input entity')) {
             console.log(`⚠️  Entity not found: ${reply.username} - SKIP`);
             continue; // Skip and don't re-add to queue
+          }
+
+          // PEER_ID_INVALID - user not accessible
+          if (error.message.includes('PEER_ID_INVALID')) {
+            console.log(`⚠️  Peer ID invalid: ${reply.username} - SKIP`);
+            continue; // Skip - session can't access this user
           }
 
           // Other errors - log and skip
