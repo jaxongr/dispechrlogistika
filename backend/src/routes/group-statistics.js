@@ -37,27 +37,30 @@ router.get('/summary', authenticate, async (req, res) => {
       .value();
 
     // Get all groups
-    const groups = db.get('telegram_groups').value();
+    const allGroups = db.get('telegram_groups').value();
 
-    // Build statistics by group
+    // Build statistics by group - FAQAT XABAR KELGAN GURUHLAR
     const groupStats = {};
 
-    // Initialize stats for each group
-    groups.forEach(group => {
-      groupStats[group.id] = {
-        group_id: group.id,
-        group_name: group.group_name,
-        group_username: group.group_username,
-        total_messages: 0,
-        sent_to_channel: 0,
-        auto_blocked: 0,
-        manual_blocked: 0,
-        blocked_users: []
-      };
-    });
-
-    // Count messages per group
+    // Count messages per group BIRINCHI (faqat xabar bor guruhlarni qo'shamiz)
     messages.forEach(msg => {
+      if (!groupStats[msg.group_id]) {
+        // Find group info
+        const group = allGroups.find(g => g.id === msg.group_id);
+        if (group) {
+          groupStats[msg.group_id] = {
+            group_id: group.id,
+            group_name: group.group_name,
+            group_username: group.group_username,
+            total_messages: 0,
+            sent_to_channel: 0,
+            auto_blocked: 0,
+            manual_blocked: 0,
+            blocked_users: []
+          };
+        }
+      }
+
       if (groupStats[msg.group_id]) {
         groupStats[msg.group_id].total_messages++;
 
