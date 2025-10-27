@@ -45,7 +45,8 @@ class BroadcastBot {
           reply_markup: {
             keyboard: [
               [{ text: '🔗 Accountni ulash' }, { text: '📋 Guruhlarim' }],
-              [{ text: '📢 Xabar yuborish' }, { text: 'ℹ️ Yordam' }]
+              [{ text: '📢 Xabar yuborish' }, { text: '📈 Statistika' }],
+              [{ text: 'ℹ️ Yordam' }]
             ],
             resize_keyboard: true
           }
@@ -190,7 +191,8 @@ class BroadcastBot {
             reply_markup: {
               keyboard: [
                 [{ text: '🔗 Accountni ulash' }, { text: '📋 Guruhlarim' }],
-                [{ text: '📢 Xabar yuborish' }, { text: 'ℹ️ Yordam' }]
+                [{ text: '📢 Xabar yuborish' }, { text: '📈 Statistika' }],
+                [{ text: 'ℹ️ Yordam' }]
               ],
               resize_keyboard: true
             }
@@ -219,6 +221,74 @@ class BroadcastBot {
         `⚠️ Bu xavfsiz tezlik - account freeze bo'lmaydi!`,
         { parse_mode: 'HTML' }
       );
+    });
+
+    // /mystats - Statistika
+    this.bot.command('mystats', async (ctx) => {
+      const userId = ctx.from.id;
+      const user = db.get('users').find({ telegram_id: userId }).value();
+
+      if (!user) {
+        await ctx.reply('❌ Avval /start ni bosing!');
+        return;
+      }
+
+      // Get user's broadcasts
+      const broadcasts = db.get('broadcasts')
+        .filter({ user_id: user.id })
+        .orderBy(['created_at'], ['desc'])
+        .take(10)
+        .value();
+
+      if (broadcasts.length === 0) {
+        await ctx.reply(
+          '📊 <b>Statistika</b>\n\n' +
+          '❌ Hali broadcast qilmadingiz!\n\n' +
+          '📢 Xabar yuborish orqali boshlang.',
+          { parse_mode: 'HTML' }
+        );
+        return;
+      }
+
+      // Calculate total stats
+      const totalBroadcasts = broadcasts.length;
+      const totalSent = broadcasts.reduce((sum, b) => sum + b.sent_count, 0);
+      const totalFailed = broadcasts.reduce((sum, b) => sum + b.failed_count, 0);
+      const totalGroups = broadcasts.reduce((sum, b) => sum + b.total_groups, 0);
+
+      let message = `📊 <b>Sizning Statistikangiz</b>\n\n`;
+      message += `📈 <b>Umumiy:</b>\n`;
+      message += `• Jami broadcast: ${totalBroadcasts} ta\n`;
+      message += `• Yuborilgan: ${totalSent} ta\n`;
+      message += `• Xatolik: ${totalFailed} ta\n`;
+      message += `• Guruhlar: ${totalGroups} ta\n\n`;
+      message += `📋 <b>So'nggi 10 ta broadcast:</b>\n\n`;
+
+      broadcasts.forEach((broadcast, index) => {
+        const date = new Date(broadcast.created_at);
+        const dateStr = date.toLocaleString('uz-UZ', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const successRate = broadcast.total_groups > 0
+          ? Math.round((broadcast.sent_count / broadcast.total_groups) * 100)
+          : 0;
+
+        message += `${index + 1}. <b>${dateStr}</b>\n`;
+        message += `   📝 "${broadcast.message_preview}"\n`;
+        message += `   📊 ${broadcast.sent_count}/${broadcast.total_groups} (${successRate}%)`;
+
+        if (broadcast.failed_count > 0) {
+          message += ` ⚠️ ${broadcast.failed_count} xato`;
+        }
+
+        message += `\n   ⏱ ${broadcast.duration_seconds}s\n\n`;
+      });
+
+      await ctx.reply(message, { parse_mode: 'HTML' });
     });
   }
 
@@ -338,7 +408,8 @@ class BroadcastBot {
             reply_markup: {
               keyboard: [
                 [{ text: '🔗 Accountni ulash' }, { text: '📋 Guruhlarim' }],
-                [{ text: '📢 Xabar yuborish' }, { text: 'ℹ️ Yordam' }]
+                [{ text: '📢 Xabar yuborish' }, { text: '📈 Statistika' }],
+                [{ text: 'ℹ️ Yordam' }]
               ],
               resize_keyboard: true
             }
@@ -347,6 +418,73 @@ class BroadcastBot {
       } else {
         await ctx.reply('❌ Hozirda faol broadcast yo\'q!');
       }
+    });
+
+    this.bot.hears('📈 Statistika', async (ctx) => {
+      const userId = ctx.from.id;
+      const user = db.get('users').find({ telegram_id: userId }).value();
+
+      if (!user) {
+        await ctx.reply('❌ Avval /start ni bosing!');
+        return;
+      }
+
+      // Get user's broadcasts
+      const broadcasts = db.get('broadcasts')
+        .filter({ user_id: user.id })
+        .orderBy(['created_at'], ['desc'])
+        .take(10)
+        .value();
+
+      if (broadcasts.length === 0) {
+        await ctx.reply(
+          '📊 <b>Statistika</b>\n\n' +
+          '❌ Hali broadcast qilmadingiz!\n\n' +
+          '📢 Xabar yuborish orqali boshlang.',
+          { parse_mode: 'HTML' }
+        );
+        return;
+      }
+
+      // Calculate total stats
+      const totalBroadcasts = broadcasts.length;
+      const totalSent = broadcasts.reduce((sum, b) => sum + b.sent_count, 0);
+      const totalFailed = broadcasts.reduce((sum, b) => sum + b.failed_count, 0);
+      const totalGroups = broadcasts.reduce((sum, b) => sum + b.total_groups, 0);
+
+      let message = `📊 <b>Sizning Statistikangiz</b>\n\n`;
+      message += `📈 <b>Umumiy:</b>\n`;
+      message += `• Jami broadcast: ${totalBroadcasts} ta\n`;
+      message += `• Yuborilgan: ${totalSent} ta\n`;
+      message += `• Xatolik: ${totalFailed} ta\n`;
+      message += `• Guruhlar: ${totalGroups} ta\n\n`;
+      message += `📋 <b>So'nggi 10 ta broadcast:</b>\n\n`;
+
+      broadcasts.forEach((broadcast, index) => {
+        const date = new Date(broadcast.created_at);
+        const dateStr = date.toLocaleString('uz-UZ', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const successRate = broadcast.total_groups > 0
+          ? Math.round((broadcast.sent_count / broadcast.total_groups) * 100)
+          : 0;
+
+        message += `${index + 1}. <b>${dateStr}</b>\n`;
+        message += `   📝 "${broadcast.message_preview}"\n`;
+        message += `   📊 ${broadcast.sent_count}/${broadcast.total_groups} (${successRate}%)`;
+
+        if (broadcast.failed_count > 0) {
+          message += ` ⚠️ ${broadcast.failed_count} xato`;
+        }
+
+        message += `\n   ⏱ ${broadcast.duration_seconds}s\n\n`;
+      });
+
+      await ctx.reply(message, { parse_mode: 'HTML' });
     });
 
     // Text message handler
@@ -610,20 +748,34 @@ class BroadcastBot {
         // Cleanup
         this.activeBroadcasts.delete(userId);
 
-        // Final report
+        // Save statistics to database
         const totalTime = Math.floor((Date.now() - startTime) / 1000);
+        db.get('broadcasts').push({
+          id: Date.now(),
+          user_id: user.id,
+          message_preview: messageText.substring(0, 50) + (messageText.length > 50 ? '...' : ''),
+          total_groups: userGroups.length,
+          sent_count: sentCount,
+          failed_count: failedCount,
+          duration_seconds: totalTime,
+          created_at: new Date().toISOString()
+        }).write();
+
+        // Final report
         await ctx.reply(
           `🎉 <b>Broadcast tugadi!</b>\n\n` +
           `✅ Muvaffaqiyatli: ${sentCount}\n` +
           `❌ Xato: ${failedCount}\n` +
           `📊 Jami: ${userGroups.length}\n` +
-          `⏱ Jami vaqt: ${totalTime}s`,
+          `⏱ Jami vaqt: ${totalTime}s\n\n` +
+          `📈 Hisobot: /mystats`,
           {
             parse_mode: 'HTML',
             reply_markup: {
               keyboard: [
                 [{ text: '🔗 Accountni ulash' }, { text: '📋 Guruhlarim' }],
-                [{ text: '📢 Xabar yuborish' }, { text: 'ℹ️ Yordam' }]
+                [{ text: '📢 Xabar yuborish' }, { text: '📈 Statistika' }],
+                [{ text: 'ℹ️ Yordam' }]
               ],
               resize_keyboard: true
             }
