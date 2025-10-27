@@ -26,6 +26,7 @@ const dispatcherReportsRoutes = require('./routes/dispatcher-reports');
 const smsRoutes = require('./routes/sms');
 const autoReplyRoutes = require('./routes/autoReply');
 const broadcastRoutes = require('./routes/broadcast');
+const groupStatisticsRoutes = require('./routes/group-statistics');
 // const dailyStatisticsRoutes = require('./routes/daily-statistics'); // Vaqtincha o'chirildi - middleware muammosi
 
 // Initialize Express
@@ -72,6 +73,7 @@ app.use('/api/dispatcher-reports', dispatcherReportsRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/auto-reply', autoReplyRoutes);
 app.use('/api/broadcast', broadcastRoutes);
+app.use('/api/group-stats', groupStatisticsRoutes);
 // app.use('/api/daily-statistics', dailyStatisticsRoutes); // Vaqtincha o'chirildi
 
 // Health check
