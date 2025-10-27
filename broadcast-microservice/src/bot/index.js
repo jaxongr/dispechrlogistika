@@ -6,6 +6,7 @@ require('dotenv').config();
 class BroadcastBot {
   constructor() {
     this.bot = new Telegraf(process.env.BOT_TOKEN);
+    this.activeBroadcasts = new Map(); // userId -> { stopped: boolean }
     this.setupCommands();
     this.setupHandlers();
   }
@@ -38,12 +39,17 @@ class BroadcastBot {
       await ctx.reply(
         `🚀 <b>Broadcast Bot'ga xush kelibsiz!</b>\n\n` +
         `📢 Bu bot orqali siz o'z telegram accountingizdan guruhlaringizga xabar yuborishingiz mumkin.\n\n` +
-        `📋 <b>Qadamlar:</b>\n` +
-        `1️⃣ /connect - Telegram accountingizni ulash\n` +
-        `2️⃣ /groups - Guruhlaringizni ko'rish\n` +
-        `3️⃣ /broadcast - Xabar yuborish\n\n` +
-        `ℹ️ /help - Yordam`,
-        { parse_mode: 'HTML' }
+        `👇 Pastdagi tugmalardan birini tanlang:`,
+        {
+          parse_mode: 'HTML',
+          reply_markup: {
+            keyboard: [
+              [{ text: '🔗 Accountni ulash' }, { text: '📋 Guruhlarim' }],
+              [{ text: '📢 Xabar yuborish' }, { text: 'ℹ️ Yordam' }]
+            ],
+            resize_keyboard: true
+          }
+        }
       );
     });
 
@@ -172,6 +178,29 @@ class BroadcastBot {
       await ctx.reply('✅ Jarayon bekor qilindi!');
     });
 
+    // /stop - Broadcast to'xtatish
+    this.bot.command('stop', async (ctx) => {
+      const userId = ctx.from.id;
+
+      if (this.activeBroadcasts.has(userId)) {
+        this.activeBroadcasts.get(userId).stopped = true;
+        await ctx.reply(
+          '⏸️ Broadcast to\'xtatilmoqda...\n\nKeyingi guruhdan keyin to\'xtaydi.',
+          {
+            reply_markup: {
+              keyboard: [
+                [{ text: '🔗 Accountni ulash' }, { text: '📋 Guruhlarim' }],
+                [{ text: '📢 Xabar yuborish' }, { text: 'ℹ️ Yordam' }]
+              ],
+              resize_keyboard: true
+            }
+          }
+        );
+      } else {
+        await ctx.reply('❌ Hozirda faol broadcast yo\'q!');
+      }
+    });
+
     // /help - Yordam
     this.bot.command('help', async (ctx) => {
       await ctx.reply(
@@ -194,6 +223,42 @@ class BroadcastBot {
   }
 
   setupHandlers() {
+    // Keyboard button handlers
+    this.bot.hears('🔗 Accountni ulash', async (ctx) => {
+      return this.bot.handleUpdate({
+        ...ctx.update,
+        message: { ...ctx.message, text: '/connect' }
+      }, ctx);
+    });
+
+    this.bot.hears('📋 Guruhlarim', async (ctx) => {
+      return this.bot.handleUpdate({
+        ...ctx.update,
+        message: { ...ctx.message, text: '/groups' }
+      }, ctx);
+    });
+
+    this.bot.hears('📢 Xabar yuborish', async (ctx) => {
+      return this.bot.handleUpdate({
+        ...ctx.update,
+        message: { ...ctx.message, text: '/broadcast' }
+      }, ctx);
+    });
+
+    this.bot.hears('ℹ️ Yordam', async (ctx) => {
+      return this.bot.handleUpdate({
+        ...ctx.update,
+        message: { ...ctx.message, text: '/help' }
+      }, ctx);
+    });
+
+    this.bot.hears('⏹ To\'xtatish', async (ctx) => {
+      return this.bot.handleUpdate({
+        ...ctx.update,
+        message: { ...ctx.message, text: '/stop' }
+      }, ctx);
+    });
+
     // Text message handler
     this.bot.on('text', async (ctx) => {
       const userId = ctx.from.id;
@@ -370,9 +435,24 @@ class BroadcastBot {
           .assign({ waiting_for_message: false })
           .write();
 
+        // Register active broadcast
+        this.activeBroadcasts.set(userId, { stopped: false });
+
         let sentCount = 0;
         let failedCount = 0;
         const startTime = Date.now();
+
+        // Show stop button
+        await ctx.reply(
+          '⏹ <b>Broadcast to\'xtatish uchun:</b>',
+          {
+            parse_mode: 'HTML',
+            reply_markup: {
+              keyboard: [[{ text: '⏹ To\'xtatish' }]],
+              resize_keyboard: true
+            }
+          }
+        );
 
         // Progress message
         const progressMsg = await ctx.reply(
@@ -385,6 +465,12 @@ class BroadcastBot {
 
         // Send to each group with rate limiting
         for (let i = 0; i < userGroups.length; i++) {
+          // Check if stopped
+          if (this.activeBroadcasts.get(userId)?.stopped) {
+            await ctx.reply('⏸️ Broadcast to\'xtatildi!');
+            break;
+          }
+
           const group = userGroups[i];
 
           try {
@@ -431,6 +517,9 @@ class BroadcastBot {
           }
         }
 
+        // Cleanup
+        this.activeBroadcasts.delete(userId);
+
         // Final report
         const totalTime = Math.floor((Date.now() - startTime) / 1000);
         await ctx.reply(
@@ -439,7 +528,16 @@ class BroadcastBot {
           `❌ Xato: ${failedCount}\n` +
           `📊 Jami: ${userGroups.length}\n` +
           `⏱ Jami vaqt: ${totalTime}s`,
-          { parse_mode: 'HTML' }
+          {
+            parse_mode: 'HTML',
+            reply_markup: {
+              keyboard: [
+                [{ text: '🔗 Accountni ulash' }, { text: '📋 Guruhlarim' }],
+                [{ text: '📢 Xabar yuborish' }, { text: 'ℹ️ Yordam' }]
+              ],
+              resize_keyboard: true
+            }
+          }
         );
 
         return;
