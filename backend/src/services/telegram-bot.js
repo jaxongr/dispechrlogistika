@@ -13,6 +13,8 @@ class TelegramBotService {
     this.bot = null;
     this.isRunning = false;
     this.targetGroupId = null;
+    // Cache for user announcement counts - prevents slow DB queries
+    this.userAnnouncementCache = new Map();
   }
 
   async start() {
@@ -450,12 +452,21 @@ http://5.189.141.151:3001/reporter-stats.html`;
       // Add hashtag for user ID tracking
       const userIdHashtag = `#ID${message.sender_user_id}`;
 
-      // Count how many messages THIS USER has sent to OUR bot group
-      // This counts announcements from this specific user only
-      const userAnnouncementCount = db.get('messages')
-        .filter({ sender_user_id: message.sender_user_id })
-        .size()
-        .value();
+      // Count how many messages THIS USER has sent to OUR bot group (with cache)
+      let userAnnouncementCount = this.userAnnouncementCache.get(message.sender_user_id);
+
+      if (userAnnouncementCount === undefined) {
+        // First time seeing this user - count from DB and cache
+        userAnnouncementCount = db.get('messages')
+          .filter({ sender_user_id: message.sender_user_id })
+          .size()
+          .value();
+        this.userAnnouncementCache.set(message.sender_user_id, userAnnouncementCount);
+      } else {
+        // Already cached - just increment
+        userAnnouncementCount++;
+        this.userAnnouncementCache.set(message.sender_user_id, userAnnouncementCount);
+      }
 
       // Format: /001, /002, etc. - shows how many announcements from this user
       const announcementNumber = `/${String(userAnnouncementCount).padStart(3, '0')}`;
