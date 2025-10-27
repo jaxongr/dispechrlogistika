@@ -241,8 +241,18 @@ class TelegramClientService {
     try {
       const client = await this.getClientFromSession(userId);
 
-      // Convert string ID to BigInt
-      const chatId = BigInt(groupTelegramId);
+      // Convert string ID to BigInt for negative IDs (supergroups)
+      // For positive IDs, use -100 prefix for supergroups
+      let chatId;
+      const idNum = BigInt(groupTelegramId);
+
+      // If negative, it's already correct format
+      // If positive, add -100 prefix for supergroups
+      if (idNum > 0) {
+        chatId = BigInt(`-100${groupTelegramId}`);
+      } else {
+        chatId = idNum;
+      }
 
       await client.sendMessage(chatId, { message });
 
