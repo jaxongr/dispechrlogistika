@@ -167,10 +167,19 @@ class TelegramClientService {
 
         // Faqat guruh va supergroup'larni olamiz
         if (entity.className === 'Channel' || entity.className === 'Chat') {
+          // entity.id BigInt, uni string'ga to'g'ri convert qilamiz
+          // Negative BigInt uchun ham ishlaydi
+          let groupId;
+          if (typeof entity.id === 'bigint') {
+            groupId = entity.id.toString();
+          } else {
+            groupId = String(entity.id);
+          }
+
           const group = {
             id: Date.now() + Math.random(), // Unique ID
             user_id: user.id,
-            telegram_group_id: entity.id.toString(),
+            telegram_group_id: groupId,
             title: entity.title,
             username: entity.username || null,
             members_count: entity.participantsCount || 0,
@@ -232,7 +241,10 @@ class TelegramClientService {
     try {
       const client = await this.getClientFromSession(userId);
 
-      await client.sendMessage(groupTelegramId, { message });
+      // Convert string ID to BigInt
+      const chatId = BigInt(groupTelegramId);
+
+      await client.sendMessage(chatId, { message });
 
       return { success: true };
     } catch (error) {
