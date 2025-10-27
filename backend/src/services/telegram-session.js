@@ -32,7 +32,7 @@ class TelegramSessionService {
     this.processingQueue = false;
 
     // Process queue every 2 seconds in batch
-    setInterval(() => this.processMessageQueue(), 2000);
+    setInterval(() => this.processMessageQueue(), 1000); // 1s interval - maksimal tezlik
   }
 
   /**
@@ -216,7 +216,7 @@ class TelegramSessionService {
     this.processingQueue = true;
 
     try {
-      const batch = this.messageQueue.splice(0, 20); // Process max 20 at a time
+      const batch = this.messageQueue.splice(0, 30); // Process max 30 at a time - MAKSIMAL TEZLIK
       console.log(`📦 Processing ${batch.length} messages from queue...`);
 
       for (const item of batch) {
