@@ -10,6 +10,7 @@ class MessageFilter {
     this.recentMessages = new Map(); // message_hash -> timestamp
     this.userGroupCount = new Map(); // user_id -> Set of group_ids
     this.phoneGroupTracker = new Map(); // phone -> { groups: Set, firstSeen: timestamp }
+    this.userMessageHashes = new Map(); // user_id -> Set of message_hashes (dublikat tracking)
 
     // Load dispatcher keywords
     try {
@@ -330,6 +331,36 @@ class MessageFilter {
         reason: 'Whitelist user',
         isDispatcher: false
       };
+    }
+
+    // DUBLIKAT TEKSHIRUVI: Bir xil xabarni ko'p guruhlarga spam qilish
+    const messageHash = this.getMessageHash(message_text);
+
+    if (!this.userMessageHashes.has(sender_user_id)) {
+      this.userMessageHashes.set(sender_user_id, new Set());
+    }
+
+    const userHashes = this.userMessageHashes.get(sender_user_id);
+
+    if (userHashes.has(messageHash)) {
+      // Bu user bu xabarni allaqachon yuborgan (boshqa guruhda)
+      return {
+        shouldBlock: true,
+        reason: 'Dublikat xabar (bir xil e\'lon ko\'p guruhlarda)',
+        isDispatcher: true,
+        autoBlock: true
+      };
+    }
+
+    // Yangi xabar - hash'ni saqlash
+    userHashes.add(messageHash);
+
+    // Eski hash'larni tozalash (1000 tadan ko'p bo'lsa)
+    if (userHashes.size > 1000) {
+      const hashesArray = Array.from(userHashes);
+      userHashes.clear();
+      // Oxirgi 500 tasini saqlab qolish
+      hashesArray.slice(-500).forEach(h => userHashes.add(h));
     }
 
     // 0. Username yoki full name'da kalit so'z bor mi?
