@@ -450,7 +450,16 @@ http://5.189.141.151:3001/reporter-stats.html`;
       // Add hashtag for user ID tracking
       const userIdHashtag = `#ID${message.sender_user_id}`;
 
-      messageText += `\n👤 Yuboruvchi: ${senderInfo} ${userIdHashtag}`;
+      // Count messages from this group to generate announcement number
+      const groupMessageCount = db.get('messages')
+        .filter({ group_id: message.group_id })
+        .size()
+        .value();
+
+      // Format: /001, /002, etc.
+      const announcementNumber = `/${String(groupMessageCount).padStart(3, '0')}`;
+
+      messageText += `\n👤 Yuboruvchi: ${senderInfo} ${userIdHashtag} ${announcementNumber}`;
 
       // Create message source link - universal "Bu yerda" text
       if (groupInfo) {
