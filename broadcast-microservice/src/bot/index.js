@@ -149,8 +149,8 @@ class BroadcastBot {
         `Yubormoqchi bo'lgan xabaringizni yuboring.\n\n` +
         `📊 <b>Statistika:</b>\n` +
         `• Guruhlar: ${userGroups.length} ta\n` +
-        `• Interval: 4 soniya\n` +
-        `• Batch: 20 ta → 30s dam\n` +
+        `• Interval: 3.5 soniya\n` +
+        `• Batch: 20 ta → 15s dam\n` +
         `• Tsikl: 5 daqiqa dam\n\n` +
         `⚠️ Bekor qilish: /cancel`,
         { parse_mode: 'HTML' }
@@ -296,8 +296,8 @@ class BroadcastBot {
         `Yubormoqchi bo'lgan xabaringizni yuboring.\n\n` +
         `📊 <b>Statistika:</b>\n` +
         `• Guruhlar: ${userGroups.length} ta\n` +
-        `• Interval: 4 soniya\n` +
-        `• Batch: 20 ta → 30s dam\n` +
+        `• Interval: 3.5 soniya\n` +
+        `• Batch: 20 ta → 15s dam\n` +
         `• Tsikl: 5 daqiqa dam\n\n` +
         `⚠️ Bekor qilish: /cancel`,
         { parse_mode: 'HTML' }
@@ -598,12 +598,12 @@ class BroadcastBot {
 
           // Rate limiting
           if ((i + 1) % 20 === 0 && i < userGroups.length - 1) {
-            // 20 ta guruh → 30 soniya dam
-            await ctx.reply('⏸️ 20 ta guruh yuborildi, 30 soniya dam olinmoqda...');
-            await new Promise(resolve => setTimeout(resolve, 30000));
+            // 20 ta guruh → 15 soniya dam
+            await ctx.reply('⏸️ 20 ta guruh yuborildi, 15 soniya dam olinmoqda...');
+            await new Promise(resolve => setTimeout(resolve, 15000));
           } else if (i < userGroups.length - 1) {
-            // Har bir guruh orasida 4 soniya
-            await new Promise(resolve => setTimeout(resolve, 4000));
+            // Har bir guruh orasida 3.5 soniya
+            await new Promise(resolve => setTimeout(resolve, 3500));
           }
         }
 
