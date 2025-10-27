@@ -420,6 +420,24 @@ class TelegramSessionService {
           // logistics data already extracted above (line 246) for phone check
           // No need to extract again
 
+          // 🔍 DUPLICATE DETECTION: 10 daqiqa ichida bir xil matn = SKIP
+          const { db } = require("../config/database");
+          const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+
+          const duplicateCheck = db.get("messages")
+            .filter(msg => {
+              // Bir xil matn va 10 daqiqa ichida
+              const isSameText = msg.message_text === messageData.message_text;
+              const isRecent = new Date(msg.created_at) >= tenMinutesAgo;
+              return isSameText && isRecent;
+            })
+            .value();
+
+          if (duplicateCheck.length > 0) {
+            console.log(`🔄 DUPLICATE SKIP: "${messageData.message_text.substring(0, 50)}..." (${duplicateCheck.length} ta guruhda allaqachon bor)`);
+            continue; // Skip duplicate message
+          }
+
           // Save to database
           const savedMessage = await Message.create({
             telegram_message_id: messageData.telegram_message_id,
