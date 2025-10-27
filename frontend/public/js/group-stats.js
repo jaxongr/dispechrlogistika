@@ -205,10 +205,13 @@ function setupDateRangeFilter() {
     const applyFilter = document.getElementById('applyFilter');
 
     if (startDate && endDate) {
-        // Set default dates (today)
-        const today = new Date().toISOString().split('T')[0];
-        startDate.value = today;
-        endDate.value = today;
+        // Set default dates (last 7 days to today)
+        const today = new Date();
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        startDate.value = sevenDaysAgo.toISOString().split('T')[0];
+        endDate.value = today.toISOString().split('T')[0];
     }
 
     if (applyFilter) {
