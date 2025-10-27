@@ -47,7 +47,9 @@ db.defaults({
     check_target_group: true,
     last_updated: new Date().toISOString()
   },
-  dispatcher_auto_replies: []  // Auto-reply tarixi
+  dispatcher_auto_replies: [],  // Auto-reply tarixi
+  broadcasts: [],               // Ommaviy xabar yuborish
+  broadcast_announcements: []   // Broadcast uchun alohida e'lonlar
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);
