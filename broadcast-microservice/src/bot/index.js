@@ -225,38 +225,128 @@ class BroadcastBot {
   setupHandlers() {
     // Keyboard button handlers
     this.bot.hears('🔗 Accountni ulash', async (ctx) => {
-      return this.bot.handleUpdate({
-        ...ctx.update,
-        message: { ...ctx.message, text: '/connect' }
-      }, ctx);
+      const userId = ctx.from.id;
+      const user = db.get('users').find({ telegram_id: userId }).value();
+
+      if (!user) {
+        await ctx.reply('❌ Avval /start ni bosing!');
+        return;
+      }
+
+      if (user.session_created) {
+        await ctx.reply('✅ Siz allaqachon ulangansiz!\n\n/groups - Guruhlaringizni ko\'rish');
+        return;
+      }
+
+      await ctx.reply(
+        `📱 <b>Telegram accountingizni ulash</b>\n\n` +
+        `/create_session - Ulashni boshlash\n\n` +
+        `⚠️ <b>Xavfsiz:</b> Sizning parolingiz saqlanmaydi!\n` +
+        `✅ Faqat telefon raqam va SMS kod kerak`,
+        { parse_mode: 'HTML' }
+      );
     });
 
     this.bot.hears('📋 Guruhlarim', async (ctx) => {
-      return this.bot.handleUpdate({
-        ...ctx.update,
-        message: { ...ctx.message, text: '/groups' }
-      }, ctx);
+      const userId = ctx.from.id;
+      const user = db.get('users').find({ telegram_id: userId }).value();
+
+      if (!user || !user.session_created) {
+        await ctx.reply('❌ Avval accountingizni ulang: 🔗 Accountni ulash');
+        return;
+      }
+
+      const userGroups = db.get('user_groups')
+        .filter({ user_id: user.id })
+        .value();
+
+      if (userGroups.length === 0) {
+        await ctx.reply('📭 Sizda guruhlar topilmadi!\n\nGuruhlaringizni botga qo\'shing.');
+        return;
+      }
+
+      let message = `📋 <b>Sizning guruhlaringiz (${userGroups.length} ta):</b>\n\n`;
+      userGroups.forEach((group, index) => {
+        message += `${index + 1}. ${group.title}\n`;
+      });
+
+      await ctx.reply(message, { parse_mode: 'HTML' });
     });
 
     this.bot.hears('📢 Xabar yuborish', async (ctx) => {
-      return this.bot.handleUpdate({
-        ...ctx.update,
-        message: { ...ctx.message, text: '/broadcast' }
-      }, ctx);
+      const userId = ctx.from.id;
+      const user = db.get('users').find({ telegram_id: userId }).value();
+
+      if (!user || !user.session_created) {
+        await ctx.reply('❌ Avval accountingizni ulang: 🔗 Accountni ulash');
+        return;
+      }
+
+      const userGroups = db.get('user_groups')
+        .filter({ user_id: user.id })
+        .value();
+
+      if (userGroups.length === 0) {
+        await ctx.reply('❌ Sizda guruhlar yo\'q!');
+        return;
+      }
+
+      await ctx.reply(
+        `📢 <b>Xabar yuborish</b>\n\n` +
+        `Yubormoqchi bo'lgan xabaringizni yuboring.\n\n` +
+        `📊 <b>Statistika:</b>\n` +
+        `• Guruhlar: ${userGroups.length} ta\n` +
+        `• Interval: 4 soniya\n` +
+        `• Batch: 20 ta → 30s dam\n` +
+        `• Tsikl: 5 daqiqa dam\n\n` +
+        `⚠️ Bekor qilish: /cancel`,
+        { parse_mode: 'HTML' }
+      );
+
+      db.get('users')
+        .find({ telegram_id: userId })
+        .assign({ waiting_for_message: true })
+        .write();
     });
 
     this.bot.hears('ℹ️ Yordam', async (ctx) => {
-      return this.bot.handleUpdate({
-        ...ctx.update,
-        message: { ...ctx.message, text: '/help' }
-      }, ctx);
+      await ctx.reply(
+        `📚 <b>Yordam</b>\n\n` +
+        `<b>Asosiy buyruqlar:</b>\n` +
+        `🔗 Accountni ulash\n` +
+        `📋 Guruhlarim\n` +
+        `📢 Xabar yuborish\n` +
+        `/mystats - Statistika\n` +
+        `/cancel - Bekor qilish\n\n` +
+        `<b>Rate Limiting:</b>\n` +
+        `• Har bir guruh: 4 soniya\n` +
+        `• 20 ta guruh → 30 soniya dam\n` +
+        `• Tsikl tugadi → 5 daqiqa dam\n\n` +
+        `⚠️ Bu xavfsiz tezlik - account freeze bo'lmaydi!`,
+        { parse_mode: 'HTML' }
+      );
     });
 
     this.bot.hears('⏹ To\'xtatish', async (ctx) => {
-      return this.bot.handleUpdate({
-        ...ctx.update,
-        message: { ...ctx.message, text: '/stop' }
-      }, ctx);
+      const userId = ctx.from.id;
+
+      if (this.activeBroadcasts.has(userId)) {
+        this.activeBroadcasts.get(userId).stopped = true;
+        await ctx.reply(
+          '⏸️ Broadcast to\'xtatilmoqda...\n\nKeyingi guruhdan keyin to\'xtaydi.',
+          {
+            reply_markup: {
+              keyboard: [
+                [{ text: '🔗 Accountni ulash' }, { text: '📋 Guruhlarim' }],
+                [{ text: '📢 Xabar yuborish' }, { text: 'ℹ️ Yordam' }]
+              ],
+              resize_keyboard: true
+            }
+          }
+        );
+      } else {
+        await ctx.reply('❌ Hozirda faol broadcast yo\'q!');
+      }
     });
 
     // Text message handler
