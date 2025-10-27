@@ -115,11 +115,13 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
 
       if (!sessionString || sessionString.length < 10) {
         console.log('⚠️  Auto-reply session topilmadi (AUTOREPLY_SESSION_STRING)');
+        console.log(`   Session string length: ${sessionString.length}`);
         console.log('   Auto-reply o\'chirilgan - faqat monitoring ishlaydi');
         this.isConnected = false;
         return false;
       }
 
+      console.log(`✅ Auto-reply session string topildi (length: ${sessionString.length})`);
       const stringSession = new StringSession(sessionString);
 
       this.client = new TelegramClient(stringSession, apiId, apiHash, {
@@ -833,27 +835,44 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
     try {
       const fs = require('fs');
       const path = require('path');
-      const envPath = path.join(__dirname, '../../../.env');
+      const rootEnvPath = path.join(__dirname, '../../../.env'); // Root .env
+      const backendEnvPath = path.join(__dirname, '../../.env'); // Backend .env
 
-      // Read current .env
-      let envContent = fs.readFileSync(envPath, 'utf8');
+      // Helper function to update .env file
+      const updateEnvFile = (envPath) => {
+        if (!fs.existsSync(envPath)) {
+          console.log(`⚠️  ${envPath} topilmadi, yaratilmoqda...`);
+          fs.writeFileSync(envPath, '', 'utf8');
+        }
 
-      // Check if AUTOREPLY_SESSION_STRING exists
-      if (envContent.includes('AUTOREPLY_SESSION_STRING=')) {
-        // Replace existing
-        envContent = envContent.replace(
-          /AUTOREPLY_SESSION_STRING=.*/,
-          `AUTOREPLY_SESSION_STRING=${sessionString}`
-        );
-      } else {
-        // Add new
-        envContent += `\n\n# Auto-Reply Session (Dashboard'dan qo'shildi)\nAUTOREPLY_SESSION_STRING=${sessionString}\n`;
-      }
+        // Read current .env
+        let envContent = fs.readFileSync(envPath, 'utf8');
 
-      // Write back
-      fs.writeFileSync(envPath, envContent, 'utf8');
+        // Check if AUTOREPLY_SESSION_STRING exists
+        if (envContent.includes('AUTOREPLY_SESSION_STRING=')) {
+          // Replace existing (including commented lines)
+          envContent = envContent.replace(
+            /# ?AUTOREPLY_SESSION_STRING=.*/,
+            `AUTOREPLY_SESSION_STRING=${sessionString}`
+          );
+          // Also replace uncommented lines
+          envContent = envContent.replace(
+            /^AUTOREPLY_SESSION_STRING=.*/m,
+            `AUTOREPLY_SESSION_STRING=${sessionString}`
+          );
+        } else {
+          // Add new
+          envContent += `\n\n# Auto-Reply Session (Dashboard'dan qo'shildi)\nAUTOREPLY_SESSION_STRING=${sessionString}\n`;
+        }
 
-      console.log('✅ Session .env fayliga saqlandi');
+        // Write back
+        fs.writeFileSync(envPath, envContent, 'utf8');
+        console.log(`✅ Session ${envPath} ga saqlandi`);
+      };
+
+      // Update both .env files
+      updateEnvFile(rootEnvPath);
+      updateEnvFile(backendEnvPath);
 
       return {
         success: true,

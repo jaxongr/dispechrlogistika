@@ -434,7 +434,8 @@ router.post('/session/delete', authenticate, async (req, res) => {
     const fs = require('fs');
     const path = require('path');
     const sessionPath = path.join(__dirname, '../../session.json');
-    const envPath = path.join(__dirname, '../../.env');
+    const backendEnvPath = path.join(__dirname, '../../.env');
+    const rootEnvPath = path.join(__dirname, '../../../.env'); // ROOT .env file
 
     let deleted = false;
 
@@ -452,14 +453,19 @@ router.post('/session/delete', authenticate, async (req, res) => {
       deleted = true;
     }
 
-    // Remove AUTOREPLY_SESSION_STRING from .env
-    if (fs.existsSync(envPath)) {
+    // Helper function to remove AUTOREPLY_SESSION_STRING from .env file
+    const removeSessionFromEnv = (envPath) => {
+      if (!fs.existsSync(envPath)) {
+        console.log(`⚠️  ${envPath} topilmadi`);
+        return false;
+      }
+
       let envContent = fs.readFileSync(envPath, 'utf8');
 
       // Backup .env
-      const envBackupPath = path.join(__dirname, '../../.env.backup_' + Date.now());
+      const envBackupPath = envPath + '.backup_' + Date.now();
       fs.writeFileSync(envBackupPath, envContent);
-      console.log('💾 .env backup saved:', envBackupPath);
+      console.log(`💾 ${envPath} backup saved:`, envBackupPath);
 
       // Remove or comment out AUTOREPLY_SESSION_STRING
       const lines = envContent.split('\n');
@@ -471,7 +477,16 @@ router.post('/session/delete', authenticate, async (req, res) => {
       });
 
       fs.writeFileSync(envPath, newLines.join('\n'));
-      console.log('🗑️  AUTOREPLY_SESSION_STRING removed from .env');
+      console.log(`🗑️  AUTOREPLY_SESSION_STRING removed from ${envPath}`);
+      return true;
+    };
+
+    // Remove from both backend and root .env files
+    if (removeSessionFromEnv(backendEnvPath)) {
+      deleted = true;
+    }
+
+    if (removeSessionFromEnv(rootEnvPath)) {
       deleted = true;
     }
 
