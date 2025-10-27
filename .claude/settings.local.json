@@ -17,7 +17,8 @@
       "Bash(do echo \"Processing: $file\" grep -n \"sms.html\" \"C:\\Users\\Pro\\Desktop\\Dispechrlar uchun logistika\\frontend\\public$file\")",
       "Bash(git tag:*)",
       "Bash(git ls-tree:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Read(//c/Users/Pro/Downloads/**)"
     ],
     "deny": [],
     "ask": []

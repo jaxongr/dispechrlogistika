@@ -339,7 +339,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `Username/Bio'da kalit so'z: "${keywordCheck.keyword}"`,
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -350,7 +350,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `Ayol ismi profilda: "${femaleNameCheck.name}" (dispatcher fake account)`,
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -361,7 +361,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `Shubhali profil: ${suspiciousCheck.reason}`,
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -381,7 +381,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `${foreignCheck.reason} (faqat O'zbekiston ichida)`,
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -394,7 +394,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `Ko'p @mention spam (${mentionMatches.length} ta mention)`,
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -404,7 +404,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: '200+ belgi (spam)',
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -416,7 +416,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `3+ emoji dispetcher belgisi (${emojiMatches.length}ta emoji)`,
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -434,7 +434,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: `Ko'p bo'sh qatorlar (${maxConsecutive}ta ketma-ket)`,
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -445,7 +445,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: '15+ guruhda (professional dispatcher)',
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -456,7 +456,7 @@ class MessageFilter {
         shouldBlock: true,
         reason: 'Juda ko\'p xabar (spam)',
         isDispatcher: true,
-        autoBlock: false  // Admin tasdiq kutiladi
+        autoBlock: true  // Avtomatik bloklanadi
       };
     }
 
@@ -476,7 +476,7 @@ class MessageFilter {
           shouldBlock: true,
           reason: `Dispatcher telefon spam: ${phoneData.groups.size} ta guruhda (10 daqiqada)`,
           isDispatcher: true,
-          autoBlock: false  // Admin tasdiq kutiladi
+          autoBlock: true  // Avtomatik bloklanadi
         };
       }
     }
@@ -503,7 +503,7 @@ class MessageFilter {
           shouldBlock: true,
           reason: `Dispatcher kalit so'z xabarda: "${keyword}"`,
           isDispatcher: true,
-          autoBlock: false  // Admin tasdiq kutiladi
+          autoBlock: true  // Avtomatik bloklanadi
         };
       }
     }
