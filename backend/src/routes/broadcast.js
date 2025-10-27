@@ -419,4 +419,90 @@ router.post('/private-reply/clear', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * ============================================
+ * SESSION MANAGEMENT ROUTES
+ * ============================================
+ */
+
+/**
+ * POST /api/broadcast/session/delete
+ * Delete session file and restart
+ */
+router.post('/session/delete', authenticate, async (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const sessionPath = path.join(__dirname, '../../session.json');
+
+    // Check if session exists
+    if (fs.existsSync(sessionPath)) {
+      // Backup before delete
+      const backupPath = path.join(__dirname, '../../session_backup_' + Date.now() + '.json');
+      fs.copyFileSync(sessionPath, backupPath);
+
+      // Delete session
+      fs.unlinkSync(sessionPath);
+
+      console.log('🗑️  Session file deleted:', sessionPath);
+      console.log('💾 Backup saved:', backupPath);
+
+      // Schedule restart
+      setTimeout(() => {
+        console.log('🔄 Restarting server...');
+        process.exit(0); // PM2 will auto-restart
+      }, 1000);
+
+      res.json({
+        success: true,
+        message: 'Session o\'chirildi. Server qayta ishga tushmoqda...'
+      });
+
+    } else {
+      res.status(404).json({
+        success: false,
+        error: 'Session file topilmadi'
+      });
+    }
+
+  } catch (error) {
+    console.error('Session delete error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/session/restart
+ * Restart session without deleting
+ */
+router.post('/session/restart', authenticate, async (req, res) => {
+  try {
+    console.log('🔄 Restarting session...');
+
+    // Disconnect current session
+    await autoReplySession.disconnect();
+
+    // Schedule server restart
+    setTimeout(() => {
+      console.log('🔄 Restarting server...');
+      process.exit(0); // PM2 will auto-restart
+    }, 1000);
+
+    res.json({
+      success: true,
+      message: 'Session qayta ishga tushmoqda...'
+    });
+
+  } catch (error) {
+    console.error('Session restart error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

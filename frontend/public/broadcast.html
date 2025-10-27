@@ -137,6 +137,74 @@
             </div>
         </div>
 
+        <!-- Session Boshqaruvi -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-phone"></i> Auto-Reply Session Boshqaruvi
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="rounded-circle p-3" id="sessionStatusIcon" style="background-color: #f8f9fa;">
+                                            <i class="bi bi-phone-vibrate" style="font-size: 2rem; color: #6c757d;"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="text-muted mb-1" style="font-size: 0.85rem;">Session Holati</h6>
+                                        <h4 class="mb-0" id="sessionStatusText">Tekshirilmoqda...</h4>
+                                        <small id="sessionPhoneNumber" class="text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 text-end">
+                                <div id="sessionConnectedActions" style="display: none;">
+                                    <button class="btn btn-outline-danger" onclick="deleteSession()">
+                                        <i class="bi bi-trash"></i> Session O'chirish
+                                    </button>
+                                    <button class="btn btn-outline-warning ms-2" onclick="restartSession()">
+                                        <i class="bi bi-arrow-clockwise"></i> Qayta Ishga Tushirish
+                                    </button>
+                                </div>
+                                <div id="sessionDisconnectedActions" style="display: none;">
+                                    <button class="btn btn-primary" onclick="showSessionModal()">
+                                        <i class="bi bi-plus-circle"></i> Yangi Session Yaratish
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Session Info (when connected) -->
+                        <div id="sessionInfo" style="display: none;" class="mt-3 pt-3 border-top">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <small class="text-muted">Session Start:</small>
+                                    <p id="sessionStartTime">-</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Auto-Reply:</small>
+                                    <p id="autoReplyStatus">-</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Queue:</small>
+                                    <p id="queueSize">-</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Xatolar (5 daqiqa):</small>
+                                    <p id="recentErrors">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Warning -->
         <div class="alert alert-warning">
             <i class="bi bi-exclamation-triangle"></i>
@@ -481,6 +549,9 @@
 
                 const data = await response.json();
 
+                // Update session status UI
+                updateSessionStatus(data);
+
                 if (!data.isConnected) {
                     document.getElementById('statusCheck').style.display = 'block';
                     document.getElementById('broadcastForm').style.display = 'none';
@@ -502,6 +573,47 @@
                 console.error('Status check error:', error);
                 alert('Status tekshirishda xatolik: ' + error.message);
                 return false;
+            }
+        }
+
+        // Update session status display
+        function updateSessionStatus(data) {
+            const statusIcon = document.getElementById('sessionStatusIcon');
+            const statusText = document.getElementById('sessionStatusText');
+            const phoneNumber = document.getElementById('sessionPhoneNumber');
+            const sessionInfo = document.getElementById('sessionInfo');
+            const connectedActions = document.getElementById('sessionConnectedActions');
+            const disconnectedActions = document.getElementById('sessionDisconnectedActions');
+
+            if (data.isConnected) {
+                // Connected state
+                statusIcon.innerHTML = '<i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>';
+                statusIcon.style.backgroundColor = '#d4edda';
+                statusText.textContent = 'Ulangan';
+                statusText.className = 'mb-0 text-success';
+                phoneNumber.textContent = data.phoneNumber || '';
+
+                connectedActions.style.display = 'block';
+                disconnectedActions.style.display = 'none';
+                sessionInfo.style.display = 'block';
+
+                // Update session info
+                document.getElementById('sessionStartTime').textContent = data.sessionStart || '-';
+                document.getElementById('autoReplyStatus').textContent = data.autoReplyEnabled ? '✅ Yoqilgan' : '❌ O\'chirilgan';
+                document.getElementById('queueSize').textContent = data.queueSize || '0';
+                document.getElementById('recentErrors').textContent = data.recentErrors || '0';
+
+            } else {
+                // Disconnected state
+                statusIcon.innerHTML = '<i class="bi bi-x-circle-fill text-danger" style="font-size: 2rem;"></i>';
+                statusIcon.style.backgroundColor = '#f8d7da';
+                statusText.textContent = 'Ulanmagan';
+                statusText.className = 'mb-0 text-danger';
+                phoneNumber.textContent = '';
+
+                connectedActions.style.display = 'none';
+                disconnectedActions.style.display = 'block';
+                sessionInfo.style.display = 'none';
             }
         }
 
@@ -1103,6 +1215,74 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`;
             if (data.success) {
                 alert('✅ Tozalandi!');
                 loadPrivateReply();
+            }
+        }
+
+        // ============================================
+        // SESSION MANAGEMENT FUNCTIONS
+        // ============================================
+
+        async function deleteSession() {
+            if (!confirm('⚠️ DIQQAT!\n\nSession o\'chiriladi va barcha funksiyalar to\'xtaydi:\n- Auto-reply\n- Broadcast\n- Scheduled messages\n\nRostdan o\'chirmoqchimisiz?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/session/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Session o\'chirildi!\n\nTizim qayta ishga tushirilmoqda...');
+
+                    // Wait 2 seconds for restart
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    alert('❌ Xatolik: ' + data.error);
+                }
+
+            } catch (error) {
+                console.error('Session delete error:', error);
+                alert('❌ Session o\'chirishda xatolik: ' + error.message);
+            }
+        }
+
+        async function restartSession() {
+            if (!confirm('Session qayta ishga tushirilsinmi?')) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/session/restart', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Session qayta ishga tushirilmoqda...');
+
+                    // Wait 3 seconds for restart
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                } else {
+                    alert('❌ Xatolik: ' + data.error);
+                }
+
+            } catch (error) {
+                console.error('Session restart error:', error);
+                alert('❌ Session qayta ishga tushirishda xatolik: ' + error.message);
             }
         }
 
