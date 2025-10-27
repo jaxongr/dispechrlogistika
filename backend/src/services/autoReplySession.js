@@ -134,6 +134,7 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
       console.log('   ⚠️  Bu alohida session - asosiy sessionga ta\'sir qilmaydi');
 
       this.isConnected = true;
+      this.sessionStartTime = new Date().toLocaleString('uz-UZ');
       return true;
 
     } catch (error) {
@@ -308,7 +309,13 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
       broadcastInProgress: this.broadcastInProgress,
       broadcastQueueLength: this.broadcastQueue.length,
       broadcastProgress: this.broadcastProgress,
-      restrictedGroupsCount: this.restrictedGroups.size
+      restrictedGroupsCount: this.restrictedGroups.size,
+      // Additional info for UI
+      phoneNumber: this.isConnected ? (this.client?.session?.phoneNumber || 'N/A') : null,
+      sessionStart: this.sessionStartTime || null,
+      autoReplyEnabled: this.privateMessageAutoReply.enabled,
+      queueSize: this.replyQueue.length,
+      recentErrors: 0 // TODO: Track errors
     };
   }
 

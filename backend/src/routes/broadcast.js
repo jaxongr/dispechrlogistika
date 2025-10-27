@@ -434,8 +434,11 @@ router.post('/session/delete', authenticate, async (req, res) => {
     const fs = require('fs');
     const path = require('path');
     const sessionPath = path.join(__dirname, '../../session.json');
+    const envPath = path.join(__dirname, '../../.env');
 
-    // Check if session exists
+    let deleted = false;
+
+    // Check if session.json exists
     if (fs.existsSync(sessionPath)) {
       // Backup before delete
       const backupPath = path.join(__dirname, '../../session_backup_' + Date.now() + '.json');
@@ -446,7 +449,33 @@ router.post('/session/delete', authenticate, async (req, res) => {
 
       console.log('🗑️  Session file deleted:', sessionPath);
       console.log('💾 Backup saved:', backupPath);
+      deleted = true;
+    }
 
+    // Remove AUTOREPLY_SESSION_STRING from .env
+    if (fs.existsSync(envPath)) {
+      let envContent = fs.readFileSync(envPath, 'utf8');
+
+      // Backup .env
+      const envBackupPath = path.join(__dirname, '../../.env.backup_' + Date.now());
+      fs.writeFileSync(envBackupPath, envContent);
+      console.log('💾 .env backup saved:', envBackupPath);
+
+      // Remove or comment out AUTOREPLY_SESSION_STRING
+      const lines = envContent.split('\n');
+      const newLines = lines.map(line => {
+        if (line.startsWith('AUTOREPLY_SESSION_STRING=')) {
+          return '# AUTOREPLY_SESSION_STRING=  # Session o\'chirildi - ' + new Date().toLocaleString();
+        }
+        return line;
+      });
+
+      fs.writeFileSync(envPath, newLines.join('\n'));
+      console.log('🗑️  AUTOREPLY_SESSION_STRING removed from .env');
+      deleted = true;
+    }
+
+    if (deleted) {
       // Schedule restart
       setTimeout(() => {
         console.log('🔄 Restarting server...');
@@ -457,11 +486,10 @@ router.post('/session/delete', authenticate, async (req, res) => {
         success: true,
         message: 'Session o\'chirildi. Server qayta ishga tushmoqda...'
       });
-
     } else {
       res.status(404).json({
         success: false,
-        error: 'Session file topilmadi'
+        error: 'Session topilmadi'
       });
     }
 
