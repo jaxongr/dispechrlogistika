@@ -105,7 +105,7 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
       const apiHash = process.env.TELEGRAM_API_HASH;
 
       // ALOHIDA SESSION STRING - .env da AUTOREPLY_SESSION_STRING
-      const sessionString = process.env.AUTOREPLY_SESSION_STRING || '';
+      const sessionString = (process.env.AUTOREPLY_SESSION_STRING || '').trim();
 
       if (!apiId || !apiHash) {
         console.log('❌ Auto-reply: API credentials topilmadi');
@@ -113,7 +113,7 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
         return false;
       }
 
-      if (!sessionString) {
+      if (!sessionString || sessionString.length < 10) {
         console.log('⚠️  Auto-reply session topilmadi (AUTOREPLY_SESSION_STRING)');
         console.log('   Auto-reply o\'chirilgan - faqat monitoring ishlaydi');
         this.isConnected = false;
