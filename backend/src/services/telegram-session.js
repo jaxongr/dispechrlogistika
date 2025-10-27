@@ -214,10 +214,11 @@ class TelegramSessionService {
     }
 
     this.processingQueue = true;
+    const startTime = Date.now();
+    let batch = [];
 
     try {
-      const startTime = Date.now();
-      const batch = this.messageQueue.splice(0, 30); // Process max 30 at a time - MAKSIMAL TEZLIK
+      batch = this.messageQueue.splice(0, 30); // Process max 30 at a time - MAKSIMAL TEZLIK
       console.log(`📦 Processing ${batch.length} messages from queue...`);
 
       for (const item of batch) {
