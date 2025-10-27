@@ -14,7 +14,14 @@ const autoReplySession = require('../services/autoReplySession');
  */
 router.post('/send', authenticate, async (req, res) => {
   try {
-    const { message, speed } = req.body;
+    const { message, speed, loop } = req.body;
+
+    console.log('📥 BROADCAST REQUEST:', {
+      messageLength: message?.length,
+      speed,
+      loop,
+      loopType: typeof loop
+    });
 
     if (!message || message.trim().length === 0) {
       return res.status(400).json({
@@ -32,8 +39,8 @@ router.post('/send', authenticate, async (req, res) => {
       });
     }
 
-    // Start broadcast
-    const result = await autoReplySession.startBroadcast(message, { speed });
+    // Start broadcast with loop parameter
+    const result = await autoReplySession.startBroadcast(message, { speed, loop });
 
     res.json({
       success: true,
