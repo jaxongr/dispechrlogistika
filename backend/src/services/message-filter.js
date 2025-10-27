@@ -481,6 +481,33 @@ class MessageFilter {
       }
     }
 
+    // YANGI: Xabar matnida dispatcher kalit so'zlari tekshiruvi
+    const dispatcherKeywords = [
+      'диспечер керакмас',
+      'диспетчер керакмас',
+      'логист керакмас',
+      'безота килмасин',
+      'шартмас',
+      'dispetchr kerakmas',
+      'посредник',
+      'фақат машина',
+      'faqat mashina',
+      'фақат шофер',
+      'faqat shofer'
+    ];
+
+    const textLower = message_text ? message_text.toLowerCase() : '';
+    for (const keyword of dispatcherKeywords) {
+      if (textLower.includes(keyword.toLowerCase())) {
+        return {
+          shouldBlock: true,
+          reason: `Dispatcher kalit so'z xabarda: "${keyword}"`,
+          isDispatcher: true,
+          autoBlock: false  // Admin tasdiq kutiladi
+        };
+      }
+    }
+
     // Hammasi OK
     return {
       shouldBlock: false,
