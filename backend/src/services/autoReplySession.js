@@ -26,13 +26,17 @@ class AutoReplySessionService {
     this.broadcastQueue = [];
     this.broadcastInProgress = false;
     this.broadcastSpeed = 'safe'; // safe, fast, turbo
+    this.broadcastLoopEnabled = false; // Tsiklik rejim
+    this.broadcastMessage = null; // Loop uchun xabar
+    this.broadcastAllGroups = []; // Barcha guruhlar ro'yxati (loop uchun)
     this.restrictedGroups = new Map(); // chatId -> {until: timestamp, reason: string}
     this.broadcastProgress = {
       total: 0,
       sent: 0,
       failed: 0,
       restricted: 0,
-      currentMessage: null
+      currentMessage: null,
+      loopCount: 0 // Necha marta loop qilindi
     };
 
     // Session creation state (persistent across requests)
@@ -345,12 +349,15 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
       throw new Error('Message cannot be empty');
     }
 
-    // Set broadcast speed
+    // Set broadcast speed and loop mode
     this.broadcastSpeed = options.speed || 'safe';
+    this.broadcastLoopEnabled = options.loop === true;
+    this.broadcastMessage = message; // Save for loop
 
     console.log('\n📢 ========================================');
     console.log('   MASS MESSAGING STARTED');
     console.log(`   Speed: ${this.broadcastSpeed.toUpperCase()}`);
+    console.log(`   Loop Mode: ${this.broadcastLoopEnabled ? '🔁 YOQILGAN' : '❌ O\'CHIRILGAN'}`);
     console.log('========================================\n');
 
     try {
@@ -393,6 +400,9 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
         throw new Error('No available groups to send messages');
       }
 
+      // Save all groups for loop mode
+      this.broadcastAllGroups = availableGroups;
+
       // Initialize progress
       this.broadcastProgress = {
         total: availableGroups.length,
@@ -400,7 +410,8 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
         failed: 0,
         restricted: 0,
         currentMessage: message,
-        startedAt: new Date().toISOString()
+        startedAt: new Date().toISOString(),
+        loopCount: 0
       };
 
       // Add to broadcast queue
@@ -437,8 +448,48 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
    */
   async processBroadcastQueue() {
     if (!this.isConnected || !this.broadcastInProgress || this.broadcastQueue.length === 0) {
-      // If queue is empty but broadcast was in progress, mark as complete
+      // If queue is empty but broadcast was in progress
       if (this.broadcastInProgress && this.broadcastQueue.length === 0) {
+
+        // Check if loop mode is enabled
+        if (this.broadcastLoopEnabled && this.broadcastAllGroups.length > 0) {
+          // LOOP MODE: Restart broadcast with same groups
+          this.broadcastProgress.loopCount++;
+
+          console.log('\n🔁 ========================================');
+          console.log('   LOOP MODE: RESTARTING BROADCAST');
+          console.log(`   Loop Count: ${this.broadcastProgress.loopCount}`);
+          console.log('========================================\n');
+
+          // Filter out restricted groups
+          const availableGroups = this.broadcastAllGroups.filter(g => {
+            const restriction = this.restrictedGroups.get(g.chatId);
+            const isRestricted = restriction && restriction.until > Date.now();
+            if (isRestricted) {
+              console.log(`⏭️  Skipping restricted group: ${g.name}`);
+            }
+            return !isRestricted;
+          });
+
+          console.log(`✅ Available: ${availableGroups.length}/${this.broadcastAllGroups.length} groups`);
+
+          // Refill queue
+          this.broadcastQueue = availableGroups.map(g => ({
+            chatId: g.chatId,
+            groupName: g.name,
+            message: this.broadcastMessage,
+            retries: 0
+          }));
+
+          // Reset sent counter (keep loopCount)
+          this.broadcastProgress.sent = 0;
+          this.broadcastProgress.failed = 0;
+          this.broadcastProgress.total = availableGroups.length;
+
+          return; // Continue processing
+        }
+
+        // NO LOOP: Mark as complete
         this.broadcastInProgress = false;
         console.log('\n✅ ========================================');
         console.log('   BROADCAST COMPLETED');
@@ -447,6 +498,7 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
         console.log(`   Sent: ${this.broadcastProgress.sent}`);
         console.log(`   Failed: ${this.broadcastProgress.failed}`);
         console.log(`   Restricted: ${this.broadcastProgress.restricted}`);
+        console.log(`   Loop Count: ${this.broadcastProgress.loopCount}`);
         console.log('========================================\n');
       }
       return;
@@ -472,9 +524,9 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
           }
 
           // Delay based on speed setting (from startBroadcast options)
-          const delayMs = this.broadcastSpeed === 'safe' ? 3000 :    // 20/min
-                         this.broadcastSpeed === 'fast' ? 2000 :     // 30/min
-                         this.broadcastSpeed === 'turbo' ? 1500 :    // 40/min
+          const delayMs = this.broadcastSpeed === 'safe' ? 3000 :    // 20/min = 10 daqiqa
+                         this.broadcastSpeed === 'fast' ? 2000 :     // 30/min = 7 daqiqa
+                         this.broadcastSpeed === 'turbo' ? 1250 :    // 48/min = 5 daqiqa
                          3000; // default to safe
 
           await this.sleep(delayMs);
@@ -568,10 +620,21 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
     }
 
     const remaining = this.broadcastQueue.length;
+    const wasLoopMode = this.broadcastLoopEnabled;
+
+    // Clear queue and stop broadcast
     this.broadcastQueue = [];
     this.broadcastInProgress = false;
 
+    // Disable loop mode
+    this.broadcastLoopEnabled = false;
+    this.broadcastMessage = null;
+    this.broadcastAllGroups = [];
+
     console.log(`🛑 Broadcast stopped. ${remaining} messages cancelled.`);
+    if (wasLoopMode) {
+      console.log('🔁 Loop mode disabled');
+    }
 
     return {
       success: true,

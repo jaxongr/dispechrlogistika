@@ -276,6 +276,18 @@
                     </div>
                 </div>
 
+                <div class="mt-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="loopMode">
+                        <label class="form-check-label" for="loopMode">
+                            <strong>🔁 Tsiklik rejim</strong> - Tugagach, qaytadan boshlash (to'xtatmaguncha davom etadi)
+                        </label>
+                    </div>
+                    <div class="alert alert-warning mt-2" style="font-size: 0.85rem;">
+                        <i class="bi bi-exclamation-triangle"></i> <strong>Diqqat:</strong> Tsiklik rejimda xabar doimiy ravishda yuboriladi. Cheklangan guruhlar skip qilinadi.
+                    </div>
+                </div>
+
                 <div class="mt-4 d-flex gap-2">
                     <button class="btn btn-broadcast btn-primary flex-grow-1" onclick="startBroadcast()">
                         <i class="bi bi-send"></i> Yuborishni Boshlash
@@ -327,6 +339,7 @@
                 <div class="mt-3">
                     <p><strong>Xabar:</strong> <span id="currentMessage">-</span></p>
                     <p><strong>Qolgan:</strong> <span id="remainingCount">-</span></p>
+                    <p id="loopCountDisplay" style="display: none;"><strong>🔁 Tsikl soni:</strong> <span id="loopCount">0</span></p>
                 </div>
 
                 <div class="mt-3">
@@ -660,13 +673,19 @@
         async function startBroadcast() {
             const message = document.getElementById('messageText').value.trim();
             const speed = document.querySelector('input[name="speed"]:checked').value;
+            const loop = document.getElementById('loopMode').checked;
 
             if (!message) {
                 alert('Xabar matnini kiriting!');
                 return;
             }
 
-            if (!confirm(`Haqiqatan ham ${message.length} belgili xabarni barcha guruhlarga yubormoqchimisiz?`)) {
+            let confirmMsg = `Haqiqatan ham ${message.length} belgili xabarni barcha guruhlarga yubormoqchimisiz?`;
+            if (loop) {
+                confirmMsg += '\n\n🔁 TSIKLIK REJIM YOQILGAN - Xabar to\'xtatmaguncha davom etadi!';
+            }
+
+            if (!confirm(confirmMsg)) {
                 return;
             }
 
@@ -678,7 +697,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ message, speed })
+                    body: JSON.stringify({ message, speed, loop })
                 });
 
                 const data = await response.json();
@@ -687,7 +706,11 @@
                     throw new Error(data.error);
                 }
 
-                alert(`✅ Broadcast boshlandi!\nJami: ${data.total} guruh\nCheklangan: ${data.restricted} guruh`);
+                let alertMsg = `✅ Broadcast boshlandi!\nJami: ${data.total} guruh\nCheklangan: ${data.restricted} guruh`;
+                if (loop) {
+                    alertMsg += '\n\n🔁 Tsiklik rejim aktiv - guruhlar tugagach qayta boshlaydi';
+                }
+                alert(alertMsg);
 
                 showProgress();
                 startProgressPolling();
@@ -767,6 +790,14 @@
                 document.getElementById('restrictedCount').textContent = data.restricted || 0;
                 document.getElementById('remainingCount').textContent = data.remaining || 0;
                 document.getElementById('currentMessage').textContent = data.currentMessage || '-';
+
+                // Update loop count if > 0
+                if (data.loopCount > 0) {
+                    document.getElementById('loopCountDisplay').style.display = 'block';
+                    document.getElementById('loopCount').textContent = data.loopCount;
+                } else {
+                    document.getElementById('loopCountDisplay').style.display = 'none';
+                }
 
                 // Update progress bar
                 const percentage = data.total > 0 ? Math.round((data.sent / data.total) * 100) : 0;
