@@ -41,13 +41,20 @@ pm2 save
 
 ## 📱 Bot Buyruqlari
 
-### Userlar uchun:
-- `/start` - Botni boshlash
-- `/connect` - Telegram accountni ulash
-- `/groups` - Guruhlarni ko'rish
-- `/broadcast` - Xabar yuborish
+### Userlar uchun (Juda oson!):
+1. `/start` - Botni boshlash
+2. `/connect` → `/create_session` - Account ulash
+3. Telefon raqamni yuboring: `+998901234567`
+4. SMS kodni yuboring: `12345`
+5. `/groups` - Guruhlaringizni ko'ring
+6. `/broadcast` - Xabar yuboring!
+
+### Boshqa buyruqlar:
 - `/mystats` - Statistika
 - `/help` - Yordam
+- `/cancel` - Bekor qilish
+
+⚠️ **API ID/Hash kerak emas!** Faqat telefon raqam va SMS kod!
 
 ## 🔒 Xavfsizlik
 

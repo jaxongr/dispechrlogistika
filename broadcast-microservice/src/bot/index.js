@@ -64,9 +64,9 @@ class BroadcastBot {
 
       await ctx.reply(
         `📱 <b>Telegram accountingizni ulash</b>\n\n` +
-        `Ushbu linkka o'ting va ko'rsatmalarga amal qiling:\n` +
-        `👉 /create_session\n\n` +
-        `⚠️ Bu xavfsiz - biz sizning parolingizni saqlamaymiz!`,
+        `/create_session - Ulashni boshlash\n\n` +
+        `⚠️ <b>Xavfsiz:</b> Sizning parolingiz saqlanmaydi!\n` +
+        `✅ Faqat telefon raqam va SMS kod kerak`,
         { parse_mode: 'HTML' }
       );
     });
@@ -77,13 +77,11 @@ class BroadcastBot {
 
       await ctx.reply(
         `🔐 <b>Session yaratish</b>\n\n` +
-        `1. Telegram'dan API ID va API Hash oling:\n` +
-        `   👉 https://my.telegram.org/apps\n\n` +
-        `2. Telefon raqamingizni yuboring:\n` +
-        `   Format: +998901234567\n\n` +
-        `3. SMS kod keladi - uni yuboring\n` +
-        `4. Agar 2FA bo'lsa - parolni yuboring\n\n` +
-        `⚠️ Botga FAQAT telefon raqamingizni yuboring!`,
+        `📱 <b>Telefon raqamingizni yuboring:</b>\n` +
+        `   Masalan: <code>+998901234567</code>\n\n` +
+        `✅ Keyin SMS kod keladi - uni yuboring\n` +
+        `✅ Agar 2FA parol bo'lsa - uni yuboring\n\n` +
+        `⚠️ <b>Muhim:</b> Faqat telefon raqamingizni yuboring!`,
         { parse_mode: 'HTML' }
       );
 
