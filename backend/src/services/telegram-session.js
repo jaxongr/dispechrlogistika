@@ -216,6 +216,7 @@ class TelegramSessionService {
     this.processingQueue = true;
 
     try {
+      const startTime = Date.now();
       const batch = this.messageQueue.splice(0, 30); // Process max 30 at a time - MAKSIMAL TEZLIK
       console.log(`📦 Processing ${batch.length} messages from queue...`);
 
@@ -500,6 +501,10 @@ class TelegramSessionService {
     } catch (error) {
       console.error('❌ Queue processing error:', error.message);
     } finally {
+      const duration = Date.now() - startTime;
+      if (batch.length > 0) {
+        console.log(`⏱️  Batch processed in ${duration}ms (${batch.length} messages = ${(duration / batch.length).toFixed(0)}ms/msg)`);
+      }
       this.processingQueue = false;
     }
   }
