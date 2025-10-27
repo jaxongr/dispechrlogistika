@@ -450,14 +450,15 @@ http://5.189.141.151:3001/reporter-stats.html`;
       // Add hashtag for user ID tracking
       const userIdHashtag = `#ID${message.sender_user_id}`;
 
-      // Count messages from this group to generate announcement number
-      const groupMessageCount = db.get('messages')
-        .filter({ group_id: message.group_id })
+      // Count how many messages THIS USER has sent to OUR bot group
+      // This counts announcements from this specific user only
+      const userAnnouncementCount = db.get('messages')
+        .filter({ sender_user_id: message.sender_user_id })
         .size()
         .value();
 
-      // Format: /001, /002, etc.
-      const announcementNumber = `/${String(groupMessageCount).padStart(3, '0')}`;
+      // Format: /001, /002, etc. - shows how many announcements from this user
+      const announcementNumber = `/${String(userAnnouncementCount).padStart(3, '0')}`;
 
       messageText += `\n👤 Yuboruvchi: ${senderInfo} ${userIdHashtag} ${announcementNumber}`;
 
