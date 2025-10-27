@@ -77,8 +77,8 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
       repliedUsers: new Set() // Track who we replied to (session only)
     };
 
-    // Process reply queue every 2 seconds (tezroq)
-    setInterval(() => this.processQueue(), 2000);
+    // Process reply queue every 1 second (juda tez!)
+    setInterval(() => this.processQueue(), 1000);
 
     // Process broadcast queue every 1 second (faster for mass sending)
     setInterval(() => this.processBroadcastQueue(), 1000);
@@ -186,7 +186,7 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
     this.processing = true;
 
     try {
-      const batch = this.replyQueue.splice(0, 5); // Process 5 at a time (75/min - tezroq)
+      const batch = this.replyQueue.splice(0, 10); // Process 10 at a time (600/min - maksimal tez!)
 
       for (const reply of batch) {
         try {
