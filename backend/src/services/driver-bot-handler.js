@@ -149,8 +149,12 @@ class DriverBotHandler {
   async checkDriver(ctx, phone) {
     const history = driverManager.getDriverHistory(phone);
 
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🏠 Bosh menyu', 'drivers_menu')]
+    ]);
+
     if (!history) {
-      await ctx.reply(`❌ Haydovchi topilmadi: ${phone}\n\nBu haydovchi ro'yxatda yo'q.`);
+      await ctx.reply(`❌ Haydovchi topilmadi: ${phone}\n\nBu haydovchi ro'yxatda yo'q.`, keyboard);
       return;
     }
 
@@ -182,7 +186,7 @@ class DriverBotHandler {
       message += `\n... va yana ${history.total_records - 5} ta qayd`;
     }
 
-    await ctx.reply(message);
+    await ctx.reply(message, keyboard);
   }
 
   /**
@@ -267,7 +271,11 @@ class DriverBotHandler {
       });
     }
 
-    await ctx.editMessageText(message);
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🏠 Bosh menyu', 'drivers_menu')]
+    ]);
+
+    await ctx.editMessageText(message, keyboard);
   }
 
   /**
@@ -293,7 +301,11 @@ class DriverBotHandler {
 
     message += `\n💡 Haydovchini tekshirish uchun: /haydovchilar`;
 
-    await ctx.editMessageText(message);
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🏠 Bosh menyu', 'drivers_menu')]
+    ]);
+
+    await ctx.editMessageText(message, keyboard);
   }
 }
 
