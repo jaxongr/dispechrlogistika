@@ -167,6 +167,10 @@ async function searchDriver(phone) {
         const data = await response.json();
         const driver = data.data;
 
+        // Necha marta qo'shilganini hisoblash
+        const blackCount = driver.history.filter(h => h.list_type === 'black').length;
+        const whiteCount = driver.history.filter(h => h.list_type === 'white').length;
+
         let html = `<div class="card">`;
 
         // Agar ikkalasida ham bo'lsa
@@ -184,7 +188,7 @@ async function searchDriver(phone) {
             if (driver.black_list_info) {
                 html += `
                     <div class="alert alert-dark">
-                        <h6>⚫ QORA RO'YXAT</h6>
+                        <h6>⚫ QORA RO'YXAT: ${blackCount} marta qo'shilgan</h6>
                         <p><strong>🚗 Mashina:</strong> ${driver.black_list_info.truck.type || '?'}</p>
                         <p><strong>💰 Qarz:</strong> ${driver.black_list_info.total_debt.toLocaleString()} so'm</p>
                         <p><strong>👤 Qo'shgan:</strong> ${driver.black_list_info.added_by}</p>
@@ -196,7 +200,7 @@ async function searchDriver(phone) {
             if (driver.white_list_info) {
                 html += `
                     <div class="alert alert-info">
-                        <h6>⚪ OQ RO'YXAT</h6>
+                        <h6>⚪ OQ RO'YXAT: ${whiteCount} marta qo'shilgan</h6>
                         <p><strong>🚗 Mashina:</strong> ${driver.white_list_info.truck.type || '?'}</p>
                         <p><strong>⭐ Reyting:</strong> ${driver.white_list_info.rating}/5</p>
                         <p><strong>👤 Qo'shgan:</strong> ${driver.white_list_info.added_by}</p>
@@ -208,10 +212,11 @@ async function searchDriver(phone) {
             const listIcon = driver.list_type === 'black' ? '⚫' : '⚪';
             const listName = driver.list_type === 'black' ? 'QORA RO\'YXAT' : 'OQ RO\'YXAT';
             const info = driver.list_type === 'black' ? driver.black_list_info : driver.white_list_info;
+            const count = driver.list_type === 'black' ? blackCount : whiteCount;
 
             html += `
                 <div class="card-header ${driver.list_type === 'black' ? 'bg-dark text-white' : 'bg-info text-white'}">
-                    <h5>${listIcon} ${listName}</h5>
+                    <h5>${listIcon} ${listName}: ${count} marta qo'shilgan</h5>
                 </div>
                 <div class="card-body">
                     <p><strong>📱 Telefon:</strong> ${driver.phone}</p>

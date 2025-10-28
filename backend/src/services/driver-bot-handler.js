@@ -157,6 +157,10 @@ class DriverBotHandler {
       return;
     }
 
+    // Qora va oq ro'yxat necha marta qo'shilganini hisoblash
+    const blackCount = history.history.filter(h => h.list_type === 'black').length;
+    const whiteCount = history.history.filter(h => h.list_type === 'white').length;
+
     let message = `📱 HAYDOVCHI: ${history.phone}\n\n`;
 
     // Agar ikkalasida ham bo'lsa
@@ -165,7 +169,7 @@ class DriverBotHandler {
 
       // Qora ro'yxat ma'lumoti
       if (history.black_list_info) {
-        message += `⚫ QORA RO'YXAT:\n`;
+        message += `⚫ QORA RO'YXAT: ${blackCount} marta qo'shilgan\n`;
         message += `🚗 ${history.black_list_info.truck.type || '?'}\n`;
         message += `💰 Qarz: ${history.black_list_info.total_debt.toLocaleString()} so'm\n`;
         message += `👤 Qo'shgan: ${history.black_list_info.added_by}\n\n`;
@@ -173,7 +177,7 @@ class DriverBotHandler {
 
       // Oq ro'yxat ma'lumoti
       if (history.white_list_info) {
-        message += `⚪ OQ RO'YXAT:\n`;
+        message += `⚪ OQ RO'YXAT: ${whiteCount} marta qo'shilgan\n`;
         message += `🚗 ${history.white_list_info.truck.type || '?'}\n`;
         message += `⭐ Reyting: ${history.white_list_info.rating}/5\n`;
         message += `👤 Qo'shgan: ${history.white_list_info.added_by}\n\n`;
@@ -182,8 +186,9 @@ class DriverBotHandler {
       // Faqat bitta ro'yxatda
       const icon = history.list_type === 'black' ? '⚫' : '⚪';
       const listName = history.list_type === 'black' ? 'QORA RO\'YXAT' : 'OQ RO\'YXAT';
+      const count = history.list_type === 'black' ? blackCount : whiteCount;
 
-      message += `${icon} ${listName}\n\n`;
+      message += `${icon} ${listName}: ${count} marta qo'shilgan\n\n`;
 
       const info = history.list_type === 'black' ? history.black_list_info : history.white_list_info;
       if (info) {
