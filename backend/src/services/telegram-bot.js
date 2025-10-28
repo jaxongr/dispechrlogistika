@@ -70,13 +70,6 @@ class TelegramBotService {
 
 Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi.
 
-<b>🔧 Komandalar:</b>
-/start - Bot haqida ma'lumot
-/help - Yordam
-/stats - Mening statistikam
-/autoreplies - Auto-reply tarixi
-/haydovchilar - Yuk haydovchilarini boshqarish
-
 <b>ℹ️ Qanday ishlaydi:</b>
 1. E'lonlar avtomatik filter qilinadi
 2. To'g'ri e'lonlar guruhga yuboriladi
@@ -84,7 +77,7 @@ Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi
 4. Telefon raqam botda yuboriladi
 
 <b>🚛 Haydovchilar tizimi:</b>
-Pul bermaydigan va yaxshi haydovchilarni qora/oq ro'yxatga olish
+Pul bermaydigan va yaxshi haydovchilarni qora/oq ro'yxatga olish uchun /haydovchilar buyrug'ini yuboring
 
 <b>📞 Raqamni qayta olish:</b>
 Agar raqamni unutsangiz, "📞 Raqamni olish" tugmasini bosing
@@ -92,7 +85,20 @@ Agar raqamni unutsangiz, "📞 Raqamni olish" tugmasini bosing
 <b>⚠️ Eslatma:</b>
 Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini kutib turing.`;
 
-        await ctx.reply(welcomeMessage, { parse_mode: 'HTML' });
+        // Reply keyboard qo'shish
+        const keyboard = {
+          keyboard: [
+            [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+            [{ text: '🚛 Haydovchilar' }],
+            [{ text: 'ℹ️ Yordam' }]
+          ],
+          resize_keyboard: true
+        };
+
+        await ctx.reply(welcomeMessage, {
+          parse_mode: 'HTML',
+          reply_markup: keyboard
+        });
       });
 
       // Setup /help command
@@ -204,6 +210,23 @@ Savol bo'lsa, admin bilan bog'laning.`;
           console.error('Auto-reply history error:', error);
           await ctx.reply('❌ Auto-reply tarixini yuklashda xatolik yuz berdi.');
         }
+      });
+
+      // Klavyatura tugmalarini qabul qilish
+      this.bot.hears('📊 Mening statistikam', async (ctx) => {
+        await ctx.reply('Statistikani ko\'rish uchun /stats buyrug\'ini yuboring');
+      });
+
+      this.bot.hears('📝 Auto-reply tarixi', async (ctx) => {
+        await ctx.reply('Auto-reply tarixini ko\'rish uchun /autoreplies buyrug\'ini yuboring');
+      });
+
+      this.bot.hears('🚛 Haydovchilar', async (ctx) => {
+        await ctx.reply('Haydovchilar tizimiga kirish uchun /haydovchilar buyrug\'ini yuboring');
+      });
+
+      this.bot.hears('ℹ️ Yordam', async (ctx) => {
+        await ctx.reply('Yordam uchun /help buyrug\'ini yuboring');
       });
 
       // Verify token first
