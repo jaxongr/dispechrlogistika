@@ -29,8 +29,15 @@ class DriverBotHandler {
     bot.action('add_blacklist', (ctx) => this.startAddBlacklist(ctx));
     bot.action('add_whitelist', (ctx) => this.startAddWhitelist(ctx));
 
-    // Text message handler
-    bot.on('text', (ctx) => this.handleTextMessage(ctx));
+    // Text message handler - faqat driver state bor bo'lsa
+    bot.on('text', (ctx, next) => {
+      const userId = ctx.from.id;
+      if (this.userStates.has(userId)) {
+        return this.handleTextMessage(ctx);
+      }
+      // Aks holda keyingi handlerga o'tkazish
+      return next();
+    });
 
     console.log('✅ Haydovchi bot handlerlari ulandi');
   }
@@ -39,6 +46,10 @@ class DriverBotHandler {
    * Asosiy menyu
    */
   async showMainMenu(ctx) {
+    if (ctx.callbackQuery) {
+      await ctx.answerCbQuery();
+    }
+
     const keyboard = Markup.inlineKeyboard([
       [Markup.button.callback('👤 Haydovchi tekshirish', 'driver_check')],
       [Markup.button.callback('➕ Haydovchi qo\'shish', 'driver_add')],
