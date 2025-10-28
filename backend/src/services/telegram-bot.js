@@ -206,19 +206,20 @@ Savol bo'lsa, admin bilan bog'laning.`;
         }
       });
 
-      // Setup callback query handler for "Bu dispetcher ekan" button
-      this.bot.on('callback_query', async (ctx) => {
-        await this.handleDispatcherReport(ctx);
-      });
-
       // Verify token first
       const me = await this.bot.telegram.getMe();
       console.log('✅ TELEGRAM BOT ULANDI!');
       console.log('🤖 Bot username: @' + me.username);
 
-      // Setup driver management handlers
+      // Setup driver management handlers FIRST (before other callback handlers)
       driverBotHandler.setupHandlers(this.bot);
       console.log('✅ Driver bot handlers yuklandi');
+
+      // Setup callback query handler for "Bu dispetcher ekan" button
+      // This runs AFTER driver handlers
+      this.bot.on('callback_query', async (ctx) => {
+        await this.handleDispatcherReport(ctx);
+      });
 
       // Launch bot in background (non-blocking)
       this.bot.launch().catch(err => {
