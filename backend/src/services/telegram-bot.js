@@ -311,6 +311,39 @@ Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
         await ctx.reply(helpMessage, { parse_mode: 'HTML' });
       });
 
+      // Bosh menyu tugmasi - /start ni ko'rsatish
+      this.bot.hears('🔙 Bosh menyu', async (ctx) => {
+        // Reply keyboard qo'shish
+        const keyboard = {
+          keyboard: [
+            [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+            [{ text: '🚛 Haydovchilar' }],
+            [{ text: 'ℹ️ Yordam' }]
+          ],
+          resize_keyboard: true
+        };
+
+        const welcomeMessage = `🤖 <b>YO'LDA | Yuk Markazi Bot</b>
+
+Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi.
+
+<b>ℹ️ Qanday ishlaydi:</b>
+1. E'lonlar avtomatik filter qilinadi
+2. To'g'ri e'lonlar guruhga yuboriladi
+3. E'lonni olish uchun "✅ Olindi" tugmasini bosing
+4. Telefon raqam botda yuboriladi
+
+<b>🚛 Haydovchilar tizimi:</b>
+Pul bermaydigan va yaxshi haydovchilarni qora/oq ro'yxatga olish uchun "🚛 Haydovchilar" tugmasini bosing
+
+Tanlang:`;
+
+        await ctx.reply(welcomeMessage, {
+          parse_mode: 'HTML',
+          reply_markup: keyboard
+        });
+      });
+
       // Verify token first
       const me = await this.bot.telegram.getMe();
       console.log('✅ TELEGRAM BOT ULANDI!');

@@ -58,6 +58,14 @@ class DriverBotHandler {
         return this.showMainMenu(ctx);
       }
 
+      // Bosh menyu tugmasi - asosiy botga qaytish
+      if (text === '🔙 Bosh menyu') {
+        // State ni tozalash
+        this.userStates.delete(userId);
+        // Asosiy bot menyusiga qaytish
+        return next();
+      }
+
       // Driver state bor bo'lsa
       if (this.userStates.has(userId)) {
         return this.handleTextMessage(ctx);
@@ -83,7 +91,8 @@ class DriverBotHandler {
     // Reply keyboard (klavyatura tugmalari)
     const replyKeyboard = Markup.keyboard([
       ['👤 Haydovchi tekshirish'],
-      ['➕ Haydovchi qo\'shish']
+      ['➕ Haydovchi qo\'shish'],
+      ['🔙 Bosh menyu']
     ]).resize();
 
     const text = `🚛 HAYDOVCHILAR BOSHQARUV TIZIMI
