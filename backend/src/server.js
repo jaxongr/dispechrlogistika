@@ -28,6 +28,8 @@ const autoReplyRoutes = require('./routes/autoReply');
 const broadcastRoutes = require('./routes/broadcast');
 const groupStatisticsRoutes = require('./routes/group-statistics');
 const driversRoutes = require('./routes/drivers');
+const statisticsRoutes = require('./routes/statistics');
+const usersRoutes = require('./routes/users');
 // const dailyStatisticsRoutes = require('./routes/daily-statistics'); // Vaqtincha o'chirildi - middleware muammosi
 
 // Initialize Express
@@ -76,6 +78,8 @@ app.use('/api/auto-reply', autoReplyRoutes);
 app.use('/api/broadcast', broadcastRoutes);
 app.use('/api/group-stats', groupStatisticsRoutes);
 app.use('/api/drivers', driversRoutes);
+app.use('/api/statistics', statisticsRoutes);
+app.use('/api/users', usersRoutes);
 // app.use('/api/daily-statistics', dailyStatisticsRoutes); // Vaqtincha o'chirildi
 
 // Health check
