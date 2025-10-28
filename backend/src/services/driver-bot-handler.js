@@ -53,8 +53,7 @@ class DriverBotHandler {
     const keyboard = Markup.inlineKeyboard([
       [Markup.button.callback('👤 Haydovchi tekshirish', 'driver_check')],
       [Markup.button.callback('➕ Haydovchi qo\'shish', 'driver_add')],
-      [Markup.button.callback('📋 Barcha haydovchilar', 'driver_list')],
-      [Markup.button.callback('📊 Statistika', 'driver_stats')]
+      [Markup.button.callback('📋 Barcha haydovchilar', 'driver_list')]
     ]);
 
     const text = `🚛 HAYDOVCHILAR BOSHQARUV TIZIMI\n\nTanlang:`;
