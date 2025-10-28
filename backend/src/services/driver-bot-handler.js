@@ -32,6 +32,33 @@ class DriverBotHandler {
     // Text message handler - faqat driver state bor bo'lsa
     bot.on('text', (ctx, next) => {
       const userId = ctx.from.id;
+      const text = ctx.message.text;
+
+      // Klavyatura tugmalari - asosiy menyu
+      if (text === '👤 Haydovchi tekshirish') {
+        return this.startDriverCheck(ctx);
+      }
+      if (text === '➕ Haydovchi qo\'shish') {
+        return this.startDriverAdd(ctx);
+      }
+      if (text === '📋 Barcha haydovchilar') {
+        return this.showDriverList(ctx);
+      }
+
+      // Qora/Oq ro'yxat tanlash
+      if (text === '⚫ Qora ro\'yxat (pul bermaydi)') {
+        return this.startAddBlacklist(ctx);
+      }
+      if (text === '⚪ Oq ro\'yxat (yaxshi haydovchi)') {
+        return this.startAddWhitelist(ctx);
+      }
+
+      // Orqaga tugmasi
+      if (text === '🔙 Orqaga') {
+        return this.showMainMenu(ctx);
+      }
+
+      // Driver state bor bo'lsa
       if (this.userStates.has(userId)) {
         return this.handleTextMessage(ctx);
       }
@@ -50,27 +77,32 @@ class DriverBotHandler {
       await ctx.answerCbQuery();
     }
 
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('👤 Haydovchi tekshirish', 'driver_check')],
-      [Markup.button.callback('➕ Haydovchi qo\'shish', 'driver_add')],
-      [Markup.button.callback('📋 Barcha haydovchilar', 'driver_list')]
-    ]);
+    // Reply keyboard (klavyatura tugmalari)
+    const replyKeyboard = Markup.keyboard([
+      ['👤 Haydovchi tekshirish'],
+      ['➕ Haydovchi qo\'shish', '📋 Barcha haydovchilar']
+    ]).resize();
 
     const text = `🚛 HAYDOVCHILAR BOSHQARUV TIZIMI\n\nTanlang:`;
 
     if (ctx.callbackQuery) {
-      await ctx.editMessageText(text, keyboard);
-    } else {
-      await ctx.reply(text, keyboard);
+      await ctx.editMessageText(text);
     }
+
+    await ctx.reply('Klavyaturadan tanlang:', replyKeyboard);
   }
 
   /**
    * Haydovchi tekshirishni boshlash
    */
   async startDriverCheck(ctx) {
-    await ctx.answerCbQuery();
-    await ctx.editMessageText('📱 Haydovchining telefon raqamini kiriting:\n(Masalan: +998901234567)');
+    if (ctx.callbackQuery) {
+      await ctx.answerCbQuery();
+    }
+
+    // Klavyaturani olib tashlash
+    const keyboard = Markup.removeKeyboard();
+    await ctx.reply('📱 Haydovchining telefon raqamini kiriting:\n(Masalan: +998901234567)', keyboard);
 
     this.userStates.set(ctx.from.id, { action: 'check_driver' });
   }
@@ -79,23 +111,30 @@ class DriverBotHandler {
    * Haydovchi qo'shishni boshlash
    */
   async startDriverAdd(ctx) {
-    await ctx.answerCbQuery();
+    if (ctx.callbackQuery) {
+      await ctx.answerCbQuery();
+    }
 
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('⚫ Qora ro\'yxat (pul bermaydi)', 'add_blacklist')],
-      [Markup.button.callback('⚪ Oq ro\'yxat (yaxshi haydovchi)', 'add_whitelist')],
-      [Markup.button.callback('🔙 Orqaga', 'drivers_menu')]
-    ]);
+    const keyboard = Markup.keyboard([
+      ['⚫ Qora ro\'yxat (pul bermaydi)'],
+      ['⚪ Oq ro\'yxat (yaxshi haydovchi)'],
+      ['🔙 Orqaga']
+    ]).resize();
 
-    await ctx.editMessageText('Qaysi ro\'yxatga qo\'shasiz?', keyboard);
+    await ctx.reply('Qaysi ro\'yxatga qo\'shasiz?', keyboard);
   }
 
   /**
    * Qora ro'yxatga qo'shish
    */
   async startAddBlacklist(ctx) {
-    await ctx.answerCbQuery();
-    await ctx.editMessageText('⚫ QORA RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:');
+    if (ctx.callbackQuery) {
+      await ctx.answerCbQuery();
+    }
+
+    // Klavyaturani olib tashlash
+    const keyboard = Markup.removeKeyboard();
+    await ctx.reply('⚫ QORA RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:', keyboard);
 
     this.userStates.set(ctx.from.id, {
       action: 'add_driver',
@@ -108,8 +147,13 @@ class DriverBotHandler {
    * Oq ro'yxatga qo'shish
    */
   async startAddWhitelist(ctx) {
-    await ctx.answerCbQuery();
-    await ctx.editMessageText('⚪ OQ RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:');
+    if (ctx.callbackQuery) {
+      await ctx.answerCbQuery();
+    }
+
+    // Klavyaturani olib tashlash
+    const keyboard = Markup.removeKeyboard();
+    await ctx.reply('⚪ OQ RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:', keyboard);
 
     this.userStates.set(ctx.from.id, {
       action: 'add_driver',
@@ -148,9 +192,9 @@ class DriverBotHandler {
   async checkDriver(ctx, phone) {
     const history = driverManager.getDriverHistory(phone);
 
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🏠 Bosh menyu', 'drivers_menu')]
-    ]);
+    const keyboard = Markup.keyboard([
+      ['🔙 Orqaga']
+    ]).resize();
 
     if (!history) {
       await ctx.reply(`❌ Haydovchi topilmadi: ${phone}\n\nBu haydovchi ro'yxatda yo'q.`, keyboard);
@@ -264,9 +308,9 @@ class DriverBotHandler {
       const listName = state.list_type === 'black' ? 'QORA RO\'YXATGA' : 'OQ RO\'YXATGA';
 
       // Raxmat va bosh menyuga qaytish
-      const keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('🏠 Bosh menyu', 'drivers_menu')]
-      ]);
+      const keyboard = Markup.keyboard([
+        ['🔙 Orqaga']
+      ]).resize();
 
       await ctx.reply(
         `✅ ${icon} ${listName} QO\'SHILDI!\n\n📱 ${driver.phone}\n🚗 ${driver.truck.type}\n\n🙏 Raxmat!`,
@@ -315,7 +359,9 @@ class DriverBotHandler {
    * Barcha haydovchilar ro'yxati
    */
   async showDriverList(ctx) {
-    await ctx.answerCbQuery();
+    if (ctx.callbackQuery) {
+      await ctx.answerCbQuery();
+    }
 
     const allBlackList = driverManager.getAllDrivers('black');
     const allWhiteList = driverManager.getAllDrivers('white');
@@ -348,13 +394,14 @@ class DriverBotHandler {
       });
     }
 
-    message += `\n💡 Haydovchini tekshirish uchun: /haydovchilar`;
+    message += `\n💡 Klavyaturadan "🔙 Orqaga" bosing`;
 
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🏠 Bosh menyu', 'drivers_menu')]
-    ]);
+    // Orqaga tugmasi
+    const keyboard = Markup.keyboard([
+      ['🔙 Orqaga']
+    ]).resize();
 
-    await ctx.editMessageText(message, keyboard);
+    await ctx.reply(message, keyboard);
   }
 }
 
