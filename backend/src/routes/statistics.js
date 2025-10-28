@@ -214,6 +214,10 @@ router.get('/bot-stats', async (req, res) => {
     // Count total bot users (who started the bot)
     const totalBotUsers = botUsers.length;
 
+    // Count REGISTERED users (who shared phone number)
+    const registeredUsers = botUsers.filter(u => u.is_registered === true);
+    const totalRegisteredUsers = registeredUsers.length;
+
     // Count users who clicked "Olindi" today
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
@@ -228,6 +232,13 @@ router.get('/bot-stats', async (req, res) => {
     const todayBotUsers = botUsers.filter(u => {
       const startedDate = new Date(u.started_at);
       return startedDate >= startOfDay;
+    });
+
+    // Count users who REGISTERED today (shared phone)
+    const todayRegisteredUsers = registeredUsers.filter(u => {
+      if (!u.registered_at) return false;
+      const registeredDate = new Date(u.registered_at);
+      return registeredDate >= startOfDay;
     });
 
     // Top 10 most active "Olindi" users
@@ -253,7 +264,9 @@ router.get('/bot-stats', async (req, res) => {
     res.json({
       bot_users: {
         total: totalBotUsers,
-        today: todayBotUsers.length
+        today: todayBotUsers.length,
+        registered: totalRegisteredUsers,
+        registered_today: todayRegisteredUsers.length
       },
       olindi_users: {
         total: uniqueTakers.size,

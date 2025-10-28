@@ -81,9 +81,9 @@ async function loadBotStatistics() {
 
         const data = await response.json();
 
-        // Bot users
-        document.getElementById('botUsers').textContent = data.bot_users.total || 0;
-        document.getElementById('botUsersToday').textContent = data.bot_users.today || 0;
+        // Bot users (REGISTERED users - who shared phone)
+        document.getElementById('botUsers').textContent = data.bot_users.registered || 0;
+        document.getElementById('botUsersToday').textContent = data.bot_users.registered_today || 0;
 
         // Olindi users
         document.getElementById('olindiUsers').textContent = data.olindi_users.total || 0;
