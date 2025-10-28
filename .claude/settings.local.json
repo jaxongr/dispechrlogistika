@@ -18,7 +18,10 @@
       "Bash(git tag:*)",
       "Bash(git ls-tree:*)",
       "Bash(curl:*)",
-      "Read(//c/Users/Pro/Downloads/**)"
+      "Read(//c/Users/Pro/Downloads/**)",
+      "Bash(python:*)",
+      "Bash(bash:*)",
+      "Bash(scp:*)"
     ],
     "deny": [],
     "ask": []
