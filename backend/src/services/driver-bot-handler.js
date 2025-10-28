@@ -77,19 +77,28 @@ class DriverBotHandler {
       await ctx.answerCbQuery();
     }
 
+    // Statistika olish
+    const stats = driverManager.getStatistics();
+
     // Reply keyboard (klavyatura tugmalari)
     const replyKeyboard = Markup.keyboard([
       ['👤 Haydovchi tekshirish'],
-      ['➕ Haydovchi qo\'shish', '📋 Barcha haydovchilar']
+      ['➕ Haydovchi qo\'shish']
     ]).resize();
 
-    const text = `🚛 HAYDOVCHILAR BOSHQARUV TIZIMI\n\nTanlang:`;
+    const text = `🚛 HAYDOVCHILAR BOSHQARUV TIZIMI
+
+📊 STATISTIKA:
+⚫ Qora ro'yxat: ${stats.black_list.total} ta
+⚪ Oq ro'yxat: ${stats.white_list.total} ta
+
+Tanlang:`;
 
     if (ctx.callbackQuery) {
       await ctx.editMessageText(text);
     }
 
-    await ctx.reply('Klavyaturadan tanlang:', replyKeyboard);
+    await ctx.reply(text, replyKeyboard);
   }
 
   /**
