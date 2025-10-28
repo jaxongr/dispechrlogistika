@@ -96,7 +96,7 @@ class DriverBotHandler {
    */
   async startAddBlacklist(ctx) {
     await ctx.answerCbQuery();
-    await ctx.reply('⚫ QORA RO\'YXATGA QO\'SHISH\n\n1️⃣ Haydovchining telefon raqamini kiriting:');
+    await ctx.reply('⚫ QORA RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:');
 
     this.userStates.set(ctx.from.id, {
       action: 'add_driver',
@@ -110,7 +110,7 @@ class DriverBotHandler {
    */
   async startAddWhitelist(ctx) {
     await ctx.answerCbQuery();
-    await ctx.reply('⚪ OQ RO\'YXATGA QO\'SHISH\n\n1️⃣ Haydovchining telefon raqamini kiriting:');
+    await ctx.reply('⚪ OQ RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:');
 
     this.userStates.set(ctx.from.id, {
       action: 'add_driver',
@@ -186,7 +186,7 @@ class DriverBotHandler {
   }
 
   /**
-   * Haydovchi qo'shish jarayoni
+   * Haydovchi qo'shish jarayoni - SODDA VERSIYA
    */
   async processAddDriver(ctx, text, state) {
     const userId = ctx.from.id;
@@ -195,52 +195,13 @@ class DriverBotHandler {
       state.phone = text;
       state.step = 'truck_type';
       this.userStates.set(userId, state);
-      await ctx.reply('2️⃣ Mashina turi:\n(Masalan: Isuzu, Kamaz, Labo)');
+      await ctx.reply('Mashina turi:\n(Masalan: Isuzu, Kamaz, Labo)');
       return;
     }
 
     if (state.step === 'truck_type') {
       state.truck_type = text;
-      state.step = 'truck_color';
-      this.userStates.set(userId, state);
-      await ctx.reply('3️⃣ Mashina rangi:\n(Masalan: oq, qora, ko\'k)');
-      return;
-    }
-
-    if (state.step === 'truck_color') {
-      state.truck_color = text;
-      state.step = 'truck_plate';
-      this.userStates.set(userId, state);
-      await ctx.reply('4️⃣ Davlat raqam:\n(Masalan: 01A123BC)');
-      return;
-    }
-
-    if (state.step === 'truck_plate') {
-      state.truck_plate = text;
-
-      if (state.list_type === 'black') {
-        state.step = 'reason';
-        this.userStates.set(userId, state);
-        await ctx.reply('5️⃣ Nima uchun qora ro\'yxatda?\n(Masalan: Pul bermadi, telefon o\'chiradi)');
-        return;
-      } else {
-        // Oq ro'yxat uchun tavsif ixtiyoriy
-        await this.saveDriver(ctx, state);
-      }
-    }
-
-    if (state.step === 'reason') {
-      state.reason = text;
-      state.step = 'note';
-      this.userStates.set(userId, state);
-      await ctx.reply('6️⃣ Qo\'shimcha ma\'lumot (ixtiyoriy):\n(Yoki /skip yozing)');
-      return;
-    }
-
-    if (state.step === 'note') {
-      if (text !== '/skip') {
-        state.note = text;
-      }
+      // To'g'ridan to'g'ri saqlash
       await this.saveDriver(ctx, state);
     }
   }
@@ -254,10 +215,10 @@ class DriverBotHandler {
         phone: state.phone,
         list_type: state.list_type,
         truck_type: state.truck_type,
-        truck_color: state.truck_color,
-        truck_plate: state.truck_plate,
-        reason: state.reason || '',
-        note: state.note || '',
+        truck_color: '',
+        truck_plate: '',
+        reason: '',
+        note: '',
         dispatcher_id: ctx.from.id.toString(),
         dispatcher_name: ctx.from.first_name + (ctx.from.last_name ? ' ' + ctx.from.last_name : '')
       });
@@ -265,7 +226,15 @@ class DriverBotHandler {
       const icon = state.list_type === 'black' ? '⚫' : '⚪';
       const listName = state.list_type === 'black' ? 'QORA RO\'YXATGA' : 'OQ RO\'YXATGA';
 
-      await ctx.reply(`✅ ${icon} ${listName} QO\'SHILDI!\n\n📱 ${driver.phone}\n🚗 ${driver.truck.type}, ${driver.truck.color}, ${driver.truck.plate}`);
+      // Raxmat va bosh menyuga qaytish
+      const keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('🏠 Bosh menyu', 'drivers_menu')]
+      ]);
+
+      await ctx.reply(
+        `✅ ${icon} ${listName} QO\'SHILDI!\n\n📱 ${driver.phone}\n🚗 ${driver.truck.type}\n\n🙏 Raxmat!`,
+        keyboard
+      );
 
       this.userStates.delete(ctx.from.id);
     } catch (error) {
