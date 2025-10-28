@@ -1,4 +1,5 @@
 const { Telegraf } = require("telegraf");
+const driverBotHandler = require("./driver-bot-handler");
 
 class TelegramBotService {
   constructor() {
@@ -17,6 +18,10 @@ class TelegramBotService {
       }
 
       this.bot = new Telegraf(botToken);
+
+      // Haydovchi bot handlerlarini ulash
+      driverBotHandler.setupHandlers(this.bot);
+
       await this.bot.launch();
       this.isRunning = true;
       console.log("✅ Telegram bot ishga tushdi!");
