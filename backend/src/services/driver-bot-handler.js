@@ -118,8 +118,10 @@ Tanlang:`;
       await ctx.answerCbQuery();
     }
 
-    // Klavyaturani olib tashlash
-    const keyboard = Markup.removeKeyboard();
+    // Orqaga tugmasi bilan klavyatura
+    const keyboard = Markup.keyboard([
+      ['🔙 Orqaga']
+    ]).resize();
     await ctx.reply('📱 Haydovchining telefon raqamini kiriting:\n(Masalan: +998901234567)', keyboard);
 
     this.userStates.set(ctx.from.id, { action: 'check_driver' });
@@ -150,8 +152,10 @@ Tanlang:`;
       await ctx.answerCbQuery();
     }
 
-    // Klavyaturani olib tashlash
-    const keyboard = Markup.removeKeyboard();
+    // Orqaga tugmasi bilan klavyatura
+    const keyboard = Markup.keyboard([
+      ['🔙 Orqaga']
+    ]).resize();
     await ctx.reply('⚫ QORA RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:', keyboard);
 
     this.userStates.set(ctx.from.id, {
@@ -169,8 +173,10 @@ Tanlang:`;
       await ctx.answerCbQuery();
     }
 
-    // Klavyaturani olib tashlash
-    const keyboard = Markup.removeKeyboard();
+    // Orqaga tugmasi bilan klavyatura
+    const keyboard = Markup.keyboard([
+      ['🔙 Orqaga']
+    ]).resize();
     await ctx.reply('⚪ OQ RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:', keyboard);
 
     this.userStates.set(ctx.from.id, {
@@ -294,7 +300,12 @@ Tanlang:`;
       state.phone = text;
       state.step = 'truck_type';
       this.userStates.set(userId, state);
-      await ctx.reply('Mashina turi:\n(Masalan: Isuzu, Kamaz, Labo)');
+
+      // Orqaga tugmasi bilan klavyatura
+      const keyboard = Markup.keyboard([
+        ['🔙 Orqaga']
+      ]).resize();
+      await ctx.reply('Mashina turi:\n(Masalan: Isuzu, Kamaz, Labo)', keyboard);
       return;
     }
 
