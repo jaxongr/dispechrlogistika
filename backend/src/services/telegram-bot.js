@@ -212,21 +212,103 @@ Savol bo'lsa, admin bilan bog'laning.`;
         }
       });
 
-      // Klavyatura tugmalarini qabul qilish
+      // Klavyatura tugmalarini qabul qilish - to'g'ridan-to'g'ri funksiya chaqirish
       this.bot.hears('📊 Mening statistikam', async (ctx) => {
-        await ctx.reply('Statistikani ko\'rish uchun /stats buyrug\'ini yuboring');
+        // /stats komandasi bilan bir xil
+        try {
+          const userId = ctx.from.id;
+          const userMessages = db.get('messages')
+            .filter({ sender_user_id: userId.toString() })
+            .value();
+
+          const approvedCount = userMessages.filter(m => m.is_approved).length;
+          const dispatcherCount = userMessages.filter(m => m.is_dispatcher).length;
+
+          let message = `📊 <b>Sizning statistikangiz:</b>\n\n`;
+          message += `📨 Jami xabarlar: ${userMessages.length}\n`;
+          message += `✅ Tasdiqlangan: ${approvedCount}\n`;
+          message += `🚫 Dispetcher: ${dispatcherCount}\n`;
+
+          await ctx.reply(message, { parse_mode: 'HTML' });
+        } catch (error) {
+          console.error('Statistika xatosi:', error);
+          await ctx.reply('❌ Statistikani yuklashda xatolik yuz berdi.');
+        }
       });
 
       this.bot.hears('📝 Auto-reply tarixi', async (ctx) => {
-        await ctx.reply('Auto-reply tarixini ko\'rish uchun /autoreplies buyrug\'ini yuboring');
+        // /autoreplies komandasi bilan bir xil
+        try {
+          const history = autoReply.getReplyHistory(20);
+          const stats = autoReply.getStatistics();
+
+          if (history.length === 0) {
+            await ctx.reply('📝 Auto-reply tarixi bo\'sh');
+            return;
+          }
+
+          let message = `📝 <b>Auto-reply tarixi (oxirgi 20 ta):</b>\n\n`;
+          message += `📊 Jami yuborilgan: ${stats.total_sent} ta\n`;
+          message += `⏱ Oxirgi 24 soat: ${stats.last_24h} ta\n\n`;
+
+          for (const reply of history) {
+            const date = new Date(reply.timestamp);
+            const dateStr = date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
+            const timeStr = date.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+
+            let messageLink = '#';
+            if (reply.group_id && reply.message_id) {
+              const groupIdStr = reply.group_id.toString().replace('-100', '');
+              messageLink = `https://t.me/c/${groupIdStr}/${reply.message_id}`;
+            }
+
+            message += `📍 <a href="${messageLink}">${dateStr} ${timeStr}</a> - ${reply.username || 'User'} (${reply.group_name || 'Group'})\n`;
+          }
+
+          await ctx.reply(message, {
+            parse_mode: 'HTML',
+            disable_web_page_preview: true
+          });
+        } catch (error) {
+          console.error('Auto-reply history error:', error);
+          await ctx.reply('❌ Auto-reply tarixini yuklashda xatolik yuz berdi.');
+        }
       });
 
       this.bot.hears('🚛 Haydovchilar', async (ctx) => {
-        await ctx.reply('Haydovchilar tizimiga kirish uchun /haydovchilar buyrug\'ini yuboring');
+        // /haydovchilar komandasi bilan bir xil - driver handler qo'ng'iroq qilish
+        const driverBotHandler = require('./driver-bot-handler');
+        await driverBotHandler.showMainMenu(ctx);
       });
 
       this.bot.hears('ℹ️ Yordam', async (ctx) => {
-        await ctx.reply('Yordam uchun /help buyrug\'ini yuboring');
+        // /help komandasi bilan bir xil
+        const helpMessage = `ℹ️ <b>YORDAM</b>
+
+<b>📨 E'lon yuborish:</b>
+• Guruhda e'lon yozing
+• Bot avtomatik tekshiradi
+• To'g'ri bo'lsa guruhga yuboriladi
+
+<b>✅ E'lonni olish:</b>
+• "✅ Olindi" tugmasini bosing
+• Telefon raqam botda yuboriladi
+
+<b>🚫 Noto'g'ri e'lon:</b>
+• "Bu dispetcher ekan" tugmasini bosing
+• Admin tasdiqlashini kutib turing
+
+<b>📞 Raqamni qayta olish:</b>
+• Agar raqamni unutsangiz
+• "📞 Raqamni olish" tugmasini bosing
+
+<b>🚛 Haydovchilar:</b>
+• Pul bermaydigan haydovchilarni qora ro'yxatga olish
+• Yaxshi haydovchilarni oq ro'yxatga olish
+
+Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
+
+        await ctx.reply(helpMessage, { parse_mode: 'HTML' });
       });
 
       // Verify token first
