@@ -56,6 +56,9 @@ async function loadStatistics() {
         // Load bot statistics
         await loadBotStatistics();
 
+        // Load driver statistics
+        await loadDriverStatistics();
+
     } catch (error) {
         console.error('Statistika yuklashda xatolik:', error);
     }
@@ -216,6 +219,42 @@ function startAutoRefresh() {
     setInterval(() => {
         loadRecentMessages();
     }, 60000);
+}
+
+// Load driver statistics
+async function loadDriverStatistics() {
+    try {
+        const response = await fetch('/api/drivers/statistics', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Haydovchi statistika yuklashda xatolik');
+        }
+
+        const data = await response.json();
+        const stats = data.data;
+
+        // Update driver statistics
+        document.getElementById('blacklistCount').textContent = stats.black_list.total || 0;
+        document.getElementById('totalDebt').textContent = (stats.black_list.total_debt || 0).toLocaleString();
+        document.getElementById('whitelistCount').textContent = stats.white_list.total || 0;
+
+        const recentTotal = (stats.black_list.recent_30days || 0) + (stats.white_list.recent_30days || 0);
+        document.getElementById('recentDrivers').textContent = recentTotal;
+
+    } catch (error) {
+        console.error('Haydovchi statistika yuklashda xatolik:', error);
+        // Set defaults on error
+        document.getElementById('blacklistCount').textContent = '0';
+        document.getElementById('totalDebt').textContent = '0';
+        document.getElementById('whitelistCount').textContent = '0';
+        document.getElementById('recentDrivers').textContent = '0';
+    }
 }
 
 // Load daily archive

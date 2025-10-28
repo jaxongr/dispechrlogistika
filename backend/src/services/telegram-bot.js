@@ -69,9 +69,6 @@ class TelegramBotService {
 
 Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi.
 
-<b>📊 Statistika:</b>
-Dashboard: http://5.189.141.151:3001
-
 <b>🔧 Komandalar:</b>
 /start - Bot haqida ma'lumot
 /help - Yordam
@@ -117,9 +114,6 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 • Bloklangan dispatcher'larga avtomatik javob yuboriladi
 • /autoreplies - So'nggi 20 ta javobni ko'rish
 
-<b>Dashboard:</b>
-http://5.189.141.151:3001
-
 Savol bo'lsa, admin bilan bog'laning.`;
 
         await ctx.reply(helpMessage, { parse_mode: 'HTML' });
@@ -137,10 +131,7 @@ Savol bo'lsa, admin bilan bog'laning.`;
 👤 User: ${ctx.from.first_name || 'Noma\'lum'}
 🆔 ID: <code>${userId}</code>
 
-📝 <b>Jami bloklagan:</b> ${reports.length} ta e'lon
-
-🔗 <b>To'liq statistika:</b>
-http://5.189.141.151:3001/reporter-stats.html`;
+📝 <b>Jami bloklagan:</b> ${reports.length} ta e'lon`;
 
           await ctx.reply(statsMessage, { parse_mode: 'HTML' });
         } catch (error) {
@@ -192,8 +183,6 @@ http://5.189.141.151:3001/reporter-stats.html`;
 
             message += `📍 <a href="${messageLink}">${dateStr} ${timeStr}</a> - ${reply.username || 'User'} (${reply.group_name || 'Group'})\n`;
           }
-
-          message += `\n🌐 <b>Dashboard:</b>\nhttp://5.189.141.151:3001/auto-reply.html`;
 
           await ctx.reply(message, {
             parse_mode: 'HTML',
