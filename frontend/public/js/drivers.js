@@ -167,30 +167,77 @@ async function searchDriver(phone) {
         const data = await response.json();
         const driver = data.data;
 
-        const listIcon = driver.list_type === 'black' ? '⚫' : '⚪';
-        const listName = driver.list_type === 'black' ? 'QORA RO\'YXAT' : 'OQ RO\'YXAT';
+        let html = `<div class="card">`;
 
-        let html = `
-            <div class="card">
+        // Agar ikkalasida ham bo'lsa
+        if (driver.list_type === 'both') {
+            html += `
+                <div class="card-header bg-secondary text-white">
+                    <h5>⚫⚪ IKKI RO'YXATDA HAM BOR</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>📱 Telefon:</strong> ${driver.phone}</p>
+                    <hr>
+            `;
+
+            // Qora ro'yxat
+            if (driver.black_list_info) {
+                html += `
+                    <div class="alert alert-dark">
+                        <h6>⚫ QORA RO'YXAT</h6>
+                        <p><strong>🚗 Mashina:</strong> ${driver.black_list_info.truck.type || '?'}</p>
+                        <p><strong>💰 Qarz:</strong> ${driver.black_list_info.total_debt.toLocaleString()} so'm</p>
+                        <p><strong>👤 Qo'shgan:</strong> ${driver.black_list_info.added_by}</p>
+                    </div>
+                `;
+            }
+
+            // Oq ro'yxat
+            if (driver.white_list_info) {
+                html += `
+                    <div class="alert alert-info">
+                        <h6>⚪ OQ RO'YXAT</h6>
+                        <p><strong>🚗 Mashina:</strong> ${driver.white_list_info.truck.type || '?'}</p>
+                        <p><strong>⭐ Reyting:</strong> ${driver.white_list_info.rating}/5</p>
+                        <p><strong>👤 Qo'shgan:</strong> ${driver.white_list_info.added_by}</p>
+                    </div>
+                `;
+            }
+        } else {
+            // Faqat bitta ro'yxatda
+            const listIcon = driver.list_type === 'black' ? '⚫' : '⚪';
+            const listName = driver.list_type === 'black' ? 'QORA RO\'YXAT' : 'OQ RO\'YXAT';
+            const info = driver.list_type === 'black' ? driver.black_list_info : driver.white_list_info;
+
+            html += `
                 <div class="card-header ${driver.list_type === 'black' ? 'bg-dark text-white' : 'bg-info text-white'}">
                     <h5>${listIcon} ${listName}</h5>
                 </div>
                 <div class="card-body">
                     <p><strong>📱 Telefon:</strong> ${driver.phone}</p>
-                    <p><strong>🚗 Mashina:</strong> ${driver.truck.type || '?'}, ${driver.truck.color || '?'}, ${driver.truck.plate || '?'}</p>
-        `;
+            `;
 
-        if (driver.list_type === 'black' && driver.total_debt > 0) {
-            html += `<p><strong>💰 Jami qarz:</strong> ${driver.total_debt.toLocaleString()} so'm</p>`;
+            if (info) {
+                html += `<p><strong>🚗 Mashina:</strong> ${info.truck.type || '?'}</p>`;
+                if (driver.list_type === 'black' && info.total_debt > 0) {
+                    html += `<p><strong>💰 Qarz:</strong> ${info.total_debt.toLocaleString()} so'm</p>`;
+                }
+                html += `<p><strong>👤 Qo'shgan:</strong> ${info.added_by}</p>`;
+            }
         }
 
         html += `<hr><h6>📝 TARIXLAR (${driver.total_records} ta):</h6>`;
 
         driver.history.slice(0, 5).forEach(h => {
             const date = new Date(h.date).toLocaleString('uz-UZ');
+            const typeIcon = h.list_type === 'black' ? '⚫' : '⚪';
+            const typeBadge = h.list_type === 'black'
+                ? '<span class="badge bg-dark">Qora ro\'yxat</span>'
+                : '<span class="badge bg-info">Oq ro\'yxat</span>';
+
             html += `
                 <div class="border-bottom pb-2 mb-2">
-                    <small class="text-muted">📅 ${date}</small><br>
+                    <small class="text-muted">${typeIcon} 📅 ${date}</small> ${typeBadge}<br>
                     <strong>👤 ${h.dispatcher_name}</strong><br>
             `;
             if (h.route) html += `📍 ${h.route}<br>`;

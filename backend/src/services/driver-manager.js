@@ -78,20 +78,44 @@ class DriverManager {
     // Barcha tarixlarni birlashtirish
     let allHistory = [];
     drivers.forEach(driver => {
-      allHistory = allHistory.concat(driver.history || []);
+      // Har bir history elementiga list_type va truck ma'lumotini qo'shish
+      const historyWithType = (driver.history || []).map(h => ({
+        ...h,
+        list_type: driver.list_type, // qora yoki oq ro'yxat
+        truck_info: driver.truck // mashina ma'lumotlari
+      }));
+      allHistory = allHistory.concat(historyWithType);
     });
 
     // Sanaga qarab tartibla (eng yangi birinchi)
     allHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const latestDriver = drivers[drivers.length - 1];
+    // Qora va oq ro'yxat ma'lumotlarini alohida ajratish
+    const blackListDriver = drivers.find(d => d.list_type === 'black');
+    const whiteListDriver = drivers.find(d => d.list_type === 'white');
 
     return {
-      phone: latestDriver.phone,
-      list_type: latestDriver.list_type,
-      truck: latestDriver.truck,
-      total_debt: drivers.reduce((sum, d) => sum + (d.total_debt || 0), 0),
-      rating: latestDriver.rating,
+      phone: drivers[0].phone,
+      // Agar ikkalasi ham bo'lsa - 'both', aks holda birinchisi
+      list_type: blackListDriver && whiteListDriver ? 'both' : drivers[0].list_type,
+
+      black_list_info: blackListDriver ? {
+        truck: blackListDriver.truck,
+        total_debt: blackListDriver.total_debt || 0,
+        added_at: blackListDriver.created_at,
+        added_by: blackListDriver.added_by.name
+      } : null,
+
+      white_list_info: whiteListDriver ? {
+        truck: whiteListDriver.truck,
+        rating: whiteListDriver.rating || 5,
+        added_at: whiteListDriver.created_at,
+        added_by: whiteListDriver.added_by.name
+      } : null,
+
+      // Jami qarz faqat qora ro'yxatdan
+      total_debt: blackListDriver ? (blackListDriver.total_debt || 0) : 0,
+
       history: allHistory,
       total_records: allHistory.length
     };

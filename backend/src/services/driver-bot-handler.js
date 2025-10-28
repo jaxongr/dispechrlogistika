@@ -157,23 +157,52 @@ class DriverBotHandler {
       return;
     }
 
-    const icon = history.list_type === 'black' ? '⚫' : '⚪';
-    const listName = history.list_type === 'black' ? 'QORA RO\'YXAT' : 'OQ RO\'YXAT';
+    let message = `📱 HAYDOVCHI: ${history.phone}\n\n`;
 
-    let message = `${icon} ${listName}\n\n`;
-    message += `📱 Telefon: ${history.phone}\n`;
-    message += `🚗 Mashina: ${history.truck.type || '?'}, ${history.truck.color || '?'}, ${history.truck.plate || '?'}\n`;
+    // Agar ikkalasida ham bo'lsa
+    if (history.list_type === 'both') {
+      message += `⚫⚪ IKKI RO'YXATDA HAM BOR\n\n`;
 
-    if (history.list_type === 'black' && history.total_debt > 0) {
-      message += `💰 Jami qarz: ${history.total_debt.toLocaleString()} so'm\n`;
+      // Qora ro'yxat ma'lumoti
+      if (history.black_list_info) {
+        message += `⚫ QORA RO'YXAT:\n`;
+        message += `🚗 ${history.black_list_info.truck.type || '?'}\n`;
+        message += `💰 Qarz: ${history.black_list_info.total_debt.toLocaleString()} so'm\n`;
+        message += `👤 Qo'shgan: ${history.black_list_info.added_by}\n\n`;
+      }
+
+      // Oq ro'yxat ma'lumoti
+      if (history.white_list_info) {
+        message += `⚪ OQ RO'YXAT:\n`;
+        message += `🚗 ${history.white_list_info.truck.type || '?'}\n`;
+        message += `⭐ Reyting: ${history.white_list_info.rating}/5\n`;
+        message += `👤 Qo'shgan: ${history.white_list_info.added_by}\n\n`;
+      }
+    } else {
+      // Faqat bitta ro'yxatda
+      const icon = history.list_type === 'black' ? '⚫' : '⚪';
+      const listName = history.list_type === 'black' ? 'QORA RO\'YXAT' : 'OQ RO\'YXAT';
+
+      message += `${icon} ${listName}\n\n`;
+
+      const info = history.list_type === 'black' ? history.black_list_info : history.white_list_info;
+      if (info) {
+        message += `🚗 Mashina: ${info.truck.type || '?'}\n`;
+        if (history.list_type === 'black' && info.total_debt > 0) {
+          message += `💰 Qarz: ${info.total_debt.toLocaleString()} so'm\n`;
+        }
+        message += `👤 Qo'shgan: ${info.added_by}\n\n`;
+      }
     }
 
-    message += `\n📝 TARIXLAR (${history.total_records} ta):\n`;
+    message += `📝 TARIXLAR (${history.total_records} ta):\n`;
     message += `━━━━━━━━━━━━━━━━━━━━\n`;
 
     history.history.slice(0, 5).forEach((h, i) => {
       const date = new Date(h.date).toLocaleString('uz-UZ');
-      message += `\n📅 ${date}\n`;
+      const typeIcon = h.list_type === 'black' ? '⚫' : '⚪';
+
+      message += `\n${typeIcon} 📅 ${date}\n`;
       message += `👤 ${h.dispatcher_name}\n`;
       if (h.route) message += `📍 ${h.route}\n`;
       if (h.debt) message += `💰 ${h.debt.toLocaleString()} so'm\n`;
