@@ -75,12 +75,16 @@ Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi
 /help - Yordam
 /stats - Mening statistikam
 /autoreplies - Auto-reply tarixi
+/haydovchilar - Yuk haydovchilarini boshqarish
 
 <b>ℹ️ Qanday ishlaydi:</b>
 1. E'lonlar avtomatik filter qilinadi
 2. To'g'ri e'lonlar guruhga yuboriladi
 3. E'lonni olish uchun "✅ Olindi" tugmasini bosing
 4. Telefon raqam botda yuboriladi
+
+<b>🚛 Haydovchilar tizimi:</b>
+Pul bermaydigan va yaxshi haydovchilarni qora/oq ro'yxatga olish
 
 <b>📞 Raqamni qayta olish:</b>
 Agar raqamni unutsangiz, "📞 Raqamni olish" tugmasini bosing
@@ -100,6 +104,7 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 /help - Bu yordam
 /stats - Mening statistikam
 /autoreplies - Auto-reply tarixi (havolalar bilan)
+/haydovchilar - Haydovchilarni boshqarish
 
 <b>Qanday ishlaydi:</b>
 • Bot guruhlardan e'lonlarni o'qiydi
@@ -110,6 +115,12 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 • "🚫 Bu dispetcher ekan" tugmasini bosing
 • User avtomatik bloklanadi
 • E'lon o'chiriladi
+
+<b>🚛 Haydovchilar tizimi:</b>
+• /haydovchilar - Qora/oq ro'yxat boshqaruvi
+• Pul bermaydigan haydovchilarni qora ro'yxatga qo'shing
+• Yaxshi haydovchilarni oq ro'yxatga qo'shing
+• Telefon raqam orqali qidiring
 
 <b>Auto-Reply:</b>
 • Bloklangan dispatcher'larga avtomatik javob yuboriladi
