@@ -312,20 +312,36 @@ class DriverBotHandler {
   async showDriverList(ctx) {
     await ctx.answerCbQuery();
 
-    const blackList = driverManager.getAllDrivers('black').slice(0, 10);
-    const whiteList = driverManager.getAllDrivers('white').slice(0, 10);
+    const allBlackList = driverManager.getAllDrivers('black');
+    const allWhiteList = driverManager.getAllDrivers('white');
+    const blackList = allBlackList.slice(0, 10);
+    const whiteList = allWhiteList.slice(0, 10);
 
     let message = '📋 HAYDOVCHILAR RO\'YXATI\n\n';
 
+    // Jami sonlar
+    message += `📊 STATISTIKA:\n`;
+    message += `⚫ Qora ro'yxat: ${allBlackList.length} ta\n`;
+    message += `⚪ Oq ro'yxat: ${allWhiteList.length} ta\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+
     message += `⚫ QORA RO'YXAT (oxirgi 10 ta):\n`;
-    blackList.forEach((d, i) => {
-      message += `${i + 1}. ${d.phone} | ${d.truck.type || '?'}\n`;
-    });
+    if (blackList.length === 0) {
+      message += `   (Bo'sh)\n`;
+    } else {
+      blackList.forEach((d, i) => {
+        message += `${i + 1}. ${d.phone} | ${d.truck.type || '?'}\n`;
+      });
+    }
 
     message += `\n⚪ OQ RO'YXAT (oxirgi 10 ta):\n`;
-    whiteList.forEach((d, i) => {
-      message += `${i + 1}. ${d.phone} | ${d.truck.type || '?'}\n`;
-    });
+    if (whiteList.length === 0) {
+      message += `   (Bo'sh)\n`;
+    } else {
+      whiteList.forEach((d, i) => {
+        message += `${i + 1}. ${d.phone} | ${d.truck.type || '?'}\n`;
+      });
+    }
 
     message += `\n💡 Haydovchini tekshirish uchun: /haydovchilar`;
 
