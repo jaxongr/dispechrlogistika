@@ -50,12 +50,47 @@ class TelegramBotService {
                 username: ctx.from.username || '',
                 first_name: ctx.from.first_name || '',
                 last_name: ctx.from.last_name || '',
+                phone: '', // Telefon raqam keyinchalik qo'shiladi
+                is_registered: false, // Ro'yxatdan o'tmaganmi
                 started_at: new Date().toISOString()
               })
               .write();
 
             console.log(`✅ New bot user registered: ${ctx.from.username || ctx.from.id}`);
+
+            // Telefon raqam so'rash
+            const phoneKeyboard = {
+              keyboard: [
+                [{ text: '📱 Telefon raqamni yuborish', request_contact: true }]
+              ],
+              resize_keyboard: true,
+              one_time_keyboard: true
+            };
+
+            await ctx.reply(
+              '👋 Assalomu alaykum!\n\n' +
+              '📱 Botdan foydalanish uchun telefon raqamingizni yuboring:',
+              { reply_markup: phoneKeyboard }
+            );
+            return; // /start xabarini ko'rsatmaslik
           } else {
+            // Agar telefon raqam yo'q bo'lsa - qaytadan so'rash
+            if (!existingUser.phone || !existingUser.is_registered) {
+              const phoneKeyboard = {
+                keyboard: [
+                  [{ text: '📱 Telefon raqamni yuborish', request_contact: true }]
+                ],
+                resize_keyboard: true,
+                one_time_keyboard: true
+              };
+
+              await ctx.reply(
+                '📱 Botdan foydalanish uchun telefon raqamingizni yuboring:',
+                { reply_markup: phoneKeyboard }
+              );
+              return;
+            }
+
             // Update last interaction
             db.get('bot_users')
               .find({ telegram_user_id: ctx.from.id.toString() })
@@ -153,6 +188,57 @@ Savol bo'lsa, admin bilan bog'laning.`;
 
           await ctx.reply(statsMessage, { parse_mode: 'HTML' });
         } catch (error) {
+          await ctx.reply('❌ Statistikani yuklashda xatolik yuz berdi.');
+        }
+      });
+
+      // Setup /users command - Foydalanuvchilar statistikasi (Admin uchun)
+      this.bot.command('users', async (ctx) => {
+        try {
+          // Admin ID larini tekshirish (o'zingizning admin ID ni qo'shing)
+          const adminIds = process.env.ADMIN_IDS ? process.env.ADMIN_IDS.split(',') : [];
+          if (!adminIds.includes(ctx.from.id.toString())) {
+            await ctx.reply('❌ Bu komanda faqat admin uchun!');
+            return;
+          }
+
+          // Barcha foydalanuvchilarni olish
+          const allUsers = db.get('bot_users').value();
+          const registeredUsers = allUsers.filter(u => u.is_registered);
+          const unregisteredUsers = allUsers.filter(u => !u.is_registered);
+
+          // Oxirgi 24 soatda ro'yxatdan o'tganlar
+          const last24h = new Date();
+          last24h.setHours(last24h.getHours() - 24);
+          const recentUsers = registeredUsers.filter(u =>
+            u.registered_at && new Date(u.registered_at) > last24h
+          );
+
+          // Oxirgi 10 ta ro'yxatdan o'tgan
+          const latestUsers = [...registeredUsers]
+            .sort((a, b) => new Date(b.registered_at) - new Date(a.registered_at))
+            .slice(0, 10);
+
+          let message = `👥 <b>FOYDALANUVCHILAR STATISTIKASI</b>\n\n`;
+          message += `📊 <b>Umumiy:</b>\n`;
+          message += `• Jami: ${allUsers.length} ta\n`;
+          message += `• ✅ Ro'yxatdan o'tgan: ${registeredUsers.length} ta\n`;
+          message += `• ⏳ Ro'yxatdan o'tmagan: ${unregisteredUsers.length} ta\n\n`;
+          message += `📅 <b>Oxirgi 24 soat:</b> ${recentUsers.length} ta\n\n`;
+
+          if (latestUsers.length > 0) {
+            message += `🆕 <b>Oxirgi 10 ta ro'yxatdan o'tgan:</b>\n`;
+            latestUsers.forEach((u, i) => {
+              const name = u.first_name || u.username || 'Noma\'lum';
+              const phone = u.phone || '?';
+              const date = u.registered_at ? new Date(u.registered_at).toLocaleDateString('uz-UZ') : '?';
+              message += `${i + 1}. ${name} | ${phone} | ${date}\n`;
+            });
+          }
+
+          await ctx.reply(message, { parse_mode: 'HTML' });
+        } catch (error) {
+          console.error('Users command error:', error);
           await ctx.reply('❌ Statistikani yuklashda xatolik yuz berdi.');
         }
       });
@@ -352,6 +438,65 @@ Tanlang:`;
       // Setup driver management handlers FIRST (before other callback handlers)
       driverBotHandler.setupHandlers(this.bot);
       console.log('✅ Driver bot handlers yuklandi');
+
+      // Contact (telefon raqam) yuborilganda
+      this.bot.on('contact', async (ctx) => {
+        try {
+          const phone = ctx.message.contact.phone_number;
+          const userId = ctx.from.id.toString();
+
+          // Telefon raqamni saqlash
+          db.get('bot_users')
+            .find({ telegram_user_id: userId })
+            .assign({
+              phone: phone,
+              is_registered: true,
+              registered_at: new Date().toISOString()
+            })
+            .write();
+
+          console.log(`✅ User registered with phone: ${phone}`);
+
+          // Asosiy menyu klavyaturasi
+          const keyboard = {
+            keyboard: [
+              [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+              [{ text: '🚛 Haydovchilar' }],
+              [{ text: 'ℹ️ Yordam' }]
+            ],
+            resize_keyboard: true
+          };
+
+          await ctx.reply(
+            `✅ Tabriklaymiz! Ro'yxatdan o'tdingiz!\n\n` +
+            `📱 Telefon: ${phone}\n\n` +
+            `Endi botning barcha imkoniyatlaridan foydalanishingiz mumkin!`,
+            { reply_markup: keyboard }
+          );
+
+          // Welcome xabarini ko'rsatish
+          const welcomeMessage = `🤖 <b>YO'LDA | Yuk Markazi Bot</b>
+
+Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi.
+
+<b>ℹ️ Qanday ishlaydi:</b>
+1. E'lonlar avtomatik filter qilinadi
+2. To'g'ri e'lonlar guruhga yuboriladi
+3. E'lonni olish uchun "✅ Olindi" tugmasini bosing
+4. Telefon raqam botda yuboriladi
+
+<b>🚛 Haydovchilar tizimi:</b>
+Pul bermaydigan va yaxshi haydovchilarni qora/oq ro'yxatga olish uchun "🚛 Haydovchilar" tugmasini bosing
+
+Tanlang:`;
+
+          await ctx.reply(welcomeMessage, { parse_mode: 'HTML' });
+
+        } catch (error) {
+          console.error('Contact handler error:', error);
+          await ctx.reply('❌ Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+        }
+      });
 
       // Setup callback query handler for "Bu dispetcher ekan" button
       // This runs AFTER driver handlers
