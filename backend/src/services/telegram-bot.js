@@ -7,6 +7,7 @@ const Whitelist = require('../models/Whitelist');
 const Message = require('../models/Message');
 const semySMS = require('./semysms');
 const autoReply = require('./autoReply');
+const driverBotHandler = require('./driver-bot-handler');
 
 class TelegramBotService {
   constructor() {
@@ -203,6 +204,10 @@ Savol bo'lsa, admin bilan bog'laning.`;
       const me = await this.bot.telegram.getMe();
       console.log('✅ TELEGRAM BOT ULANDI!');
       console.log('🤖 Bot username: @' + me.username);
+
+      // Setup driver management handlers
+      driverBotHandler.setupHandlers(this.bot);
+      console.log('✅ Driver bot handlers yuklandi');
 
       // Launch bot in background (non-blocking)
       this.bot.launch().catch(err => {
