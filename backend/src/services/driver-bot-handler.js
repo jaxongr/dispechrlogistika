@@ -70,7 +70,7 @@ class DriverBotHandler {
    */
   async startDriverCheck(ctx) {
     await ctx.answerCbQuery();
-    await ctx.reply('📱 Haydovchining telefon raqamini kiriting:\n(Masalan: +998901234567)');
+    await ctx.editMessageText('📱 Haydovchining telefon raqamini kiriting:\n(Masalan: +998901234567)');
 
     this.userStates.set(ctx.from.id, { action: 'check_driver' });
   }
@@ -95,7 +95,7 @@ class DriverBotHandler {
    */
   async startAddBlacklist(ctx) {
     await ctx.answerCbQuery();
-    await ctx.reply('⚫ QORA RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:');
+    await ctx.editMessageText('⚫ QORA RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:');
 
     this.userStates.set(ctx.from.id, {
       action: 'add_driver',
@@ -109,7 +109,7 @@ class DriverBotHandler {
    */
   async startAddWhitelist(ctx) {
     await ctx.answerCbQuery();
-    await ctx.reply('⚪ OQ RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:');
+    await ctx.editMessageText('⚪ OQ RO\'YXATGA QO\'SHISH\n\nTelefon raqam kiriting:');
 
     this.userStates.set(ctx.from.id, {
       action: 'add_driver',
