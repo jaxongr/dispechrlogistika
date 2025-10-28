@@ -49,7 +49,8 @@ db.defaults({
   },
   dispatcher_auto_replies: [],  // Auto-reply tarixi
   broadcasts: [],               // Ommaviy xabar yuborish
-  broadcast_announcements: []   // Broadcast uchun alohida e'lonlar
+  broadcast_announcements: [],   // Broadcast uchun alohida e'lonlar
+  drivers: []                   // Yuk mashinasi haydovchilari (qora/oq ro'yxat)
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);
