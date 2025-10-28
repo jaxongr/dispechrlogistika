@@ -311,7 +311,28 @@ Tanlang:`;
 
     if (state.step === 'truck_type') {
       state.truck_type = text;
-      // To'g'ridan to'g'ri saqlash
+
+      // Agar QORA RO'YXAT bo'lsa - qarz miqdorini so'rash
+      if (state.list_type === 'black') {
+        state.step = 'debt';
+        this.userStates.set(userId, state);
+
+        const keyboard = Markup.keyboard([
+          ['🔙 Orqaga']
+        ]).resize();
+        await ctx.reply('💰 Qancha pul bermadi?\n(Masalan: 500000)', keyboard);
+        return;
+      }
+
+      // OQ RO'YXAT bo'lsa - to'g'ridan to'g'ri saqlash
+      await this.saveDriver(ctx, state);
+    }
+
+    if (state.step === 'debt') {
+      // Qarz miqdorini olish
+      const debt = parseInt(text.replace(/\s/g, '')) || 0;
+      state.debt = debt;
+      // Saqlash
       await this.saveDriver(ctx, state);
     }
   }
@@ -329,6 +350,7 @@ Tanlang:`;
         truck_plate: '',
         reason: '',
         note: '',
+        debt: state.debt || 0,
         dispatcher_id: ctx.from.id.toString(),
         dispatcher_name: ctx.from.first_name + (ctx.from.last_name ? ' ' + ctx.from.last_name : '')
       });
@@ -341,10 +363,16 @@ Tanlang:`;
         ['🔙 Orqaga']
       ]).resize();
 
-      await ctx.reply(
-        `✅ ${icon} ${listName} QO\'SHILDI!\n\n📱 ${driver.phone}\n🚗 ${driver.truck.type}\n\n🙏 Raxmat!`,
-        keyboard
-      );
+      let message = `✅ ${icon} ${listName} QO\'SHILDI!\n\n📱 ${driver.phone}\n🚗 ${driver.truck.type}`;
+
+      // Agar qora ro'yxat bo'lsa va qarz bor bo'lsa
+      if (state.list_type === 'black' && state.debt > 0) {
+        message += `\n💰 Qarz: ${state.debt.toLocaleString()} so'm`;
+      }
+
+      message += `\n\n🙏 Raxmat!`;
+
+      await ctx.reply(message, keyboard);
 
       this.userStates.delete(ctx.from.id);
     } catch (error) {
