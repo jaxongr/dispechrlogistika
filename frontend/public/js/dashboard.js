@@ -212,6 +212,7 @@ function startAutoRefresh() {
     // Refresh every 30 seconds for statistics
     setInterval(() => {
         loadStatistics();
+        loadRegisteredUsers();
         checkSystemHealth();
     }, 30000);
 
@@ -255,6 +256,111 @@ async function loadDriverStatistics() {
         document.getElementById('whitelistCount').textContent = '0';
         document.getElementById('recentDrivers').textContent = '0';
     }
+}
+
+// Load registered users (for dashboard)
+async function loadRegisteredUsers() {
+    try {
+        const response = await fetch('/api/users/registered', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Ro\'yxatdan o\'tganlar yuklashda xatolik');
+        }
+
+        const data = await response.json();
+        const users = data.users || [];
+
+        // Update badge count
+        const badge = document.getElementById('registeredCountBadge');
+        if (badge) {
+            badge.textContent = users.length + ' ta';
+        }
+
+        const container = document.getElementById('registeredUsersContainer');
+
+        if (users.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                    <p class="mt-2">Hali ro'yxatdan o'tgan user yo'q</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Show only last 10 users on dashboard
+        const recentUsers = users.slice(0, 10);
+
+        let html = '<div class="table-responsive"><table class="table table-hover">';
+        html += `
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ism</th>
+                    <th>Telefon</th>
+                    <th>Ro'yxatdan o'tgan sana</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        recentUsers.forEach((u, index) => {
+            const name = u.first_name || u.last_name || 'Noma\'lum';
+            const phone = u.phone || '-';
+            const date = u.registered_at
+                ? new Date(u.registered_at).toLocaleString('uz-UZ', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })
+                : '-';
+
+            html += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${escapeHtml(name)}</strong></td>
+                    <td><span class="badge bg-success">${escapeHtml(phone)}</span></td>
+                    <td><small>${date}</small></td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table></div>';
+
+        if (users.length > 10) {
+            html += `
+                <div class="text-center mt-3">
+                    <small class="text-muted">Yana ${users.length - 10} ta user...</small>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error('Ro\'yxatdan o\'tganlar yuklashda xatolik:', error);
+        const container = document.getElementById('registeredUsersContainer');
+        container.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> Yuklashda xatolik yuz berdi
+            </div>
+        `;
+    }
+}
+
+// Escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // Load daily archive
@@ -325,6 +431,7 @@ async function loadDailyArchive() {
 // Initialize
 async function initialize() {
     await loadStatistics();
+    await loadRegisteredUsers();
     await loadRecentMessages();
     await checkSystemHealth();
     await loadDailyArchive();
