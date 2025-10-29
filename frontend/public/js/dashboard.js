@@ -620,7 +620,7 @@ function updateAdPreview() {
     }
 
     // Simple HTML rendering (be careful with XSS in production)
-    const formattedMessage = `📢 <strong>REKLAMA</strong><br><br>${message.replace(/\n/g, '<br>')}<br><br><em>Bu reklama xabari</em>`;
+    const formattedMessage = `@Yukchiborbot<br><br>${message.replace(/\n/g, '<br>')}<br><br>@Yukchiborbot`;
     preview.innerHTML = formattedMessage;
 }
 

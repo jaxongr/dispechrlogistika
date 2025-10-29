@@ -1963,7 +1963,7 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
       console.log(`📢 Reklamani guruhga yuborish: ${this.targetGroupId}`);
 
       // Send ad message with special formatting
-      const formattedMessage = `📢 <b>REKLAMA</b>\n\n${adMessage}\n\n<i>Bu reklama xabari</i>`;
+      const formattedMessage = `@Yukchiborbot\n\n${adMessage}\n\n@Yukchiborbot`;
 
       const sentMessage = await this.bot.telegram.sendMessage(
         this.targetGroupId,
