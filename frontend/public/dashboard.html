@@ -331,6 +331,121 @@
             </div>
         </div>
 
+        <!-- Reklama Scheduler -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-megaphone-fill"></i> Avtomatik Reklama
+                        </h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="adSchedulerEnabled" onchange="toggleAdScheduler()">
+                            <label class="form-check-label" for="adSchedulerEnabled">
+                                <span id="adSchedulerStatusText">O'chirilgan</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <!-- Statistics Cards -->
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-muted mb-2">E'lonlar soni</h6>
+                                        <h3 class="mb-0" id="adMessageCount">0</h3>
+                                        <small class="text-muted">joriy</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-muted mb-2">Keyingi reklama</h6>
+                                        <h3 class="mb-0" id="adNextIn">-</h3>
+                                        <small class="text-muted">e'londan keyin</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-muted mb-2">Jami yuborilgan</h6>
+                                        <h3 class="mb-0 text-success" id="adTotalSent">0</h3>
+                                        <small class="text-muted">reklama</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-muted mb-2">Oxirgi yuborilgan</h6>
+                                        <div id="adLastSent">-</div>
+                                        <small class="text-muted">vaqt</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Form -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adInterval" class="form-label">
+                                        <i class="bi bi-calendar3"></i> Interval (nechta e'londan keyin)
+                                    </label>
+                                    <input type="number" class="form-control" id="adInterval" min="1" max="1000" value="10">
+                                    <div class="form-text">Har nechta e'londan keyin reklama yuborilsin? (1-1000)</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Amallar</label>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-primary" onclick="saveAdSettings()">
+                                            <i class="bi bi-save"></i> Saqlash
+                                        </button>
+                                        <button class="btn btn-warning" onclick="sendAdNow()">
+                                            <i class="bi bi-send"></i> Test yuborish
+                                        </button>
+                                        <button class="btn btn-secondary" onclick="resetAdCounter()">
+                                            <i class="bi bi-arrow-clockwise"></i> Counter Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="adMessage" class="form-label">
+                                        <i class="bi bi-chat-text"></i> Reklama xabari
+                                    </label>
+                                    <textarea class="form-control" id="adMessage" rows="5" placeholder="Reklama matnini kiriting..."></textarea>
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle"></i> Bu xabar guruhga yuboriladi. HTML formatda yozishingiz mumkin.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <strong><i class="bi bi-eye"></i> Preview:</strong>
+                                    <div id="adMessagePreview" class="mt-2 p-3 bg-white border rounded">
+                                        <em class="text-muted">Reklama xabarini kiriting...</em>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- So'nggi E'lonlar -->
         <div class="row">
             <div class="col-12">
@@ -438,6 +553,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/api.js?v=1761303581"></script>
-    <script src="/js/dashboard.js?v=20251029"></script>
+    <script src="/js/dashboard.js?v=20251030"></script>
 </body>
 </html>

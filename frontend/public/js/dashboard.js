@@ -428,6 +428,217 @@ async function loadDailyArchive() {
     }
 }
 
+// ========================================
+// AD SCHEDULER FUNCTIONS
+// ========================================
+
+/**
+ * Load ad scheduler settings and statistics
+ */
+async function loadAdSchedulerSettings() {
+    try {
+        const response = await apiRequest('/ad-scheduler/settings');
+        const settings = response.settings;
+
+        // Update UI
+        document.getElementById('adSchedulerEnabled').checked = settings.enabled;
+        document.getElementById('adSchedulerStatusText').textContent = settings.enabled ? 'Yoqilgan' : 'O\'chirilgan';
+        document.getElementById('adInterval').value = settings.interval;
+        document.getElementById('adMessage').value = settings.message || '';
+
+        // Update statistics
+        document.getElementById('adMessageCount').textContent = settings.message_count || 0;
+        document.getElementById('adNextIn').textContent = settings.next_ad_in || '-';
+        document.getElementById('adTotalSent').textContent = settings.total_ads_sent || 0;
+
+        // Last sent time
+        if (settings.last_ad_sent_at) {
+            const lastSent = new Date(settings.last_ad_sent_at).toLocaleString('uz-UZ');
+            document.getElementById('adLastSent').innerHTML = `<small>${lastSent}</small>`;
+        } else {
+            document.getElementById('adLastSent').innerHTML = '<small>-</small>';
+        }
+
+        // Update preview
+        updateAdPreview();
+
+    } catch (error) {
+        console.error('Ad scheduler settings yuklashda xatolik:', error);
+        showAlert('danger', 'Reklama sozlamalarini yuklashda xatolik');
+    }
+}
+
+/**
+ * Toggle ad scheduler on/off
+ */
+async function toggleAdScheduler() {
+    const enabled = document.getElementById('adSchedulerEnabled').checked;
+
+    try {
+        const response = await apiRequest('/ad-scheduler/update', {
+            method: 'POST',
+            body: JSON.stringify({ enabled })
+        });
+
+        if (response.success) {
+            document.getElementById('adSchedulerStatusText').textContent = enabled ? 'Yoqilgan' : 'O\'chirilgan';
+            showAlert('success', enabled ? '✅ Reklama scheduler yoqildi' : '⚠️ Reklama scheduler o\'chirildi');
+
+            // Reload settings to get updated data
+            await loadAdSchedulerSettings();
+        } else {
+            throw new Error(response.error || 'Noma\'lum xatolik');
+        }
+    } catch (error) {
+        console.error('Toggle ad scheduler error:', error);
+        showAlert('danger', 'Xatolik: ' + error.message);
+
+        // Revert checkbox
+        document.getElementById('adSchedulerEnabled').checked = !enabled;
+    }
+}
+
+/**
+ * Save ad scheduler settings
+ */
+async function saveAdSettings() {
+    const enabled = document.getElementById('adSchedulerEnabled').checked;
+    const interval = parseInt(document.getElementById('adInterval').value);
+    const message = document.getElementById('adMessage').value.trim();
+
+    // Validation
+    if (interval < 1 || interval > 1000) {
+        showAlert('danger', 'Interval 1 dan 1000 gacha bo\'lishi kerak');
+        return;
+    }
+
+    if (enabled && message.length === 0) {
+        showAlert('danger', 'Reklama xabari bo\'sh bo\'lishi mumkin emas');
+        return;
+    }
+
+    try {
+        const response = await apiRequest('/ad-scheduler/update', {
+            method: 'POST',
+            body: JSON.stringify({ enabled, interval, message })
+        });
+
+        if (response.success) {
+            showAlert('success', '✅ Sozlamalar saqlandi');
+            await loadAdSchedulerSettings();
+        } else {
+            throw new Error(response.error || 'Noma\'lum xatolik');
+        }
+    } catch (error) {
+        console.error('Save ad settings error:', error);
+        showAlert('danger', 'Xatolik: ' + error.message);
+    }
+}
+
+/**
+ * Send ad manually (test)
+ */
+async function sendAdNow() {
+    const message = document.getElementById('adMessage').value.trim();
+
+    if (message.length === 0) {
+        showAlert('danger', 'Iltimos reklama xabarini kiriting');
+        return;
+    }
+
+    if (!confirm('Reklama xabarini hoziroq guruhga yuborilsinmi?')) {
+        return;
+    }
+
+    try {
+        const response = await apiRequest('/ad-scheduler/send-now', {
+            method: 'POST'
+        });
+
+        if (response.success) {
+            showAlert('success', '✅ Reklama yuborildi!');
+            await loadAdSchedulerSettings();
+        } else {
+            throw new Error(response.error || 'Noma\'lum xatolik');
+        }
+    } catch (error) {
+        console.error('Send ad now error:', error);
+        showAlert('danger', 'Xatolik: ' + error.message);
+    }
+}
+
+/**
+ * Reset ad counter
+ */
+async function resetAdCounter() {
+    if (!confirm('Reklama counter reset qilinsinmi? (E\'lonlar soni 0 ga qaytadi)')) {
+        return;
+    }
+
+    try {
+        const response = await apiRequest('/ad-scheduler/reset-counter', {
+            method: 'POST'
+        });
+
+        if (response.success) {
+            showAlert('success', '✅ Counter reset qilindi');
+            await loadAdSchedulerSettings();
+        } else {
+            throw new Error(response.error || 'Noma\'lum xatolik');
+        }
+    } catch (error) {
+        console.error('Reset counter error:', error);
+        showAlert('danger', 'Xatolik: ' + error.message);
+    }
+}
+
+/**
+ * Update ad message preview
+ */
+function updateAdPreview() {
+    const message = document.getElementById('adMessage').value.trim();
+    const preview = document.getElementById('adMessagePreview');
+
+    if (message.length === 0) {
+        preview.innerHTML = '<em class="text-muted">Reklama xabarini kiriting...</em>';
+        return;
+    }
+
+    // Simple HTML rendering (be careful with XSS in production)
+    const formattedMessage = `📢 <strong>REKLAMA</strong><br><br>${message.replace(/\n/g, '<br>')}<br><br><em>Bu reklama xabari</em>`;
+    preview.innerHTML = formattedMessage;
+}
+
+// Add event listener for message textarea to update preview
+document.addEventListener('DOMContentLoaded', () => {
+    const adMessageTextarea = document.getElementById('adMessage');
+    if (adMessageTextarea) {
+        adMessageTextarea.addEventListener('input', updateAdPreview);
+    }
+});
+
+/**
+ * Show alert message
+ */
+function showAlert(type, message) {
+    // Create alert element
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+    alertDiv.style.zIndex = '9999';
+    alertDiv.style.minWidth = '400px';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(alertDiv);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
 // Initialize
 async function initialize() {
     await loadStatistics();
@@ -435,6 +646,7 @@ async function initialize() {
     await loadRecentMessages();
     await checkSystemHealth();
     await loadDailyArchive();
+    await loadAdSchedulerSettings(); // Load ad scheduler settings
     startAutoRefresh();
 }
 
