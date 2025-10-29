@@ -50,8 +50,9 @@ router.post('/update', async (req, res) => {
       }
     }
 
-    // Validate message
-    if (enabled && (!message || message.trim().length === 0)) {
+    // Validate message only if it's being explicitly set
+    // Don't validate on toggle, only when saving settings with message
+    if (message !== undefined && enabled && message.trim().length === 0) {
       return res.status(400).json({
         success: false,
         error: 'Reklama xabari bo\'sh bo\'lishi mumkin emas'
