@@ -512,9 +512,12 @@ async function saveAdSettings() {
         return;
     }
 
+    // Removed strict validation - backend will handle it
+    // Just warn user if enabled but no message
     if (enabled && message.length === 0) {
-        showAlert('danger', 'Reklama xabari bo\'sh bo\'lishi mumkin emas');
-        return;
+        if (!confirm('Reklama xabari bo\'sh. Davom ettirilsinmi?')) {
+            return;
+        }
     }
 
     try {
@@ -539,6 +542,7 @@ async function saveAdSettings() {
  * Send ad manually (test)
  */
 async function sendAdNow() {
+    // First save the message to ensure backend has it
     const message = document.getElementById('adMessage').value.trim();
 
     if (message.length === 0) {
@@ -546,11 +550,22 @@ async function sendAdNow() {
         return;
     }
 
-    if (!confirm('Reklama xabarini hoziroq guruhga yuborilsinmi?')) {
-        return;
-    }
+    // Save settings first
+    const interval = parseInt(document.getElementById('adInterval').value);
+    const enabled = document.getElementById('adSchedulerEnabled').checked;
 
     try {
+        // Save message to backend first
+        await apiRequest('/ad-scheduler/update', {
+            method: 'POST',
+            body: JSON.stringify({ enabled, interval, message })
+        });
+
+        if (!confirm('Reklama xabarini hoziroq guruhga yuborilsinmi?')) {
+            return;
+        }
+
+        // Now send the ad
         const response = await apiRequest('/ad-scheduler/send-now', {
             method: 'POST'
         });
