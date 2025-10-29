@@ -158,6 +158,53 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Send reminder to unregistered users
+async function sendReminderToUnregistered() {
+    const btn = document.getElementById('sendReminderBtn');
+
+    if (!confirm('Telefon bermagan barcha userlarga eslatma xabar yuborilsinmi?\n\nBu jarayon bir necha daqiqa davom etishi mumkin.')) {
+        return;
+    }
+
+    try {
+        // Disable button
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Yuborilmoqda...';
+
+        const response = await fetch('/api/users/send-reminder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || data.message || 'Xabar yuborishda xatolik');
+        }
+
+        // Show success message with details
+        const message = `✅ Eslatma yuborildi!\n\n` +
+            `📤 Yuborildi: ${data.sent} ta\n` +
+            `❌ Xatolik: ${data.failed} ta\n` +
+            `📊 Jami: ${data.total} ta user`;
+
+        showAlert('success', message.replace(/\n/g, '<br>'));
+
+        console.log('📊 Reminder results:', data);
+
+    } catch (error) {
+        console.error('Send reminder error:', error);
+        showAlert('danger', '❌ Xatolik: ' + error.message);
+    } finally {
+        // Re-enable button
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-bell"></i> Telefon bermaganlarga eslatma yuborish';
+    }
+}
+
 // Initialize
 async function initialize() {
     await loadStatistics();

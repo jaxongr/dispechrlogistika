@@ -67,4 +67,26 @@ router.get('/all', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/users/send-reminder - Telefon bermagan userlarga eslatma yuborish
+ */
+router.post('/send-reminder', async (req, res) => {
+  try {
+    const telegramBot = require('../services/telegram-bot');
+
+    // Send reminder to all unregistered users
+    const result = await telegramBot.sendReminderToUnregistered();
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Send reminder error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server xatolik',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

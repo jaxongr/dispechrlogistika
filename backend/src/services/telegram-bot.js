@@ -1826,6 +1826,114 @@ ${this.escapeHtml((userData.message_text || '').substring(0, 200))}${(userData.m
     }
   }
 
+  /**
+   * Send reminder message to unregistered users (who didn't share phone number)
+   * Returns: { success, sent, failed, results }
+   */
+  async sendReminderToUnregistered() {
+    try {
+      if (!this.bot || !this.isRunning) {
+        return { success: false, error: 'Bot ishlamayapti', sent: 0, failed: 0 };
+      }
+
+      // Get all unregistered users (who started bot but didn't share phone)
+      const botUsers = db.get('bot_users').value() || [];
+      const unregisteredUsers = botUsers.filter(u => !u.is_registered);
+
+      console.log(`📤 Sending reminder to ${unregisteredUsers.length} unregistered users`);
+
+      const reminderMessage = `🤖 <b>YO'LDA | Yuk Markazi Bot</b>
+
+Assalomu alaykum!
+
+Siz bizning botga /start bostingiz, lekin hali ro'yxatdan o'tmadingiz.
+
+<b>🔔 Bot yangilandi!</b>
+
+Endi botda quyidagi yangi imkoniyatlar mavjud:
+✅ Haydovchilarni qora/oq ro'yxatga olish
+✅ Qarz miqdorini kuzatish
+✅ Yaxshi haydovchilarni saqlash
+✅ Auto-reply tarixi
+
+<b>📱 Ro'yxatdan o'tish juda oson:</b>
+1. Quyidagi tugmani bosing
+2. Telefon raqamingizni yuboring
+3. Tayyor! Barcha imkoniyatlar ochiladi
+
+Tugmani qayta ko'rish uchun /start ni bosing.`;
+
+      let sent = 0;
+      let failed = 0;
+      const results = [];
+
+      // Send with delay to avoid Telegram rate limits
+      for (const user of unregisteredUsers) {
+        try {
+          // Create reply keyboard with phone share button
+          const keyboard = {
+            keyboard: [
+              [{ text: '📱 Telefon raqamni yuborish', request_contact: true }]
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: false
+          };
+
+          await this.bot.telegram.sendMessage(
+            user.telegram_user_id,
+            reminderMessage,
+            {
+              parse_mode: 'HTML',
+              reply_markup: keyboard
+            }
+          );
+
+          sent++;
+          results.push({
+            user_id: user.telegram_user_id,
+            name: user.first_name || user.username || 'Unknown',
+            status: 'sent'
+          });
+
+          console.log(`✅ Sent reminder to ${user.telegram_user_id} (${user.first_name})`);
+
+          // Delay to avoid rate limits (30 messages per second max)
+          await new Promise(resolve => setTimeout(resolve, 50));
+
+        } catch (error) {
+          failed++;
+          results.push({
+            user_id: user.telegram_user_id,
+            name: user.first_name || user.username || 'Unknown',
+            status: 'failed',
+            error: error.message
+          });
+
+          console.error(`❌ Failed to send to ${user.telegram_user_id}:`, error.message);
+        }
+      }
+
+      console.log(`📊 Reminder sent: ${sent} success, ${failed} failed`);
+
+      return {
+        success: true,
+        sent,
+        failed,
+        total: unregisteredUsers.length,
+        results
+      };
+
+    } catch (error) {
+      console.error('❌ Send reminder error:', error);
+      return {
+        success: false,
+        error: error.message,
+        sent: 0,
+        failed: 0
+      };
+    }
+  }
+
   stop() {
     if (this.bot) {
       this.bot.stop();
