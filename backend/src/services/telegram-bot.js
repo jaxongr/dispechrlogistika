@@ -829,6 +829,14 @@ Tanlang:`;
         });
       }
 
+      // Notify ad scheduler that a message was sent
+      try {
+        const adScheduler = require('./ad-scheduler');
+        await adScheduler.onMessageSent();
+      } catch (error) {
+        console.error('Ad scheduler notification error:', error.message);
+      }
+
       return {
         success: true,
         groupMessageId: sentMessage.message_id
@@ -1930,6 +1938,54 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         error: error.message,
         sent: 0,
         failed: 0
+      };
+    }
+  }
+
+  /**
+   * Send advertisement message to the target group
+   * Returns: { success, message_id }
+   */
+  async sendAdToGroup(adMessage) {
+    try {
+      if (!this.bot || !this.isRunning) {
+        return { success: false, error: 'Bot ishlamayapti' };
+      }
+
+      if (!this.targetGroupId) {
+        return { success: false, error: 'Target group ID yo\'q' };
+      }
+
+      if (!adMessage || adMessage.trim().length === 0) {
+        return { success: false, error: 'Reklama xabari bo\'sh' };
+      }
+
+      console.log(`📢 Reklamani guruhga yuborish: ${this.targetGroupId}`);
+
+      // Send ad message with special formatting
+      const formattedMessage = `📢 <b>REKLAMA</b>\n\n${adMessage}\n\n<i>Bu reklama xabari</i>`;
+
+      const sentMessage = await this.bot.telegram.sendMessage(
+        this.targetGroupId,
+        formattedMessage,
+        {
+          parse_mode: 'HTML',
+          disable_web_page_preview: true
+        }
+      );
+
+      console.log(`✅ Reklama yuborildi: message_id=${sentMessage.message_id}`);
+
+      return {
+        success: true,
+        message_id: sentMessage.message_id
+      };
+
+    } catch (error) {
+      console.error('❌ Send ad to group error:', error);
+      return {
+        success: false,
+        error: error.message
       };
     }
   }
