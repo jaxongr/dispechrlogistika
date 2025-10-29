@@ -1,7 +1,7 @@
 # 🔄 TIKLASH BO'YICHA QO'LLANMA (RESTORE GUIDE)
 
 **Sana:** 28 Oktyabr 2025
-**Versiya:** v2.1-stable
+**Versiya:** v2.2-stable
 **Status:** ✅ Production Ready
 
 ---
@@ -17,24 +17,32 @@
 
 ## 🎯 HOZIRGI STABLE VERSIYA
 
-### **v2.1-stable** (28 Oktyabr 2025)
+### **v2.2-stable** (28 Oktyabr 2025)
 
-**Commit:** `0ec60fb`
+**Commit:** `762cba0`
 
 **Funksiyalar:**
 - ✅ Telefon raqam bilan ro'yxatdan o'tish
-- ✅ Foydalanuvchilar statistikasi (`/users`)
+- ✅ Foydalanuvchilar statistikasi (`/users` komanda)
+- ✅ **Foydalanuvchilar sahifasi** (`users.html`)
 - ✅ Haydovchilar tizimi (qora/oq ro'yxat)
-- ✅ Qarz miqdori (qora ro'yxat)
-- ✅ Navigatsiya tugmalari (orqaga/bosh menyu)
+- ✅ Qarz miqdori (qora ro'yxat - 3 bosqichli)
+- ✅ Navigatsiya tugmalari (orqaga/bosh menyu hamma joyda)
 - ✅ Reply keyboard (klavyatura tugmalari)
 - ✅ Statistika va hisobotlar
+- ✅ Dashboard yangilangan (ro'yxatdan o'tganlar ko'rsatadi)
 - ✅ Xavfsizlik (admin panel)
 - ✅ Avtomatik backup (har soat + kunlik)
+
+**API Endpoints:**
+- `GET /api/statistics/bot-stats` - Bot statistikasi
+- `GET /api/users/registered` - Ro'yxatdan o'tgan userlar
+- `GET /api/users/all` - Barcha userlar
 
 **Database:**
 - Asosiy: 9.7 MB
 - Backup: 31 MB (5+ kunlik)
+- Foydalanuvchilar: 45 ta (6 ro'yxatdan o'tgan)
 
 ---
 
@@ -52,10 +60,10 @@ cd "C:\Users\Pro\Desktop\Dispechrlar uchun logistika"
 git stash
 
 # Stable versiyaga qaytish
-git checkout v2.1-stable
+git checkout v2.2-stable
 
 # Yoki commit hash orqali
-git checkout 0ec60fb
+git checkout 762cba0
 
 # Serverga yuklash
 git push origin main --force
@@ -72,10 +80,10 @@ cd /var/www/dispatchr-logistics
 
 # Stable versiyaga o'tish
 git fetch --all
-git checkout v2.1-stable
+git checkout v2.2-stable
 
 # Yoki
-git reset --hard 0ec60fb
+git reset --hard 762cba0
 
 # Dependency larni yangilash
 cd backend
@@ -155,8 +163,8 @@ pm2 stop dispatchr-logistics
 # Kod tiklash
 cd /var/www/dispatchr-logistics
 git fetch --all
-git checkout v2.1-stable
-git reset --hard 0ec60fb
+git checkout v2.2-stable
+git reset --hard 762cba0
 
 # Database tiklash
 cp /var/www/dispatchr-logistics/backups/daily/db_backup_2025-10-28_02-00-02.json /var/www/dispatchr-logistics/database/db.json
@@ -189,7 +197,8 @@ Kerakli o'zgaruvchilar:
 
 | Versiya | Sana | Commit | Tavsif |
 |---------|------|--------|--------|
-| **v2.1-stable** | 28 Okt 2025 | `0ec60fb` | Telefon ro'yxatdan o'tish + foydalanuvchilar statistikasi |
+| **v2.2-stable** | 28 Okt 2025 | `762cba0` | Foydalanuvchilar sahifasi + qarz miqdori + orqaga tugmalari |
+| v2.1-stable | 28 Okt 2025 | `0ec60fb` | Telefon ro'yxatdan o'tish + foydalanuvchilar statistikasi |
 | v2.0-stable | 28 Okt 2025 | - | Haydovchilar tizimi to'liq |
 | v1.4 | - | - | Haydovchilar sistemasi oldin |
 | v1.3 | - | - | 6986 userlar backup |
@@ -221,8 +230,8 @@ pm2 restart dispatchr-logistics
 **Yechim:**
 ```bash
 cd /var/www/dispatchr-logistics
-git checkout v2.1-stable
-git reset --hard 0ec60fb
+git checkout v2.2-stable
+git reset --hard 762cba0
 pm2 restart dispatchr-logistics
 ```
 
