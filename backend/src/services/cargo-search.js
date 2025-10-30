@@ -288,9 +288,8 @@ class CargoSearchService {
 
       // Xabarga o'tish tugmasi (agar group_id va message_id mavjud bo'lsa)
       if (result.telegram_message_id && result.group_id) {
-        // Group ID'dan "-100" prefiksini olib tashlash
-        const groupIdStr = result.group_id.toString();
-        const chatId = groupIdStr.startsWith('-100') ? groupIdStr.slice(4) : groupIdStr;
+        // group_id bazada "-100" prefiksisiz saqlanadi, to'g'ridan-to'g'ri ishlatamiz
+        const chatId = result.group_id.toString().replace(/^-100/, '');
         const messageLink = `https://t.me/c/${chatId}/${result.telegram_message_id}`;
         message += `📨 <a href="${messageLink}">Xabarga o'tish</a>\n`;
       }
