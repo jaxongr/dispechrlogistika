@@ -54,6 +54,66 @@
         "Bkt", "BKT", "бкт", "БКТ", "Bektemur", "bektemur"
       ]
     },
+    "angren": {
+      "name": "Angren",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Angren", "angren", "Ангрен", "ангрен", "Angiren", "angiren",
+        "Ang", "ang", "Angrenga", "Angrendan", "Ангренга", "Ангрендан",
+        "ангренга", "ангрендан", "Angr", "angr", "АНГ", "анг"
+      ]
+    },
+    "olmaliq": {
+      "name": "Olmaliq",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Olmaliq", "olmaliq", "Олмалиқ", "олмалиқ", "Almalyk", "almalyk",
+        "Olm", "olm", "Olmaliqqa", "Olmaliqdan", "Олмаликка", "Олмаликдан",
+        "олмаликка", "олмаликдан", "Almalik", "almalik", "Олмалык", "олмалык"
+      ]
+    },
+    "chirchiq": {
+      "name": "Chirchiq",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Chirchiq", "chirchiq", "Чирчиқ", "чирчиқ", "Chirchik", "chirchik",
+        "Chir", "chir", "Chirchiqqa", "Chirchiqdan", "Чирчикка", "Чирчикдан",
+        "чирчикка", "чирчикдан", "Chirchq", "chirchq", "ЧИР", "чир"
+      ]
+    },
+    "ohangaron": {
+      "name": "Ohangaron",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Ohangaron", "ohangaron", "Оҳангарон", "оҳангарон", "Akhangaran", "akhangaran",
+        "Ohan", "ohan", "Ohangaronga", "Ohangarondan", "Оҳангаронга", "Оҳангарондан",
+        "оҳангаронга", "оҳангарондан", "Охангарон", "охангарон", "Ahangaron", "ahangaron"
+      ]
+    },
+    "bekobod": {
+      "name": "Bekobod",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Bekobod", "bekobod", "Бекобод", "бекобод", "Bekabad", "bekabad",
+        "Bek", "bek", "Bekobodga", "Bekoboddan", "Бекободга", "Бекободдан",
+        "бекободга", "бекободдан", "Бекабад", "бекабад", "Bekobot", "bekobot"
+      ]
+    },
+    "yangiyo'l": {
+      "name": "Yangiyo'l",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Yangiyo'l", "yangiyol", "Янгийўл", "янгийўл", "Yangiyul", "yangiyul",
+        "Yan", "yan", "Yangiyo'lga", "Yangiyo'ldan", "Янгийўлга", "Янгийўлдан",
+        "янгийўлга", "янгийўлдан", "Yangiyol", "yangiyol", "Янгиюль", "янгиюль"
+      ]
+    },
     "samarqand": {
       "name": "Samarqand",
       "type": "region",
