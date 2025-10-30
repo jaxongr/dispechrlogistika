@@ -171,7 +171,9 @@ class CargoSearchService {
       const msgDate = new Date(msg.created_at);
       // sent_to_group yoki is_sent_to_channel tekshirish
       const isSent = msg.sent_to_group === true || msg.is_sent_to_channel === true;
-      return msgDate >= threeHoursAgo && isSent;
+      // "Olindi" bosilgan e'lonlarni chiqarib tashlash
+      const isNotTaken = !msg.is_taken;
+      return msgDate >= threeHoursAgo && isSent && isNotTaken;
     });
   }
 
