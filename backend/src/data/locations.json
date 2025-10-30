@@ -93,8 +93,9 @@
       "parent_region": "toshkent",
       "keywords": [
         "Chirchiq", "chirchiq", "Чирчиқ", "чирчиқ", "Chirchik", "chirchik",
-        "Chir", "chir", "Chirchiqqa", "Chirchiqdan", "Чирчикка", "Чирчикдан",
-        "чирчикка", "чирчикдан", "Chirchq", "chirchq", "ЧИР", "чир"
+        "Chirchiqqa", "Chirchiqdan", "Чирчикка", "Чирчикдан",
+        "чирчикка", "чирчикдан", "Chirchq", "chirchq",
+        "chirchiq tumani", "Chirchiq tumani", "chirchiq shahri", "Chirchiq shahri"
       ]
     },
     "ohangaron": {
@@ -1656,6 +1657,26 @@
         "Muborak", "muborak", "Муборак", "муборак", "Mubarak", "mubarak",
         "Mub", "mub", "Muborakka", "Muborakdan", "Муборакка", "Муборакдан",
         "муборакка", "муборакдан", "Мубарак", "мубарак", "Mubarek", "mubarek"
+      ]
+    },
+    "chiroqchi": {
+      "name": "Chiroqchi",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Chiroqchi", "chiroqchi", "Чироқчи", "чироқчи", "Chirokchi", "chirokchi",
+        "Chiroqchi tumani", "chiroqchi tumani", "Chiroqchi district", "chiroqchi district",
+        "Chiroqchi rayon", "chiroqchi rayon", "Chiroqchi rayoni", "chiroqchi rayoni",
+        "Chiroqchitumani", "chiroqchitumani", "CHIROQCHI", "CHIROQchi", "ChIrOqChI",
+        "chiroqchi tuman", "Chiroqchi tuman", "chiroqchi t.", "Chiroqchi t.",
+        "chiroqchi r.", "Chiroqchi r.", "Chiroqchi tmn", "chiroqchi tmn",
+        "chiroqchiga", "Chiroqchiga", "chiroqchidan", "Chiroqchidan",
+        "chiroqchi tumaniga", "Chiroqchi tumaniga", "chiroqchi tumanidan", "Chiroqchi tumanidan",
+        "Chiroqchi tumani shahri", "chiroqchi tumani qalasi", "Chiroqchi tumani qishloq",
+        "chiroqchi tumani markazi", "Chiroqchi tumani markazi", "CHIROQCHI TMN",
+        "chirоqchi", "Chirоqchi", "chiroqсhi", "Chiroqсhi", "chiroqchii", "Chiroqchii",
+        "chiroqchiy", "Chiroqchiy", "chiroqchii", "chirokchi", "Chirokchi",
+        "chiroqchee", "Chiroqchee", "chiroqchі", "Chiroqchі"
       ]
     },
     "koson": {
