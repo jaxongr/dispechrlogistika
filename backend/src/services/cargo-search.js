@@ -142,7 +142,9 @@ class CargoSearchService {
     return messages.filter(msg => {
       if (!msg.created_at) return false;
       const msgDate = new Date(msg.created_at);
-      return msgDate >= threeHoursAgo && msg.sent_to_group === true;
+      // sent_to_group yoki is_sent_to_channel tekshirish
+      const isSent = msg.sent_to_group === true || msg.is_sent_to_channel === true;
+      return msgDate >= threeHoursAgo && isSent;
     });
   }
 
