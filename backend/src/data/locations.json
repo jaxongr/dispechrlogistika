@@ -208,6 +208,189 @@
         "паярикка", "паярикдан", "Poyarik", "poyarik", "Паярық", "паярық"
       ]
     },
+    "oqdaryo": {
+      "name": "Oqdaryo",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Oqdaryo", "oqdaryo", "Оқдарё", "оқдарё", "Akdarya", "akdarya",
+        "Oqdaryo tumani", "oqdaryo tumani", "Оқдарё тумани", "оқдарё тумани",
+        "Oqdaryo district", "oqdaryo district", "Акдарья район", "акдарья район",
+        "Oqdaryo rayon", "oqdaryo rayon", "Oqdaryo rayoni", "oqdaryo rayoni",
+        "Oqdaryotumani", "oqdaryotumani", "OQDARYO", "OQDaryo", "OqDaRyO",
+        "oqdaryo tuman", "Oqdaryo tuman", "akdarya tuman", "Akdarya tuman",
+        "oqdaryo t.", "Oqdaryo t.", "akdarya t.", "Akdarya t.",
+        "oqdaryo r.", "Oqdaryo r.", "akdarya r.", "Akdarya r.",
+        "Oqd tum", "oqd tum", "OQD TUM", "Oqd district", "oqd district",
+        "oqdaryoga", "Oqdaryoga", "akdaryaga", "Akdaryaga",
+        "oqdaryodan", "Oqdaryodan", "akdaryadan", "Akdaryadan",
+        "oqdaryo tumaniga", "Oqdaryo tumaniga", "oqdaryo tumanidan", "Oqdaryo tumanidan",
+        "Оқдарёга", "оқдарёга", "Оқдарёдан", "оқдарёдан",
+        "Оқдарё туманига", "оқдарё туманига", "Оқдарё туманидан", "оқдарё туманидан",
+        "oqdaryo tmn", "Oqdaryo tmn", "OQDARYO TMN", "oqdaryo tumani markazi",
+        "Oqdaryo tumani shahri", "oqdaryo tumani qalasi", "Oqdaryo tumani qishloq",
+        "oqdаryo", "Oqdаryo", "oqdarуo", "Oqdarуo", "okdaryo", "Okdaryo"
+      ]
+    },
+    "bulungur": {
+      "name": "Bulung'ur",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Bulung'ur", "bulungur", "Булунғур", "булунғур", "Bulungur", "bulungur",
+        "Bulung'ur tumani", "bulungur tumani", "Булунғур тумани", "булунғур тумани",
+        "Bulung'ur district", "bulungur district", "Булунгур район", "булунгур район",
+        "Bulung'ur rayon", "bulungur rayon", "Bulung'ur rayoni", "bulungur rayoni",
+        "Bulungurtumani", "bulungurtumani", "BULUNGUR", "BULUNgur", "BuLuNgUr",
+        "bulungur tuman", "Bulungur tuman", "bulung'ur tuman", "Bulung'ur tuman",
+        "bulungur t.", "Bulungur t.", "bulung'ur t.", "Bulung'ur t.",
+        "bulungur r.", "Bulungur r.", "bulung'ur r.", "Bulung'ur r.",
+        "Bul tum", "bul tum", "BUL TUM", "Bul district", "bul district",
+        "bulungurga", "Bulungurga", "bulung'urga", "Bulung'urga",
+        "bulungurdan", "Bulungurdan", "bulung'urdan", "Bulung'urdan",
+        "bulungur tumaniga", "Bulungur tumaniga", "bulungur tumanidan", "Bulungur tumanidan",
+        "Булунғурга", "булунғурга", "Булунғурдан", "булунғурдан",
+        "Булунғур туманига", "булунғур туманига", "Булунғур туманидан", "булунғур туманидан",
+        "bulungur tmn", "Bulungur tmn", "BULUNGUR TMN", "bulungur tumani markazi",
+        "Bulungur tumani shahri", "bulungur tumani qalasi", "Bulungur tumani qishloq",
+        "bulunghur", "Bulunghur", "bulunguur", "Bulunguur"
+      ]
+    },
+    "narpay": {
+      "name": "Narpay",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Narpay", "narpay", "Нарпай", "нарпай", "Narpai", "narpai",
+        "Narpay tumani", "narpay tumani", "Нарпай тумани", "нарпай тумани",
+        "Narpay district", "narpay district", "Нарпай район", "нарпай район",
+        "Narpay rayon", "narpay rayon", "Narpay rayoni", "narpay rayoni",
+        "Narpaytumani", "narpaytumani", "NARPAY", "NARpay", "NaRpAy",
+        "narpay tuman", "Narpay tuman", "narpai tuman", "Narpai tuman",
+        "narpay t.", "Narpay t.", "narpai t.", "Narpai t.",
+        "narpay r.", "Narpay r.", "narpai r.", "Narpai r.",
+        "Nrp tum", "nrp tum", "NRP TUM", "Nrp district", "nrp district",
+        "narpayga", "Narpayga", "narpaiga", "Narpaiga",
+        "narpaydan", "Narpaydan", "narpaidan", "Narpaidan",
+        "narpay tumaniga", "Narpay tumaniga", "narpay tumanidan", "Narpay tumanidan",
+        "Нарпайга", "нарпайга", "Нарпайдан", "нарпайдан",
+        "Нарпай туманига", "нарпай туманига", "Нарпай туманидан", "нарпай туманидан",
+        "narpay tmn", "Narpay tmn", "NARPAY TMN", "narpay tumani markazi",
+        "Narpay tumani shahri", "narpay tumani qalasi", "Narpay tumani qishloq",
+        "nаrpay", "Nаrpay", "narpау", "Narpау", "norpay", "Norpay"
+      ]
+    },
+    "pastdargom": {
+      "name": "Pastdarg'om",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Pastdarg'om", "pastdargom", "Пастдарғом", "пастдарғом", "Pastdargom", "pastdargom",
+        "Pastdarg'om tumani", "pastdargom tumani", "Пастдарғом тумани", "пастдарғом тумани",
+        "Pastdarg'om district", "pastdargom district", "Пастдаргом район", "пастдаргом район",
+        "Pastdarg'om rayon", "pastdargom rayon", "Pastdarg'om rayoni", "pastdargom rayoni",
+        "Pastdargomtumani", "pastdargomtumani", "PASTDARGOM", "PASTDARgom", "PaStDaRgOm",
+        "pastdargom tuman", "Pastdargom tuman", "pastdarg'om tuman", "Pastdarg'om tuman",
+        "pastdargom t.", "Pastdargom t.", "pastdarg'om t.", "Pastdarg'om t.",
+        "pastdargom r.", "Pastdargom r.", "pastdarg'om r.", "Pastdarg'om r.",
+        "Pst tum", "pst tum", "PST TUM", "Pst district", "pst district",
+        "pastdargomga", "Pastdargomga", "pastdarg'omga", "Pastdarg'omga",
+        "pastdargomdan", "Pastdargomdan", "pastdarg'omdan", "Pastdarg'omdan",
+        "pastdargom tumaniga", "Pastdargom tumaniga", "pastdargom tumanidan", "Pastdargom tumanidan",
+        "Пастдарғомга", "пастдарғомга", "Пастдарғомдан", "пастдарғомдан",
+        "Пастдарғом туманига", "пастдарғом туманига", "Пастдарғом туманидан", "пастдарғом туманидан",
+        "pastdargom tmn", "Pastdargom tmn", "PASTDARGOM TMN", "pastdargom tumani markazi",
+        "Pastdargom tumani shahri", "pastdargom tumani qalasi", "Pastdargom tumani qishloq",
+        "pastdarghom", "Pastdarghom", "past dargom", "Past dargom"
+      ]
+    },
+    "samarqand_tumani": {
+      "name": "Samarqand tumani",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Samarqand tumani", "samarqand tumani", "Самарқанд тумани", "самарқанд тумани",
+        "Samarkand district", "samarkand district", "Самарканд район", "самарканд район",
+        "Samarqand tuman", "samarqand tuman", "Samarkand tuman", "samarkand tuman",
+        "Samarqand rayoni", "samarqand rayoni", "Samarkand rayon", "samarkand rayon",
+        "Samarqandtumani", "samarqandtumani", "SAMARQAND TUMANI", "SAMARQANDtumani",
+        "samarqand t.", "Samarqand t.", "samarkand t.", "Samarkand t.",
+        "samarqand r.", "Samarqand r.", "samarkand r.", "Samarkand r.",
+        "Smq tum", "smq tum", "SMQ TUM", "Smq district", "smq district",
+        "samarqand tumaniga", "Samarqand tumaniga", "samarqand tumanidan", "Samarqand tumanidan",
+        "Самарқанд туманига", "самарқанд туманига", "Самарқанд туманидан", "самарқанд туманидан",
+        "samarqand tmn", "Samarqand tmn", "SAMARQAND TMN", "samarqand tumani markazi",
+        "Samarqand tumani shahri", "samarqand tumani qalasi", "Samarqand tumani qishloq",
+        "samarkan tumani", "Samarkan tumani", "samarkant tumani", "Samarkant tumani",
+        "smq tumani", "Smq tumani", "SMQ tumani", "smr tumani", "Smr tumani"
+      ]
+    },
+    "toyloq": {
+      "name": "Toyloq",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Toyloq", "toyloq", "Тойлоқ", "тойлоқ", "Toylok", "toylok",
+        "Toyloq tumani", "toyloq tumani", "Тойлоқ тумани", "тойлоқ тумани",
+        "Toyloq district", "toyloq district", "Тойлок район", "тойлок район",
+        "Toyloq rayon", "toyloq rayon", "Toyloq rayoni", "toyloq rayoni",
+        "Toyloqtumani", "toyloqtumani", "TOYLOQ", "TOYloq", "ToYlOq",
+        "toyloq tuman", "Toyloq tuman", "toylok tuman", "Toylok tuman",
+        "toyloq t.", "Toyloq t.", "toylok t.", "Toylok t.",
+        "toyloq r.", "Toyloq r.", "toylok r.", "Toylok r.",
+        "Tyl tum", "tyl tum", "TYL TUM", "Tyl district", "tyl district",
+        "toyloqqa", "Toyloqqa", "toylokka", "Toylokka",
+        "toyloqdan", "Toyloqdan", "toylokdan", "Toylokdan",
+        "toyloq tumaniga", "Toyloq tumaniga", "toyloq tumanidan", "Toyloq tumanidan",
+        "Тойлоққа", "тойлоққа", "Тойлоқдан", "тойлоқдан",
+        "Тойлоқ туманига", "тойлоқ туманига", "Тойлоқ туманидан", "тойлоқ туманидан",
+        "toyloq tmn", "Toyloq tmn", "TOYLOQ TMN", "toyloq tumani markazi",
+        "Toyloq tumani shahri", "toyloq tumani qalasi", "Toyloq tumani qishloq",
+        "tоyloq", "Tоyloq", "toyloк", "Toyloк", "toylok", "Toylok"
+      ]
+    },
+    "urgut_tumani": {
+      "name": "Urgut tumani",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Urgut tumani", "urgut tumani", "Ургут тумани", "ургут тумани",
+        "Urgut district", "urgut district", "Ургут район", "ургут район",
+        "Urgut tuman", "urgut tuman", "Urgut rayon", "urgut rayon",
+        "Urgut rayoni", "urgut rayoni", "Urguttumani", "urguttumani",
+        "URGUT TUMANI", "URGUTtumani", "urgut t.", "Urgut t.",
+        "urgut r.", "Urgut r.", "Urg tum", "urg tum", "URG TUM",
+        "Urg district", "urg district", "urgut tumaniga", "Urgut tumaniga",
+        "urgut tumanidan", "Urgut tumanidan", "Ургут туманига", "ургут туманига",
+        "Ургут туманидан", "ургут туманидан", "urgut tmn", "Urgut tmn",
+        "URGUT TMN", "urgut tumani markazi", "Urgut tumani shahri",
+        "urgut tumani qalasi", "Urgut tumani qishloq", "urgud tumani", "Urgud tumani"
+      ]
+    },
+    "paxtachi": {
+      "name": "Paxtachi",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Paxtachi", "paxtachi", "Пахтачи", "пахтачи", "Pakhtachi", "pakhtachi",
+        "Paxtachi tumani", "paxtachi tumani", "Пахтачи тумани", "пахтачи тумани",
+        "Paxtachi district", "paxtachi district", "Пахтачи район", "пахтачи район",
+        "Paxtachi rayon", "paxtachi rayon", "Paxtachi rayoni", "paxtachi rayoni",
+        "Paxtachitumani", "paxtachitumani", "PAXTACHI", "PAXTachi", "PaXtAcHi",
+        "paxtachi tuman", "Paxtachi tuman", "pakhtachi tuman", "Pakhtachi tuman",
+        "paxtachi t.", "Paxtachi t.", "pakhtachi t.", "Pakhtachi t.",
+        "paxtachi r.", "Paxtachi r.", "pakhtachi r.", "Pakhtachi r.",
+        "Pxt tum", "pxt tum", "PXT TUM", "Pxt district", "pxt district",
+        "paxtachiga", "Paxtachiga", "pakhtachiga", "Pakhtachiga",
+        "paxtachidan", "Paxtachidan", "pakhtachidan", "Pakhtachidan",
+        "paxtachi tumaniga", "Paxtachi tumaniga", "paxtachi tumanidan", "Paxtachi tumanidan",
+        "Пахтачига", "пахтачига", "Пахтачидан", "пахтачидан",
+        "Пахтачи туманига", "пахтачи туманига", "Пахтачи туманидан", "пахтачи туманидан",
+        "paxtachi tmn", "Paxtachi tmn", "PAXTACHI TMN", "paxtachi tumani markazi",
+        "Paxtachi tumani shahri", "paxtachi tumani qalasi", "Paxtachi tumani qishloq",
+        "pаxtachi", "Pаxtachi", "paxtаchi", "Paxtаchi", "paxtache", "Paxtache"
+      ]
+    },
     "andijon": {
       "name": "Andijon",
       "type": "region",
@@ -269,6 +452,262 @@
         "олтинкўлга", "олтинкўлдан", "Oltinkol", "oltinkol", "Алтынкуль", "алтынкуль"
       ]
     },
+    "andijon_tumani": {
+      "name": "Andijon tumani",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Andijon tumani", "andijon tumani", "Андижон тумани", "андижон тумани",
+        "Andijon district", "andijon district", "Андижон район", "андижон район",
+        "Andijon rayon", "andijon rayon", "Andijon rayoni", "andijon rayoni",
+        "Andijontumani", "andijontumani", "ANDIJON TUMANI", "ANDIJon tumani",
+        "andijon tuman", "Andijon tuman", "andijan tumani", "Andijan tumani",
+        "andijon t.", "Andijon t.", "andijan t.", "Andijan t.",
+        "andijon r.", "Andijon r.", "andijan r.", "Andijan r.",
+        "And tum", "and tum", "AND TUM", "And district", "and district",
+        "andijon tumaniga", "Andijon tumaniga", "andijon tumanidan", "Andijon tumanidan",
+        "Андижон туманига", "андижон туманига", "Андижон туманидан", "андижон туманидан",
+        "andijon tmn", "Andijon tmn", "ANDIJON TMN", "andijon tumani markazi",
+        "Andijon tumani shahri", "andijon tumani qalasi", "Andijon tumani qishloq",
+        "andіjon tumani", "Andіjon tumani", "andijоn tumani", "Andijоn tumani",
+        "andizhon tumani", "Andizhon tumani", "andizhan tumani", "Andizhan tumani",
+        "andijon tumoni", "Andijon tumoni", "andijon tumoni", "andijon tumon"
+      ]
+    },
+    "asaka_tumani": {
+      "name": "Asaka tumani",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Asaka tumani", "asaka tumani", "Асака тумани", "асака тумани",
+        "Asaka district", "asaka district", "Асака район", "асака район",
+        "Asaka rayon", "asaka rayon", "Asaka rayoni", "asaka rayoni",
+        "Asakatumani", "asakatumani", "ASAKA TUMANI", "ASAka tumani",
+        "asaka tuman", "Asaka tuman", "asoka tumani", "Asoka tumani",
+        "asaka t.", "Asaka t.", "asoka t.", "Asoka t.",
+        "asaka r.", "Asaka r.", "asoka r.", "Asoka r.",
+        "Ask tum", "ask tum", "ASK TUM", "Ask district", "ask district",
+        "asaka tumaniga", "Asaka tumaniga", "asaka tumanidan", "Asaka tumanidan",
+        "Асака туманига", "асака туманига", "Асака туманидан", "асака туманидан",
+        "asaka tmn", "Asaka tmn", "ASAKA TMN", "asaka tumani markazi",
+        "Asaka tumani shahri", "asaka tumani qalasi", "Asaka tumani qishloq",
+        "asаka tumani", "Asаka tumani", "asаka tumani", "asоka tumani",
+        "Asоka tumani", "asakа tumani", "Asakа tumani", "asokа tumani"
+      ]
+    },
+    "baliqchi": {
+      "name": "Baliqchi",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Baliqchi", "baliqchi", "Балиқчи", "балиқчи", "Balikchi", "balikchi",
+        "Baliqchi tumani", "baliqchi tumani", "Балиқчи тумани", "балиқчи тумани",
+        "Baliqchi district", "baliqchi district", "Балиқчи район", "балиқчи район",
+        "Baliqchi rayon", "baliqchi rayon", "Baliqchi rayoni", "baliqchi rayoni",
+        "Baliqchitumani", "baliqchitumani", "BALIQCHI", "BALiqchi", "BaLiQcHi",
+        "baliqchi tuman", "Baliqchi tuman", "balikchi tuman", "Balikchi tuman",
+        "baliqchi t.", "Baliqchi t.", "balikchi t.", "Balikchi t.",
+        "baliqchi r.", "Baliqchi r.", "balikchi r.", "Balikchi r.",
+        "Bal tum", "bal tum", "BAL TUM", "Bal district", "bal district",
+        "baliqchiga", "Baliqchiga", "balikchiga", "Balikchiga",
+        "baliqchidan", "Baliqchidan", "balikchidan", "Balikchidan",
+        "baliqchi tumaniga", "Baliqchi tumaniga", "baliqchi tumanidan", "Baliqchi tumanidan",
+        "Балиқчига", "балиқчига", "Балиқчидан", "балиқчидан",
+        "Балиқчи туманига", "балиқчи туманига", "Балиқчи туманидан", "балиқчи туманидан",
+        "baliqchi tmn", "Baliqchi tmn", "BALIQCHI TMN", "baliqchi tumani markazi",
+        "Baliqchi tumani shahri", "baliqchi tumani qalasi", "Baliqchi tumani qishloq",
+        "balіqchi", "Balіqchi", "baliqchі", "Baliqchі", "balykchi", "Balykchi"
+      ]
+    },
+    "boz": {
+      "name": "Bo'z",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Bo'z", "boz", "Бўз", "бўз", "Boz", "buz",
+        "Bo'z tumani", "boz tumani", "Бўз тумани", "бўз тумani",
+        "Bo'z district", "boz district", "Бўз район", "бўз район",
+        "Bo'z rayon", "boz rayon", "Bo'z rayoni", "boz rayoni",
+        "Boztumani", "boztumani", "BOZ", "BOz", "Bo'Z",
+        "boz tuman", "Bo'z tuman", "buz tuman", "Buz tuman",
+        "boz t.", "Bo'z t.", "buz t.", "Buz t.",
+        "boz r.", "Bo'z r.", "buz r.", "Buz r.",
+        "Bz tum", "bz tum", "BZ TUM", "Bz district", "bz district",
+        "bozga", "Bo'zga", "buzga", "Buzga",
+        "bozdan", "Bo'zdan", "buzdan", "Buzdan",
+        "boz tumaniga", "Bo'z tumaniga", "boz tumanidan", "Bo'z tumanidan",
+        "Бўзга", "бўзга", "Бўздан", "бўздан",
+        "Бўз туманига", "бўз туманига", "Бўз туманидан", "бўз туманидан",
+        "boz tmn", "Bo'z tmn", "BOZ TMN", "boz tumani markazi",
+        "Bo'z tumani shahri", "boz tumani qalasi", "Bo'z tumani qishloq",
+        "bо'z", "Bо'z", "bоz", "Bоz", "bo'z", "Bo'z"
+      ]
+    },
+    "buloqboshi": {
+      "name": "Buloqboshi",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Buloqboshi", "buloqboshi", "Булоқбоши", "булоқбоши", "Bulokboshi", "bulokboshi",
+        "Buloqboshi tumani", "buloqboshi tumani", "Булоқбоши тумани", "булоқбоши тумани",
+        "Buloqboshi district", "buloqboshi district", "Булоқбоши район", "булоқбоши район",
+        "Buloqboshi rayon", "buloqboshi rayon", "Buloqboshi rayoni", "buloqboshi rayoni",
+        "Buloqboshitumani", "buloqboshitumani", "BULOQBOSHI", "BULOqboshi", "BuLoQbOsHi",
+        "buloqboshi tuman", "Buloqboshi tuman", "bulokboshi tuman", "Bulokboshi tuman",
+        "buloqboshi t.", "Buloqboshi t.", "bulokboshi t.", "Bulokboshi t.",
+        "buloqboshi r.", "Buloqboshi r.", "bulokboshi r.", "Bulokboshi r.",
+        "Bul tum", "bul tum", "BUL TUM", "Bul district", "bul district",
+        "buloqboshiga", "Buloqboshiga", "bulokboshiga", "Bulokboshiga",
+        "buloqboshidan", "Buloqboshidan", "bulokboshidan", "Bulokboshidan",
+        "buloqboshi tumaniga", "Buloqboshi tumaniga", "buloqboshi tumanidan", "Buloqboshi tumanidan",
+        "Булоқбошига", "булоқбошига", "Булоқбошидан", "булоқбошидан",
+        "Булоқбоши туманига", "булоқбоши туманига", "Булоқбоши туманидан", "булоқбоши туманидан",
+        "buloqboshi tmn", "Buloqboshi tmn", "BULOQBOSHI TMN", "buloqboshi tumani markazi",
+        "Buloqboshi tumani shahri", "buloqboshi tumani qalasi", "Buloqboshi tumani qishloq",
+        "bulоqboshi", "Bulоqboshi", "buloqbоshi", "Buloqbоshi", "bulakboshi", "Bulakboshi"
+      ]
+    },
+    "jalaquduq": {
+      "name": "Jalaquduq",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Jalaquduq", "jalaquduq", "Жалақудуқ", "жалақудуқ", "Jalakuduk", "jalakuduk",
+        "Jalaquduq tumani", "jalaquduq tumani", "Жалақудуқ тумани", "жалақудуқ тумани",
+        "Jalaquduq district", "jalaquduq district", "Жалақудуқ район", "жалақудуқ район",
+        "Jalaquduq rayon", "jalaquduq rayon", "Jalaquduq rayoni", "jalaquduq rayoni",
+        "Jalaquduqtumani", "jalaquduqtumani", "JALAQUDUQ", "JALAquduq", "JaLaQuDuQ",
+        "jalaquduq tuman", "Jalaquduq tuman", "jalakuduk tuman", "Jalakuduk tuman",
+        "jalaquduq t.", "Jalaquduq t.", "jalakuduk t.", "Jalakuduk t.",
+        "jalaquduq r.", "Jalaquduq r.", "jalakuduk r.", "Jalakuduk r.",
+        "Jal tum", "jal tum", "JAL TUM", "Jal district", "jal district",
+        "jalaquduqqa", "Jalaquduqqa", "jalakudukka", "Jalakudukka",
+        "jalaquduqdan", "Jalaquduqdan", "jalakudukdan", "Jalakudukdan",
+        "jalaquduq tumaniga", "Jalaquduq tumaniga", "jalaquduq tumanidan", "Jalaquduq tumanidan",
+        "Жалақудуқга", "жалақудуқга", "Жалақудуқдан", "жалақудуқдан",
+        "Жалақудуқ туманига", "жалақудуқ туманига", "Жалақудуқ туманидан", "жалақудуқ туманидан",
+        "jalaquduq tmn", "Jalaquduq tmn", "JALAQUDUQ TMN", "jalaquduq tumani markazi",
+        "Jalaquduq tumani shahri", "jalaquduq tumani qalasi", "Jalaquduq tumani qishloq",
+        "jalаquduq", "Jalаquduq", "jalaquduq", "jаlaquduq", "Jаlaquduq", "jallaquduq"
+      ]
+    },
+    "izboskan": {
+      "name": "Izboskan",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Izboskan", "izboskan", "Избоскан", "избоскан", "Izboskon", "izboskon",
+        "Izboskan tumani", "izboskan tumani", "Избоскан тумани", "избоскан тумани",
+        "Izboskan district", "izboskan district", "Избоскан район", "избоскан район",
+        "Izboskan rayon", "izboskan rayon", "Izboskan rayoni", "izboskan rayoni",
+        "Izboskantumani", "izboskantumani", "IZBOSKAN", "IZBoskan", "IzBoSkAn",
+        "izboskan tuman", "Izboskan tuman", "izboskon tuman", "Izboskon tuman",
+        "izboskan t.", "Izboskan t.", "izboskon t.", "Izboskon t.",
+        "izboskan r.", "Izboskan r.", "izboskon r.", "Izboskon r.",
+        "Izb tum", "izb tum", "IZB TUM", "Izb district", "izb district",
+        "izboskanga", "Izboskanga", "izboskonga", "Izboskonga",
+        "izboskandan", "Izboskandan", "izboskondan", "Izboskondan",
+        "izboskan tumaniga", "Izboskan tumaniga", "izboskan tumanidan", "Izboskan tumanidan",
+        "Избосканга", "избосканга", "Избоскандан", "избоскандан",
+        "Избоскан туманига", "избоскан туманига", "Избоскан туманидан", "избоскан туманидан",
+        "izboskan tmn", "Izboskan tmn", "IZBOSKAN TMN", "izboskan tumani markazi",
+        "Izboskan tumani shahri", "izboskan tumani qalasi", "Izboskan tumani qishloq",
+        "izbоskan", "Izbоskan", "izboskаn", "Izboskаn", "izboskan", "Izboskan"
+      ]
+    },
+    "qorgontepa": {
+      "name": "Qo'rg'ontepa",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Qo'rg'ontepa", "qorgontepa", "Қўрғонтепа", "қўрғонтепа", "Qurgontepa", "qurgontepa",
+        "Qo'rg'ontepa tumani", "qorgontepa tumani", "Қўрғонтепа тумани", "қўрғонтепа тумани",
+        "Qo'rg'ontepa district", "qorgontepa district", "Қўрғонтепа район", "қўрғонтепа район",
+        "Qo'rg'ontepa rayon", "qorgontepa rayon", "Qo'rg'ontepa rayoni", "qorgontepa rayoni",
+        "Qorgontepaumani", "qorgontepaumani", "QORGONTEPA", "QORGontepa", "QoRgOnTePa",
+        "qorgontepa tuman", "Qo'rg'ontepa tuman", "qurgontepa tuman", "Qurgontepa tuman",
+        "qorgontepa t.", "Qo'rg'ontepa t.", "qurgontepa t.", "Qurgontepa t.",
+        "qorgontepa r.", "Qo'rg'ontepa r.", "qurgontepa r.", "Qurgontepa r.",
+        "Qor tum", "qor tum", "QOR TUM", "Qor district", "qor district",
+        "qorgontepaga", "Qo'rg'ontepaga", "qurgontepaga", "Qurgontepaga",
+        "qorgontepadan", "Qo'rg'ontepadan", "qurgontepadan", "Qurgontepadan",
+        "qorgontepa tumaniga", "Qo'rg'ontepa tumaniga", "qorgontepa tumanidan", "Qo'rg'ontepa tumanidan",
+        "Қўрғонтепага", "қўрғонтепага", "Қўрғонтепадан", "қўрғонтепадан",
+        "Қўрғонтепа туманига", "қўрғонтепа туманига", "Қўрғонтепа туманидан", "қўрғонтепа туманидан",
+        "qorgontepa tmn", "Qo'rg'ontepa tmn", "QORGONTEPA TMN", "qorgontepa tumani markazi",
+        "Qo'rg'ontepa tumani shahri", "qorgontepa tumani qalasi", "Qo'rg'ontepa tumani qishloq",
+        "qоrgontepa", "Qоrgontepa", "qorgоntepa", "Qorgоntepa", "qorgontepa", "kurgontepa"
+      ]
+    },
+    "shahrixon": {
+      "name": "Shahrixon",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Shahrixon", "shahrixon", "Шаҳрихон", "шаҳрихон", "Shahrihon", "shahrihon",
+        "Shahrixon tumani", "shahrixon tumani", "Шаҳрихон тумани", "шаҳрихон тумани",
+        "Shahrixon district", "shahrixon district", "Шаҳрихон район", "шаҳрихон район",
+        "Shahrixon rayon", "shahrixon rayon", "Shahrixon rayoni", "shahrixon rayoni",
+        "Shahrixontumani", "shahrixontumani", "SHAHRIXON", "SHAHRixon", "ShAhRiXoN",
+        "shahrixon tuman", "Shahrixon tuman", "shahrihon tuman", "Shahrihon tuman",
+        "shahrixon t.", "Shahrixon t.", "shahrihon t.", "Shahrihon t.",
+        "shahrixon r.", "Shahrixon r.", "shahrihon r.", "Shahrihon r.",
+        "Sha tum", "sha tum", "SHA TUM", "Sha district", "sha district",
+        "shahrixonga", "Shahrixonga", "shahrihonga", "Shahrihonga",
+        "shahrixondan", "Shahrixondan", "shahrihondan", "Shahrihondan",
+        "shahrixon tumaniga", "Shahrixon tumaniga", "shahrixon tumanidan", "Shahrixon tumanidan",
+        "Шаҳрихонга", "шаҳрихонга", "Шаҳрихондан", "шаҳрихондан",
+        "Шаҳрихон туманига", "шаҳрихон туманига", "Шаҳрихон туманидан", "шаҳрихон туманидан",
+        "shahrixon tmn", "Shahrixon tmn", "SHAHRIXON TMN", "shahrixon tumani markazi",
+        "Shahrixon tumani shahri", "shahrixon tumani qalasi", "Shahrixon tumani qishloq",
+        "shаhrixon", "Shаhrixon", "shahrixоn", "Shahrixоn", "shahrikon", "Shahrikon"
+      ]
+    },
+    "ulugnor": {
+      "name": "Ulug'nor",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Ulug'nor", "ulugnor", "Улуғнор", "улуғнор", "Ulugnor", "ulugnor",
+        "Ulug'nor tumani", "ulugnor tumani", "Улуғнор тумани", "улуғнор тумани",
+        "Ulug'nor district", "ulugnor district", "Улуғнор район", "улуғнор район",
+        "Ulug'nor rayon", "ulugnor rayon", "Ulug'nor rayoni", "ulugnor rayoni",
+        "Ulug'nortumani", "ulugnortumani", "ULUGNOR", "ULUGnor", "UlUgNoR",
+        "ulugnor tuman", "Ulug'nor tuman", "ulugnor tuman", "Ulugnor tuman",
+        "ulugnor t.", "Ulug'nor t.", "ulugnor t.", "Ulugnor t.",
+        "ulugnor r.", "Ulug'nor r.", "ulugnor r.", "Ulugnor r.",
+        "Ulu tum", "ulu tum", "ULU TUM", "Ulu district", "ulu district",
+        "ulug'norga", "Ulug'norga", "ulugnorga", "Ulugnorga",
+        "ulug'nordan", "Ulug'nordan", "ulugnordan", "Ulugnordan",
+        "ulugnor tumaniga", "Ulug'nor tumaniga", "ulugnor tumanidan", "Ulug'nor tumanidan",
+        "Улуғнорга", "улуғнорга", "Улуғнордан", "улуғнордан",
+        "Улуғнор туманига", "улуғнор туманига", "Улуғнор туманидан", "улуғнор туманидан",
+        "ulugnor tmn", "Ulug'nor tmn", "ULUGNOR TMN", "ulugnor tumani markazi",
+        "Ulug'nor tumani shahri", "ulugnor tumani qalasi", "Ulug'nor tumani qishloq",
+        "ulug'nоr", "Ulug'nоr", "ulugnоr", "Ulugnоr", "ulugnor", "Ulugnor"
+      ]
+    },
+    "xojaobod_tumani": {
+      "name": "Xo'jaobod tumani",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Xo'jaobod tumani", "xojaobod tumani", "Хўжаобод тумани", "хўжаобод тумани",
+        "Xo'jaobod district", "xojaobod district", "Хўжаобод район", "хўжаобод район",
+        "Xo'jaobod rayon", "xojaobod rayon", "Xo'jaobod rayoni", "xojaobod rayoni",
+        "Xojaobodtumani", "xojaobodtumani", "XOJAOBOD TUMANI", "XOJAobod tumani",
+        "xojaobod tuman", "Xo'jaobod tuman", "khodjaobod tumani", "Khodjaobod tumani",
+        "xojaobod t.", "Xo'jaobod t.", "khodjaobod t.", "Khodjaobod t.",
+        "xojaobod r.", "Xo'jaobod r.", "khodjaobod r.", "Khodjaobod r.",
+        "Xoj tum", "xoj tum", "XOJ TUM", "Xoj district", "xoj district",
+        "xojaobod tumaniga", "Xo'jaobod tumaniga", "xojaobod tumanidan", "Xo'jaobod tumanidan",
+        "Хўжаобод туманига", "хўжаобод туманига", "Хўжаобод туманидан", "хўжаобод туманидан",
+        "xojaobod tmn", "Xo'jaobod tmn", "XOJAOBOD TMN", "xojaobod tumani markazi",
+        "Xo'jaobod tumani shahri", "xojaobod tumani qalasi", "Xo'jaobod tumani qishloq",
+        "xоjaobod tumani", "Xоjaobod tumani", "xojаobod tumani", "Xojаobod tumani",
+        "xojaabad tumani", "Xojaabad tumani", "khоjaobod tumani", "Khоjaobod tumani"
+      ]
+    },
     "fargona": {
       "name": "Farg'ona",
       "type": "region",
@@ -300,7 +739,27 @@
         "kokanga", "kokandan", "quqonga", "quqondan", "qo'qonga", "qo'qondan",
         "қўқонга", "қўқондан", "коканга", "кокандан", "кукандан", "куканга",
         "qoqon shahri", "qoqon city", "kokand city", "kokand shahri",
-        "qoqon qalasi", "kokand qalasi", "quqon shahri", "qo'qon shahri"
+        "qoqon qalasi", "kokand qalasi", "quqon shahri", "qo'qon shahri",
+        "qoqon tumani", "Qo'qon tumani", "kokand tumani", "Kokand tumani",
+        "qoqon district", "kokand district", "qoqon rayon", "kokand rayon",
+        "qoqоnga", "Qoqоnga", "kokanddа", "Kokanddа", "quqondan", "Quqondan",
+        "qoqon sh", "Qo'qon sh", "kokand sh", "Kokand sh", "qoqon s", "kokand s",
+        "qoqon markazi", "kokand markazi", "qoqon центр", "kokand центр",
+        "qoқon", "Qoқon", "koкand", "Koкand", "quқon", "Quқon",
+        "qoqon tuman", "kokand tuman", "qo'qon t", "Qo'qon t", "kokand t", "Kokand t",
+        "qo'qon r", "Qo'qon r", "kokand r", "Kokand r", "qoqon r", "Qoqon r",
+        "qoqonda", "Qo'qonda", "kokandda", "Kokandda", "quqonda", "Quqonda",
+        "qoqondagi", "Qo'qondagi", "kokanddagi", "Kokanddagi", "quqondagi", "Quqondagi",
+        "qoqonlik", "Qo'qonlik", "kokandlik", "Kokandlik", "quqonlik", "Quqonlik",
+        "qoqon shahar", "Qo'qon shahar", "kokand shahar", "Kokand shahar",
+        "qoqon shaхri", "Qo'qon shaхri", "kokand shaхri", "Kokand shaхri",
+        "qoqon qаlasi", "Qo'qon qаlasi", "kokand qаlasi", "Kokand qаlasi",
+        "qoqon xalqi", "kokand xalqi", "qoqon ahli", "kokand ahli",
+        "qoqon bozori", "kokand bozori", "qoqon bazaar", "kokand bazaar",
+        "qoqon station", "kokand station", "qoqon bekat", "kokand bekat",
+        "qoqon avtovokzal", "kokand avtovokzal", "qoqon avtostation", "kokand avtostation",
+        "qoqon yoли", "kokand yoли", "qoqon road", "kokand road",
+        "qoqon street", "kokand street", "qoqon ko'chasi", "kokand ko'chasi"
       ]
     },
     "margilon": {
@@ -311,7 +770,34 @@
         "Marg'ilon", "margilon", "Марғилон", "марғилон", "Margilan", "margilan",
         "Mar", "mar", "Marg'ilonga", "Marg'ilondan", "Марғилонга", "Марғилондан",
         "марғилонга", "марғилондан", "Маргилан", "маргилан", "Marghilan", "marghilan",
-        "Margelan", "margelan", "Mrg", "mrg", "МРГ", "мрг"
+        "Margelan", "margelan", "Mrg", "mrg", "МРГ", "мрг",
+        "margilon", "Margilon", "MARGILON", "margilan", "Margilan", "MARGILAN",
+        "margilоn", "Margilоn", "margіlon", "Margіlon", "margilan", "Margilan",
+        "margilon shahri", "margilon city", "margilan city", "margilan shahri",
+        "margilon qalasi", "margilan qalasi", "marghilan shahri", "marghilan city",
+        "margilon tumani", "Marg'ilon tumani", "margilan tumani", "Margilan tumani",
+        "margilon district", "margilan district", "margilon rayon", "margilan rayon",
+        "margilоnga", "Margilоnga", "margilandа", "Margilandа", "margilondan", "Margilondan",
+        "margilon sh", "Marg'ilon sh", "margilan sh", "Margilan sh", "margilon s", "margilan s",
+        "margilon markazi", "margilan markazi", "margilon центр", "margilan центр",
+        "margіlon", "Margіlon", "margilаn", "Margilаn", "marghіlan", "Marghіlan",
+        "margilon tuman", "margilan tuman", "marg'ilon t", "Marg'ilon t", "margilan t", "Margilan t",
+        "marg'ilon r", "Marg'ilon r", "margilan r", "Margilan r", "margilon r", "Margilon r",
+        "margilonda", "Marg'ilonda", "margilanda", "Margilanda", "marghilonda", "Marghilonda",
+        "margilondagi", "Marg'ilondagi", "margilandagi", "Margilandagi", "marghilandagi", "Marghilandagi",
+        "margilonlik", "Marg'ilonlik", "margilanlik", "Margilanlik", "marghilanlik", "Marghilanlik",
+        "margilon shahar", "Marg'ilon shahar", "margilan shahar", "Margilan shahar",
+        "margilon shaхri", "Marg'ilon shaхri", "margilan shaхri", "Margilan shaхri",
+        "margilon qаlasi", "Marg'ilon qаlasi", "margilan qаlasi", "Margilan qаlasi",
+        "margilon xalqi", "margilan xalqi", "margilon ahli", "margilan ahli",
+        "margilon bozori", "margilan bozori", "margilon bazaar", "margilan bazaar",
+        "margilon station", "margilan station", "margilon bekat", "margilan bekat",
+        "margilon avtovokzal", "margilan avtovokzal", "margilon avtostation", "margilan avtostation",
+        "margilon yoли", "margilan yoли", "margilon road", "margilan road",
+        "margilon street", "margilan street", "margilon ko'chasi", "margilan ko'chasi",
+        "margilon atlas", "margilan atlas", "margilon ipak", "margilan ipak",
+        "margilon silk", "margilan silk", "margilon textile", "margilan textile",
+        "margelon", "Margelon", "MARGELON", "marghilon", "Marghilon", "MARGHILON"
       ]
     },
     "quvasoy": {
@@ -342,6 +828,291 @@
         "Beshariq", "beshariq", "Бешариқ", "бешариқ", "Besharik", "besharik",
         "Bsh", "bsh", "Beshariqqa", "Beshariqdan", "Бешарикка", "Бешарикдан",
         "бешарикка", "бешарикдан", "Бешарык", "бешарык", "Besharyk", "besharyk"
+      ]
+    },
+    "bogdod": {
+      "name": "Bog'dod",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Bog'dod", "bogdod", "Боғдод", "боғдод", "Bogdod", "bogdod",
+        "Bog'dod tumani", "bogdod tumani", "Боғдод тумани", "боғдод тумани",
+        "Bog'dod district", "bogdod district", "Боғдод район", "боғдод район",
+        "Bog'dod rayon", "bogdod rayon", "Bog'dod rayoni", "bogdod rayoni",
+        "Bogdodtumani", "bogdodtumani", "BOGDOD", "BOGdod", "BoG'DoD",
+        "bogdod tuman", "Bog'dod tuman", "bagdod tuman", "Bagdod tuman",
+        "bogdod t.", "Bog'dod t.", "bagdod t.", "Bagdod t.",
+        "bogdod r.", "Bog'dod r.", "bagdod r.", "Bagdod r.",
+        "Bog tum", "bog tum", "BOG TUM", "Bog district", "bog district",
+        "bogdodga", "Bog'dodga", "bagdodga", "Bagdodga",
+        "bogdoddan", "Bog'doddan", "bagdoddan", "Bagdoddan",
+        "bogdod tumaniga", "Bog'dod tumaniga", "bogdod tumanidan", "Bog'dod tumanidan",
+        "Боғдодга", "боғдодга", "Боғдоддан", "боғдоддан",
+        "Боғдод туманига", "боғдод туманига", "Боғдод туманидан", "боғдод туманидан",
+        "bogdod tmn", "Bog'dod tmn", "BOGDOD TMN", "bogdod tumani markazi",
+        "Bog'dod tumani shahri", "bogdod tumani qalasi", "Bog'dod tumani qishloq",
+        "bоg'dod", "Bоg'dod", "bogdоd", "Bogdоd", "bogdad", "Bogdad"
+      ]
+    },
+    "buvayda": {
+      "name": "Buvayda",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Buvayda", "buvayda", "Бувайда", "бувайда", "Buvaida", "buvaida",
+        "Buvayda tumani", "buvayda tumani", "Бувайда тумани", "бувайда тумани",
+        "Buvayda district", "buvayda district", "Бувайда район", "бувайда район",
+        "Buvayda rayon", "buvayda rayon", "Buvayda rayoni", "buvayda rayoni",
+        "Buvaydatumani", "buvaydatumani", "BUVAYDA", "BUVayda", "BuVaYdA",
+        "buvayda tuman", "Buvayda tuman", "buvaida tuman", "Buvaida tuman",
+        "buvayda t.", "Buvayda t.", "buvaida t.", "Buvaida t.",
+        "buvayda r.", "Buvayda r.", "buvaida r.", "Buvaida r.",
+        "Buv tum", "buv tum", "BUV TUM", "Buv district", "buv district",
+        "buvaydaga", "Buvaydaga", "buvaidaga", "Buvaidaga",
+        "buvaydadan", "Buvaydadan", "buvaidadan", "Buvaidadan",
+        "buvayda tumaniga", "Buvayda tumaniga", "buvayda tumanidan", "Buvayda tumanidan",
+        "Бувайдага", "бувайдага", "Бувайдадан", "бувайдадан",
+        "Бувайда туманига", "бувайда туманига", "Бувайда туманидан", "бувайда туманидан",
+        "buvayda tmn", "Buvayda tmn", "BUVAYDA TMN", "buvayda tumani markazi",
+        "Buvayda tumani shahri", "buvayda tumani qalasi", "Buvayda tumani qishloq",
+        "buvаyda", "Buvаyda", "buvaydа", "Buvaydа", "buveyda", "Buveyda"
+      ]
+    },
+    "dangara": {
+      "name": "Dang'ara",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Dang'ara", "dangara", "Данғара", "данғара", "Dangara", "dangara",
+        "Dang'ara tumani", "dangara tumani", "Данғара тумани", "данғара тумани",
+        "Dang'ara district", "dangara district", "Данғара район", "данғара район",
+        "Dang'ara rayon", "dangara rayon", "Dang'ara rayoni", "dangara rayoni",
+        "Dangaratumani", "dangaratumani", "DANGARA", "DANGara", "DaNg'ArA",
+        "dangara tuman", "Dang'ara tuman", "dangara tuman", "Dangara tuman",
+        "dangara t.", "Dang'ara t.", "dangara t.", "Dangara t.",
+        "dangara r.", "Dang'ara r.", "dangara r.", "Dangara r.",
+        "Dan tum", "dan tum", "DAN TUM", "Dan district", "dan district",
+        "dangaraga", "Dang'araga", "dangaraga", "Dangaraga",
+        "dangaradan", "Dang'aradan", "dangaradan", "Dangaradan",
+        "dangara tumaniga", "Dang'ara tumaniga", "dangara tumanidan", "Dang'ara tumanidan",
+        "Данғарага", "данғарага", "Данғарадан", "данғарадан",
+        "Данғара туманига", "данғара туманига", "Данғара туманидан", "данғара туманидан",
+        "dangara tmn", "Dang'ara tmn", "DANGARA TMN", "dangara tumani markazi",
+        "Dang'ara tumani shahri", "dangara tumani qalasi", "Dang'ara tumani qishloq",
+        "dаngara", "Dаngara", "dangarа", "Dangarа", "dangara", "Dangara"
+      ]
+    },
+    "fargona_tumani": {
+      "name": "Farg'ona tumani",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Farg'ona tumani", "fargona tumani", "Фарғона тумани", "фарғона тумани",
+        "Farg'ona district", "fargona district", "Фарғона район", "фарғона район",
+        "Farg'ona rayon", "fargona rayon", "Farg'ona rayoni", "fargona rayoni",
+        "Fargonatumani", "fargonatumani", "FARGONA TUMANI", "FARGona tumani",
+        "fargona tuman", "Farg'ona tuman", "ferghana tumani", "Ferghana tumani",
+        "fargona t.", "Farg'ona t.", "ferghana t.", "Ferghana t.",
+        "fargona r.", "Farg'ona r.", "ferghana r.", "Ferghana r.",
+        "Far tum", "far tum", "FAR TUM", "Far district", "far district",
+        "fargona tumaniga", "Farg'ona tumaniga", "fargona tumanidan", "Farg'ona tumanidan",
+        "Фарғона туманига", "фарғона туманига", "Фарғона туманидан", "фарғона туманидан",
+        "fargona tmn", "Farg'ona tmn", "FARGONA TMN", "fargona tumani markazi",
+        "Farg'ona tumani shahri", "fargona tumani qalasi", "Farg'ona tumani qishloq",
+        "fаrgona tumani", "Fаrgona tumani", "fargonа tumani", "Fargonа tumani",
+        "fergana tumani", "Fergana tumani", "farghona tumani", "Farghona tumani"
+      ]
+    },
+    "furqat": {
+      "name": "Furqat",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Furqat", "furqat", "Фурқат", "фурқат", "Furkat", "furkat",
+        "Furqat tumani", "furqat tumani", "Фурқат тумани", "фурқат тумани",
+        "Furqat district", "furqat district", "Фурқат район", "фурқат район",
+        "Furqat rayon", "furqat rayon", "Furqat rayoni", "furqat rayoni",
+        "Furqattumani", "furqattumani", "FURQAT", "FURqat", "FuRqAt",
+        "furqat tuman", "Furqat tuman", "furkat tuman", "Furkat tuman",
+        "furqat t.", "Furqat t.", "furkat t.", "Furkat t.",
+        "furqat r.", "Furqat r.", "furkat r.", "Furkat r.",
+        "Fur tum", "fur tum", "FUR TUM", "Fur district", "fur district",
+        "furqatga", "Furqatga", "furkatga", "Furkatga",
+        "furqatdan", "Furqatdan", "furkatdan", "Furkatdan",
+        "furqat tumaniga", "Furqat tumaniga", "furqat tumanidan", "Furqat tumanidan",
+        "Фурқатга", "фурқатга", "Фурқатдан", "фурқатдан",
+        "Фурқат туманига", "фурқат туманига", "Фурқат туманидан", "фурқат туманидан",
+        "furqat tmn", "Furqat tmn", "FURQAT TMN", "furqat tumani markazi",
+        "Furqat tumani shahri", "furqat tumani qalasi", "Furqat tumani qishloq",
+        "furqаt", "Furqаt", "furqаt", "furkаt", "Furkаt", "furkot"
+      ]
+    },
+    "ozbekiston": {
+      "name": "O'zbekiston",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "O'zbekiston", "ozbekiston", "Ўзбекистон", "ўзбекистон", "Uzbekiston", "uzbekiston",
+        "O'zbekiston tumani", "ozbekiston tumani", "Ўзбекистон тумани", "ўзбекистон тумани",
+        "O'zbekiston district", "ozbekiston district", "Ўзбекистон район", "ўзбекистон район",
+        "O'zbekiston rayon", "ozbekiston rayon", "O'zbekiston rayoni", "ozbekiston rayoni",
+        "Ozbekistontumani", "ozbekistontumani", "OZBEKISTON", "OZBEkiston", "O'zBeKiStOn",
+        "ozbekiston tuman", "O'zbekiston tuman", "uzbekiston tuman", "Uzbekiston tuman",
+        "ozbekiston t.", "O'zbekiston t.", "uzbekiston t.", "Uzbekiston t.",
+        "ozbekiston r.", "O'zbekiston r.", "uzbekiston r.", "Uzbekiston r.",
+        "Ozb tum", "ozb tum", "OZB TUM", "Ozb district", "ozb district",
+        "ozbekistonga", "O'zbekistonga", "uzbekistonga", "Uzbekistonga",
+        "ozbekistondan", "O'zbekistondan", "uzbekistondan", "Uzbekistondan",
+        "ozbekiston tumaniga", "O'zbekiston tumaniga", "ozbekiston tumanidan", "O'zbekiston tumanidan",
+        "Ўзбекистонга", "ўзбекистонга", "Ўзбекистондан", "ўзбекистондан",
+        "Ўзбекистон туманига", "ўзбекистон туманига", "Ўзбекистон туманидан", "ўзбекистон туманидан",
+        "ozbekiston tmn", "O'zbekiston tmn", "OZBEKISTON TMN", "ozbekiston tumani markazi",
+        "O'zbekiston tumani shahri", "ozbekiston tumani qalasi", "O'zbekiston tumani qishloq",
+        "оzbekiston", "Оzbekiston", "ozbekistоn", "Ozbekistоn", "uzbekiston", "Uzbekiston"
+      ]
+    },
+    "qoshtepa": {
+      "name": "Qo'shtepa",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Qo'shtepa", "qoshtepa", "Қўштепа", "қўштепа", "Qushtepa", "qushtepa",
+        "Qo'shtepa tumani", "qoshtepa tumani", "Қўштепа тумани", "қўштепа тумани",
+        "Qo'shtepa district", "qoshtepa district", "Қўштепа район", "қўштепа район",
+        "Qo'shtepa rayon", "qoshtepa rayon", "Qo'shtepa rayoni", "qoshtepa rayoni",
+        "Qoshtepaumani", "qoshtepaumani", "QOSHTEPA", "QOSHtepa", "Qo'ShTePa",
+        "qoshtepa tuman", "Qo'shtepa tuman", "qushtepa tuman", "Qushtepa tuman",
+        "qoshtepa t.", "Qo'shtepa t.", "qushtepa t.", "Qushtepa t.",
+        "qoshtepa r.", "Qo'shtepa r.", "qushtepa r.", "Qushtepa r.",
+        "Qosh tum", "qosh tum", "QOSH TUM", "Qosh district", "qosh district",
+        "qoshtepaga", "Qo'shtepaga", "qushtepaga", "Qushtepaga",
+        "qoshtepadan", "Qo'shtepadan", "qushtepadan", "Qushtepadan",
+        "qoshtepa tumaniga", "Qo'shtepa tumaniga", "qoshtepa tumanidan", "Qo'shtepa tumanidan",
+        "Қўштепага", "қўштепага", "Қўштепадан", "қўштепадан",
+        "Қўштепа туманига", "қўштепа туманига", "Қўштепа туманидан", "қўштепа туманидан",
+        "qoshtepa tmn", "Qo'shtepa tmn", "QOSHTEPA TMN", "qoshtepa tumani markazi",
+        "Qo'shtepa tumani shahri", "qoshtepa tumani qalasi", "Qo'shtepa tumani qishloq",
+        "qоshtepa", "Qоshtepa", "qoshtepа", "Qoshtepа", "koshtepa", "Koshtepa"
+      ]
+    },
+    "quva": {
+      "name": "Quva",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Quva", "quva", "Қува", "қува", "Kuva", "kuva",
+        "Quva tumani", "quva tumani", "Қува тумани", "қува тумани",
+        "Quva district", "quva district", "Қува район", "қува район",
+        "Quva rayon", "quva rayon", "Quva rayoni", "quva rayoni",
+        "Quvatumani", "quvatumani", "QUVA", "QUva", "QuVa",
+        "quva tuman", "Quva tuman", "kuva tuman", "Kuva tuman",
+        "quva t.", "Quva t.", "kuva t.", "Kuva t.",
+        "quva r.", "Quva r.", "kuva r.", "Kuva r.",
+        "Quv tum", "quv tum", "QUV TUM", "Quv district", "quv district",
+        "quvaga", "Quvaga", "kuvaga", "Kuvaga",
+        "quvadan", "Quvadan", "kuvadan", "Kuvadan",
+        "quva tumaniga", "Quva tumaniga", "quva tumanidan", "Quva tumanidan",
+        "Қувага", "қувага", "Қувадан", "қувадан",
+        "Қува туманига", "қува туманига", "Қува туманидан", "қува туманидан",
+        "quva tmn", "Quva tmn", "QUVA TMN", "quva tumani markazi",
+        "Quva tumani shahri", "quva tumani qalasi", "Quva tumani qishloq",
+        "quvа", "Quvа", "quvа", "kuvа", "Kuvа", "kuva"
+      ]
+    },
+    "sox": {
+      "name": "So'x",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "So'x", "sox", "Сўх", "сўх", "Sox", "sokh",
+        "So'x tumani", "sox tumani", "Сўх тумани", "сўх тумани",
+        "So'x district", "sox district", "Сўх район", "сўх район",
+        "So'x rayon", "sox rayon", "So'x rayoni", "sox rayoni",
+        "Soxtumani", "soxtumani", "SOX", "SOx", "So'X",
+        "sox tuman", "So'x tuman", "sokh tuman", "Sokh tuman",
+        "sox t.", "So'x t.", "sokh t.", "Sokh t.",
+        "sox r.", "So'x r.", "sokh r.", "Sokh r.",
+        "Sox tum", "sox tum", "SOX TUM", "Sox district", "sox district",
+        "soxga", "So'xga", "sokhga", "Sokhga",
+        "soxdan", "So'xdan", "sokhdan", "Sokhdan",
+        "sox tumaniga", "So'x tumaniga", "sox tumanidan", "So'x tumanidan",
+        "Сўхга", "сўхга", "Сўхдан", "сўхдан",
+        "Сўх туманига", "сўх туманига", "Сўх туманидан", "сўх туманидан",
+        "sox tmn", "So'x tmn", "SOX TMN", "sox tumani markazi",
+        "So'x tumani shahri", "sox tumani qalasi", "So'x tumani qishloq",
+        "sоx", "Sоx", "sоx", "sоkh", "Sоkh", "sokh"
+      ]
+    },
+    "toshloq": {
+      "name": "Toshloq",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Toshloq", "toshloq", "Тошлоқ", "тошлоқ", "Toshloq", "toshloq",
+        "Toshloq tumani", "toshloq tumani", "Тошлоқ тумани", "тошлоқ тумани",
+        "Toshloq district", "toshloq district", "Тошлоқ район", "тошлоқ район",
+        "Toshloq rayon", "toshloq rayon", "Toshloq rayoni", "toshloq rayoni",
+        "Toshloqtumani", "toshloqtumani", "TOSHLOQ", "TOSHloq", "ToShLoQ",
+        "toshloq tuman", "Toshloq tuman", "tashloq tuman", "Tashloq tuman",
+        "toshloq t.", "Toshloq t.", "tashloq t.", "Tashloq t.",
+        "toshloq r.", "Toshloq r.", "tashloq r.", "Tashloq r.",
+        "Tosh tum", "tosh tum", "TOSH TUM", "Tosh district", "tosh district",
+        "toshloqqa", "Toshloqqa", "tashloqqa", "Tashloqqa",
+        "toshloqdan", "Toshloqdan", "tashloqdan", "Tashloqdan",
+        "toshloq tumaniga", "Toshloq tumaniga", "toshloq tumanidan", "Toshloq tumanidan",
+        "Тошлоққа", "тошлоққа", "Тошлоқдан", "тошлоқдан",
+        "Тошлоқ туманига", "тошлоқ туманига", "Тошлоқ туманидан", "тошлоқ туманидан",
+        "toshloq tmn", "Toshloq tmn", "TOSHLOQ TMN", "toshloq tumani markazi",
+        "Toshloq tumani shahri", "toshloq tumani qalasi", "Toshloq tumani qishloq",
+        "tоshloq", "Tоshloq", "toshloq", "tоshloq", "tashloq", "Tashloq"
+      ]
+    },
+    "uchkoprik": {
+      "name": "Uchko'prik",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Uchko'prik", "uchkoprik", "Учкўприк", "учкўприк", "Uchkuprik", "uchkuprik",
+        "Uchko'prik tumani", "uchkoprik tumani", "Учкўприк тумани", "учкўприк тумани",
+        "Uchko'prik district", "uchkoprik district", "Учкўприк район", "учкўприк район",
+        "Uchko'prik rayon", "uchkoprik rayon", "Uchko'prik rayoni", "uchkoprik rayoni",
+        "Uchkopriktumani", "uchkopriktumani", "UCHKOPRIK", "UCHKOprik", "UcHkO'pRiK",
+        "uchkoprik tuman", "Uchko'prik tuman", "uchkuprik tuman", "Uchkuprik tuman",
+        "uchkoprik t.", "Uchko'prik t.", "uchkuprik t.", "Uchkuprik t.",
+        "uchkoprik r.", "Uchko'prik r.", "uchkuprik r.", "Uchkuprik r.",
+        "Uch tum", "uch tum", "UCH TUM", "Uch district", "uch district",
+        "uchkoprikka", "Uchko'prikka", "uchkuprikka", "Uchkuprikka",
+        "uchkoprikdan", "Uchko'prikdan", "uchkuprikdan", "Uchkuprikdan",
+        "uchkoprik tumaniga", "Uchko'prik tumaniga", "uchkoprik tumanidan", "Uchko'prik tumanidan",
+        "Учкўприкка", "учкўприкка", "Учкўприкдан", "учкўприкдан",
+        "Учкўприк туманига", "учкўприк туманига", "Учкўприк туманидан", "учкўприк туманидан",
+        "uchkoprik tmn", "Uchko'prik tmn", "UCHKOPRIK TMN", "uchkoprik tumani markazi",
+        "Uchko'prik tumani shahri", "uchkoprik tumani qalasi", "Uchko'prik tumani qishloq",
+        "uchkоprik", "Uchkоprik", "uchkoprik", "uchkоprik", "uchkuprik", "Uchkuprik"
+      ]
+    },
+    "yozyovon": {
+      "name": "Yozyovon",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Yozyovon", "yozyovon", "Ёзёвон", "ёзёвон", "Yazyavan", "yazyavan",
+        "Yozyovon tumani", "yozyovon tumani", "Ёзёвон тумани", "ёзёвон тумани",
+        "Yozyovon district", "yozyovon district", "Ёзёвон район", "ёзёвон район",
+        "Yozyovon rayon", "yozyovon rayon", "Yozyovon rayoni", "yozyovon rayoni",
+        "Yozyovontumani", "yozyovontumani", "YOZYOVON", "YOZYovon", "YoZyOvOn",
+        "yozyovon tuman", "Yozyovon tuman", "yazyavan tuman", "Yazyavan tuman",
+        "yozyovon t.", "Yozyovon t.", "yazyavan t.", "Yazyavan t.",
+        "yozyovon r.", "Yozyovon r.", "yazyavan r.", "Yazyavan r.",
+        "Yoz tum", "yoz tum", "YOZ TUM", "Yoz district", "yoz district",
+        "yozyovonga", "Yozyovonga", "yazyavanga", "Yazyavanga",
+        "yozyovondan", "Yozyovondan", "yazyavandan", "Yazyavandan",
+        "yozyovon tumaniga", "Yozyovon tumaniga", "yozyovon tumanidan", "Yozyovon tumanidan",
+        "Ёзёвонга", "ёзёвонга", "Ёзёвондан", "ёзёвондан",
+        "Ёзёвон туманига", "ёзёвон туманига", "Ёзёвон туманидан", "ёзёвон туманидан",
+        "yozyovon tmn", "Yozyovon tmn", "YOZYOVON TMN", "yozyovon tumani markazi",
+        "Yozyovon tumani shahri", "yozyovon tumani qalasi", "Yozyovon tumani qishloq",
+        "yоzyovon", "Yоzyovon", "yozyovоn", "Yozyovоn", "yazyovon", "Yazyovon"
       ]
     },
     "namangan": {
@@ -407,6 +1178,189 @@
         "Ynq", "ynq", "ЯНҚ", "янқ", "Yangikorgon", "yangikorgon"
       ]
     },
+    "chortoq": {
+      "name": "Chortoq",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Chortoq", "chortoq", "Чортоқ", "чортоқ", "Chartok", "chartok",
+        "Chortoq tumani", "chortoq tumani", "Чортоқ тумани", "чортоқ тумани",
+        "Chortoq district", "chortoq district", "Чортоқ район", "чортоқ район",
+        "Chortoq rayon", "chortoq rayon", "Chortoq rayoni", "chortoq rayoni",
+        "Chortoqtumani", "chortoqtumani", "CHORTOQ", "CHORtoq", "ChOrToQ",
+        "chortoq tuman", "Chortoq tuman", "chartok tuman", "Chartok tuman",
+        "chortoq t.", "Chortoq t.", "chartok t.", "Chartok t.",
+        "chortoq r.", "Chortoq r.", "chartok r.", "Chartok r.",
+        "Cho tum", "cho tum", "CHO TUM", "Cho district", "cho district",
+        "chortoqqa", "Chortoqqa", "chartokka", "Chartokka",
+        "chortoqdan", "Chortoqdan", "chartokdan", "Chartokdan",
+        "chortoq tumaniga", "Chortoq tumaniga", "chortoq tumanidan", "Chortoq tumanidan",
+        "Чортоққа", "чортоққа", "Чортоқдан", "чортоқдан",
+        "Чортоқ туманига", "чортоқ туманига", "Чортоқ туманидан", "чортоқ туманидан",
+        "chortoq tmn", "Chortoq tmn", "CHORTOQ TMN", "chortoq tumani markazi",
+        "Chortoq tumani shahri", "chortoq tumani qalasi", "Chortoq tumani qishloq",
+        "chоrtoq", "Chоrtoq", "chortoq", "chоrtoq", "chartok", "Chartok"
+      ]
+    },
+    "chust_tumani": {
+      "name": "Chust tumani",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Chust tumani", "chust tumani", "Чуст тумани", "чуст тумани",
+        "Chust district", "chust district", "Чуст район", "чуст район",
+        "Chust rayon", "chust rayon", "Chust rayoni", "chust rayoni",
+        "Chusttumani", "chusttumani", "CHUST TUMANI", "CHUSt tumani",
+        "chust tuman", "Chust tuman", "chust tuman", "Chust tuman",
+        "chust t.", "Chust t.", "chust t.", "Chust t.",
+        "chust r.", "Chust r.", "chust r.", "Chust r.",
+        "Chu tum", "chu tum", "CHU TUM", "Chu district", "chu district",
+        "chust tumaniga", "Chust tumaniga", "chust tumanidan", "Chust tumanidan",
+        "Чуст туманига", "чуст туманига", "Чуст туманидан", "чуст туманидан",
+        "chust tmn", "Chust tmn", "CHUST TMN", "chust tumani markazi",
+        "Chust tumani shahri", "chust tumani qalasi", "Chust tumani qishloq",
+        "chust tumаni", "Chust tumаni", "chust tumani", "chust tumаni",
+        "chust tumon", "Chust tumon", "chust district", "Chust district"
+      ]
+    },
+    "kosonsoy": {
+      "name": "Kosonsoy",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Kosonsoy", "kosonsoy", "Косонсой", "косонсой", "Kosonsoi", "kosonsoi",
+        "Kosonsoy tumani", "kosonsoy tumani", "Косонсой тумани", "косонсой тумани",
+        "Kosonsoy district", "kosonsoy district", "Косонсой район", "косонсой район",
+        "Kosonsoy rayon", "kosonsoy rayon", "Kosonsoy rayoni", "kosonsoy rayoni",
+        "Kosonsoytumani", "kosonsoytumani", "KOSONSOY", "KOSONsoy", "KoSoNsOy",
+        "kosonsoy tuman", "Kosonsoy tuman", "kosonsoi tuman", "Kosonsoi tuman",
+        "kosonsoy t.", "Kosonsoy t.", "kosonsoi t.", "Kosonsoi t.",
+        "kosonsoy r.", "Kosonsoy r.", "kosonsoi r.", "Kosonsoi r.",
+        "Kos tum", "kos tum", "KOS TUM", "Kos district", "kos district",
+        "kosonsoyga", "Kosonsoyga", "kosonsoiga", "Kosonsoiga",
+        "kosonsoydan", "Kosonsoydan", "kosonsoydan", "Kosonsoydan",
+        "kosonsoy tumaniga", "Kosonsoy tumaniga", "kosonsoy tumanidan", "Kosonsoy tumanidan",
+        "Косонсойга", "косонсойга", "Косонсойдан", "косонсойдан",
+        "Косонсой туманига", "косонсой туманига", "Косонсой туманидан", "косонсой туманидан",
+        "kosonsoy tmn", "Kosonsoy tmn", "KOSONSOY TMN", "kosonsoy tumani markazi",
+        "Kosonsoy tumani shahri", "kosonsoy tumani qalasi", "Kosonsoy tumani qishloq",
+        "kosоnsoy", "Kosоnsoy", "kosonsоy", "Kosonsоy", "kosonsoi", "Kosonsoi"
+      ]
+    },
+    "mingbuloq": {
+      "name": "Mingbuloq",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Mingbuloq", "mingbuloq", "Мингбулоқ", "мингбулоқ", "Mingbulok", "mingbulok",
+        "Mingbuloq tumani", "mingbuloq tumani", "Мингбулоқ тумани", "мингбулоқ тумани",
+        "Mingbuloq district", "mingbuloq district", "Мингбулоқ район", "мингбулоқ район",
+        "Mingbuloq rayon", "mingbuloq rayon", "Mingbuloq rayoni", "mingbuloq rayoni",
+        "Mingbuloqtumani", "mingbuloqtumani", "MINGBULOQ", "MINGbuloq", "MiNgBuLoQ",
+        "mingbuloq tuman", "Mingbuloq tuman", "mingbulok tuman", "Mingbulok tuman",
+        "mingbuloq t.", "Mingbuloq t.", "mingbulok t.", "Mingbulok t.",
+        "mingbuloq r.", "Mingbuloq r.", "mingbulok r.", "Mingbulok r.",
+        "Min tum", "min tum", "MIN TUM", "Min district", "min district",
+        "mingbuloqqa", "Mingbuloqqa", "mingbulokka", "Mingbulokka",
+        "mingbuloqdan", "Mingbuloqdan", "mingbulokdan", "Mingbulokdan",
+        "mingbuloq tumaniga", "Mingbuloq tumaniga", "mingbuloq tumanidan", "Mingbuloq tumanidan",
+        "Мингбулоққа", "мингбулоққа", "Мингбулоқдан", "мингбулоқдан",
+        "Мингбулоқ туманига", "мингбулоқ туманига", "Мингбулоқ туманидан", "мингбулоқ туманидан",
+        "mingbuloq tmn", "Mingbuloq tmn", "MINGBULOQ TMN", "mingbuloq tumani markazi",
+        "Mingbuloq tumani shahri", "mingbuloq tumani qalasi", "Mingbuloq tumani qishloq",
+        "mingbulоq", "Mingbulоq", "mingbuloq", "mingbulоq", "mingbulok", "Mingbulok"
+      ]
+    },
+    "namangan_tumani": {
+      "name": "Namangan tumani",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Namangan tumani", "namangan tumani", "Наманган тумани", "наманган тумани",
+        "Namangan district", "namangan district", "Наманган район", "наманган район",
+        "Namangan rayon", "namangan rayon", "Namangan rayoni", "namangan rayoni",
+        "Namangantumani", "namangantumani", "NAMANGAN TUMANI", "NAMANgan tumani",
+        "namangan tuman", "Namangan tuman", "namangan tuman", "Namangan tuman",
+        "namangan t.", "Namangan t.", "namangan t.", "Namangan t.",
+        "namangan r.", "Namangan r.", "namangan r.", "Namangan r.",
+        "Nam tum", "nam tum", "NAM TUM", "Nam district", "nam district",
+        "namangan tumaniga", "Namangan tumaniga", "namangan tumanidan", "Namangan tumanidan",
+        "Наманган туманига", "наманган туманига", "Наманган туманидан", "наманган туманидан",
+        "namangan tmn", "Namangan tmn", "NAMANGAN TMN", "namangan tumani markazi",
+        "Namangan tumani shahri", "namangan tumani qalasi", "Namangan tumani qishloq",
+        "namаngan tumani", "Namаngan tumani", "namangan tumani", "namаngan tumani",
+        "namangon tumani", "Namangon tumani", "namangan tumon", "Namangan tumon"
+      ]
+    },
+    "norin": {
+      "name": "Norin",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Norin", "norin", "Норин", "норин", "Norin", "norin",
+        "Norin tumani", "norin tumani", "Норин тумани", "норин тумани",
+        "Norin district", "norin district", "Норин район", "норин район",
+        "Norin rayon", "norin rayon", "Norin rayoni", "norin rayoni",
+        "Norintumani", "norintumani", "NORIN", "NORin", "NoRiN",
+        "norin tuman", "Norin tuman", "norin tuman", "Norin tuman",
+        "norin t.", "Norin t.", "norin t.", "Norin t.",
+        "norin r.", "Norin r.", "norin r.", "Norin r.",
+        "Nor tum", "nor tum", "NOR TUM", "Nor district", "nor district",
+        "noringa", "Noringa", "noringa", "Noringa",
+        "norindan", "Norindan", "norindan", "Norindan",
+        "norin tumaniga", "Norin tumaniga", "norin tumanidan", "Norin tumanidan",
+        "Норинга", "норинга", "Нориндан", "нориндан",
+        "Норин туманига", "норин туманига", "Норин туманидан", "норин туманидан",
+        "norin tmn", "Norin tmn", "NORIN TMN", "norin tumani markazi",
+        "Norin tumani shahri", "norin tumani qalasi", "Norin tumani qishloq",
+        "nоrin", "Nоrin", "norin", "nоrin", "norin", "Norin"
+      ]
+    },
+    "pop_tumani": {
+      "name": "Pop tumani",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Pop tumani", "pop tumani", "Поп тумани", "поп тумани",
+        "Pop district", "pop district", "Поп район", "поп район",
+        "Pop rayon", "pop rayon", "Pop rayoni", "pop rayoni",
+        "Poptumani", "poptumani", "POP TUMANI", "POp tumani",
+        "pop tuman", "Pop tuman", "pop tuman", "Pop tuman",
+        "pop t.", "Pop t.", "pop t.", "Pop t.",
+        "pop r.", "Pop r.", "pop r.", "Pop r.",
+        "Pop tum", "pop tum", "POP TUM", "Pop district", "pop district",
+        "pop tumaniga", "Pop tumaniga", "pop tumanidan", "Pop tumanidan",
+        "Поп туманига", "поп туманига", "Поп туманидан", "поп туманидан",
+        "pop tmn", "Pop tmn", "POP TMN", "pop tumani markazi",
+        "Pop tumani shahri", "pop tumani qalasi", "Pop tumani qishloq",
+        "pоp tumani", "Pоp tumani", "pop tumani", "pоp tumani",
+        "pap tumani", "Pap tumani", "pop tumon", "Pop tumon"
+      ]
+    },
+    "uychi": {
+      "name": "Uychi",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Uychi", "uychi", "Уйчи", "уйчи", "Uichi", "uichi",
+        "Uychi tumani", "uychi tumani", "Уйчи тумани", "уйчи тумани",
+        "Uychi district", "uychi district", "Уйчи район", "уйчи район",
+        "Uychi rayon", "uychi rayon", "Uychi rayoni", "uychi rayoni",
+        "Uychitumani", "uychitumani", "UYCHI", "UYchi", "UyChI",
+        "uychi tuman", "Uychi tuman", "uichi tuman", "Uichi tuman",
+        "uychi t.", "Uychi t.", "uichi t.", "Uichi t.",
+        "uychi r.", "Uychi r.", "uichi r.", "Uichi r.",
+        "Uyc tum", "uyc tum", "UYC TUM", "Uyc district", "uyc district",
+        "uychiga", "Uychiga", "uichiga", "Uichiga",
+        "uychidan", "Uychidan", "uichidan", "Uichidan",
+        "uychi tumaniga", "Uychi tumaniga", "uychi tumanidan", "Uychi tumanidan",
+        "Уйчига", "уйчига", "Уйчидан", "уйчидан",
+        "Уйчи туманига", "уйчи туманига", "Уйчи туманидан", "уйчи туманидан",
+        "uychi tmn", "Uychi tmn", "UYCHI TMN", "uychi tumani markazi",
+        "Uychi tumani shahri", "uychi tumani qalasi", "Uychi tumani qishloq",
+        "uychі", "Uychі", "uychi", "uychі", "uichi", "Uichi"
+      ]
+    },
     "buxoro": {
       "name": "Buxoro",
       "type": "region",
@@ -435,7 +1389,36 @@
       "keywords": [
         "Kogon", "kogon", "Когон", "когон", "Kogan", "kogan",
         "Kog", "kog", "Kogonga", "Kogondan", "Когонга", "Когондан",
-        "когонга", "когондан", "Коган", "коган", "Kohan", "kohan"
+        "когонга", "когондан", "Коган", "коган", "Kohan", "kohan",
+        "kogon", "Kogon", "KOGON", "kogan", "Kogan", "KOGAN",
+        "kogоn", "Kogоn", "kogаn", "Kogаn", "kohan", "Kohan",
+        "kogon shahri", "kogon city", "kogan city", "kogan shahri",
+        "kogon qalasi", "kogan qalasi", "kohan shahri", "kohan city",
+        "kogon tumani", "Kogon tumani", "kogan tumani", "Kogan tumani",
+        "kogon district", "kogan district", "kogon rayon", "kogan rayon",
+        "kogоnga", "Kogоnga", "kogandа", "Kogandа", "kogondan", "Kogondan",
+        "kogon sh", "Kogon sh", "kogan sh", "Kogan sh", "kogon s", "kogan s",
+        "kogon markazi", "kogan markazi", "kogon центр", "kogan центр",
+        "kоgon", "Kоgon", "kogаn", "Kogаn", "kohаn", "Kohаn",
+        "kogon tuman", "kogan tuman", "kogon t", "Kogon t", "kogan t", "Kogan t",
+        "kogon r", "Kogon r", "kogan r", "Kogan r", "kogon r", "Kogon r",
+        "kogonda", "Kogonda", "koganda", "Koganda", "kohonda", "Kohonda",
+        "kogondagi", "Kogondagi", "kogandagi", "Kogandagi", "kohandagi", "Kohandagi",
+        "kogonlik", "Kogonlik", "koganlik", "Koganlik", "kohanlik", "Kohanlik",
+        "kogon shahar", "Kogon shahar", "kogan shahar", "Kogan shahar",
+        "kogon shaхri", "Kogon shaхri", "kogan shaхri", "Kogan shaхri",
+        "kogon qаlasi", "Kogon qаlasi", "kogan qаlasi", "Kogan qаlasi",
+        "kogon xalqi", "kogan xalqi", "kogon ahli", "kogan ahli",
+        "kogon bozori", "kogan bozori", "kogon bazaar", "kogan bazaar",
+        "kogon station", "kogan station", "kogon bekat", "kogan bekat",
+        "kogon avtovokzal", "kogan avtovokzal", "kogon avtostation", "kogan avtostation",
+        "kogon yoли", "kogan yoли", "kogon road", "kogan road",
+        "kogon street", "kogan street", "kogon ko'chasi", "kogan ko'chasi",
+        "kogon railway", "kogan railway", "kogon temir yo'l", "kogan temir yo'l",
+        "kogon poyezd", "kogan poyezd", "kogon train", "kogan train",
+        "kogon tekstil", "kogan tekstil", "kogon textile", "kogan textile",
+        "kogon zavod", "kogan zavod", "kogon factory", "kogan factory",
+        "kogon sanoat", "kogan sanoat", "kogon industry", "kogan industry"
       ]
     },
     "vobkent": {
@@ -466,6 +1449,168 @@
         "Shofirkon", "shofirkon", "Шофиркон", "шофиркон", "Shafirkan", "shafirkan",
         "Sho", "sho", "Shofirkonga", "Shofirkondan", "Шофиркорнга", "Шофиркондан",
         "шофиркорнга", "шофиркондан", "Шафиркан", "шафиркан", "Shafirkon", "shafirkon"
+      ]
+    },
+    "buxoro_tumani": {
+      "name": "Buxoro tumani",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Buxoro tumani", "buxoro tumani", "Бухоро тумани", "бухоро тумани",
+        "Buxoro district", "buxoro district", "Бухоро район", "бухоро район",
+        "Buxoro rayon", "buxoro rayon", "Buxoro rayoni", "buxoro rayoni",
+        "Buxorotumani", "buxorotumani", "BUXORO TUMANI", "BUXOro tumani",
+        "buxoro tuman", "Buxoro tuman", "bukhara tumani", "Bukhara tumani",
+        "buxoro t.", "Buxoro t.", "bukhara t.", "Bukhara t.",
+        "buxoro r.", "Buxoro r.", "bukhara r.", "Bukhara r.",
+        "Bux tum", "bux tum", "BUX TUM", "Bux district", "bux district",
+        "buxoro tumaniga", "Buxoro tumaniga", "buxoro tumanidan", "Buxoro tumanidan",
+        "Бухоро туманига", "бухоро туманига", "Бухоро туманидан", "бухоро туманидан",
+        "buxoro tmn", "Buxoro tmn", "BUXORO TMN", "buxoro tumani markazi",
+        "Buxoro tumani shahri", "buxoro tumani qalasi", "Buxoro tumani qishloq",
+        "buxоro tumani", "Buxоro tumani", "buxoro tumani", "buxоro tumani",
+        "bukhara tumani", "Bukhara tumani", "buhoro tumani", "Buhoro tumani"
+      ]
+    },
+    "jondor": {
+      "name": "Jondor",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Jondor", "jondor", "Жондор", "жондор", "Jondor", "jondor",
+        "Jondor tumani", "jondor tumani", "Жондор тумани", "жондор тумани",
+        "Jondor district", "jondor district", "Жондор район", "жондор район",
+        "Jondor rayon", "jondor rayon", "Jondor rayoni", "jondor rayoni",
+        "Jondortumani", "jondortumani", "JONDOR", "JONdor", "JoNdOr",
+        "jondor tuman", "Jondor tuman", "jondor tuman", "Jondor tuman",
+        "jondor t.", "Jondor t.", "jondor t.", "Jondor t.",
+        "jondor r.", "Jondor r.", "jondor r.", "Jondor r.",
+        "Jon tum", "jon tum", "JON TUM", "Jon district", "jon district",
+        "jondorga", "Jondorga", "jondorga", "Jondorga",
+        "jondordan", "Jondordan", "jondordan", "Jondordan",
+        "jondor tumaniga", "Jondor tumaniga", "jondor tumanidan", "Jondor tumanidan",
+        "Жондорга", "жондорга", "Жондордан", "жондордан",
+        "Жондор туманига", "жондор туманига", "Жондор туманидан", "жондор туманидан",
+        "jondor tmn", "Jondor tmn", "JONDOR TMN", "jondor tumani markazi",
+        "Jondor tumani shahri", "jondor tumani qalasi", "Jondor tumani qishloq",
+        "jоndor", "Jоndor", "jondоr", "Jondоr", "jondor", "Jondor"
+      ]
+    },
+    "kogon_tumani": {
+      "name": "Kogon tumani",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Kogon tumani", "kogon tumani", "Когон тумани", "когон тумани",
+        "Kogon district", "kogon district", "Когон район", "когон район",
+        "Kogon rayon", "kogon rayon", "Kogon rayoni", "kogon rayoni",
+        "Kogontumani", "kogontumani", "KOGON TUMANI", "KOGon tumani",
+        "kogon tuman", "Kogon tuman", "kogan tuman", "Kogan tuman",
+        "kogon t.", "Kogon t.", "kogan t.", "Kogan t.",
+        "kogon r.", "Kogon r.", "kogan r.", "Kogan r.",
+        "Kog tum", "kog tum", "KOG TUM", "Kog district", "kog district",
+        "kogon tumaniga", "Kogon tumaniga", "kogon tumanidan", "Kogon tumanidan",
+        "Когон туманига", "когон туманига", "Когон туманидан", "когон туманидан",
+        "kogon tmn", "Kogon tmn", "KOGON TMN", "kogon tumani markazi",
+        "Kogon tumani shahri", "kogon tumani qalasi", "Kogon tumani qishloq",
+        "kоgon tumani", "Kоgon tumani", "kogon tumani", "kоgon tumani",
+        "kogan tumani", "Kogan tumani", "kogon tumon", "Kogon tumon"
+      ]
+    },
+    "peshku": {
+      "name": "Peshku",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Peshku", "peshku", "Пешку", "пешку", "Peshku", "peshku",
+        "Peshku tumani", "peshku tumani", "Пешку тумани", "пешку тумани",
+        "Peshku district", "peshku district", "Пешку район", "пешку район",
+        "Peshku rayon", "peshku rayon", "Peshku rayoni", "peshku rayoni",
+        "Peshkutumani", "peshkutumani", "PESHKU", "PESHku", "PeShKu",
+        "peshku tuman", "Peshku tuman", "peshku tuman", "Peshku tuman",
+        "peshku t.", "Peshku t.", "peshku t.", "Peshku t.",
+        "peshku r.", "Peshku r.", "peshku r.", "Peshku r.",
+        "Pes tum", "pes tum", "PES TUM", "Pes district", "pes district",
+        "peshkuga", "Peshkuga", "peshkuga", "Peshkuga",
+        "peshkudan", "Peshkudan", "peshkudan", "Peshkudan",
+        "peshku tumaniga", "Peshku tumaniga", "peshku tumanidan", "Peshku tumanidan",
+        "Пешкуга", "пешкуга", "Пешкудан", "пешкудан",
+        "Пешку туманига", "пешку туманига", "Пешку туманидан", "пешку туманидан",
+        "peshku tmn", "Peshku tmn", "PESHKU TMN", "peshku tumani markazi",
+        "Peshku tumani shahri", "peshku tumani qalasi", "Peshku tumani qishloq",
+        "peshkу", "Peshkу", "peshku", "peshkу", "peshku", "Peshku"
+      ]
+    },
+    "qorakol": {
+      "name": "Qorako'l",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Qorako'l", "qorakol", "Қоракўл", "қоракўл", "Karakul", "karakul",
+        "Qorako'l tumani", "qorakol tumani", "Қоракўл тумани", "қоракўл тумани",
+        "Qorako'l district", "qorakol district", "Қоракўл район", "қоракўл район",
+        "Qorako'l rayon", "qorakol rayon", "Qorako'l rayoni", "qorakol rayoni",
+        "Qorakoltumani", "qorakoltumani", "QORAKOL", "QORAkol", "QoRaKo'L",
+        "qorakol tuman", "Qorako'l tuman", "karakul tuman", "Karakul tuman",
+        "qorakol t.", "Qorako'l t.", "karakul t.", "Karakul t.",
+        "qorakol r.", "Qorako'l r.", "karakul r.", "Karakul r.",
+        "Qor tum", "qor tum", "QOR TUM", "Qor district", "qor district",
+        "qorakolga", "Qorako'lga", "karakulga", "Karakulga",
+        "qorakoldan", "Qorako'ldan", "karakuldan", "Karakuldan",
+        "qorakol tumaniga", "Qorako'l tumaniga", "qorakol tumanidan", "Qorako'l tumanidan",
+        "Қоракўлга", "қоракўлга", "Қоракўлдан", "қоракўлдан",
+        "Қоракўл туманига", "қоракўл туманига", "Қоракўл туманидан", "қоракўл туманидан",
+        "qorakol tmn", "Qorako'l tmn", "QORAKOL TMN", "qorakol tumani markazi",
+        "Qorako'l tumani shahri", "qorakol tumani qalasi", "Qorako'l tumani qishloq",
+        "qоrakol", "Qоrakol", "qorakоl", "Qorakоl", "karakol", "Karakol"
+      ]
+    },
+    "qorovulbozor": {
+      "name": "Qorovulbozor",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Qorovulbozor", "qorovulbozor", "Қоровулбозор", "қоровулбозор", "Karavulbazar", "karavulbazar",
+        "Qorovulbozor tumani", "qorovulbozor tumani", "Қоровулбозор тумани", "қоровулбозор тумани",
+        "Qorovulbozor district", "qorovulbozor district", "Қоровулбозор район", "қоровулбозор район",
+        "Qorovulbozor rayon", "qorovulbozor rayon", "Qorovulbozor rayoni", "qorovulbozor rayoni",
+        "Qorovulbozortumani", "qorovulbozortumani", "QOROVULBOZOR", "QOROVULbozor", "QoRoVuLbOzOr",
+        "qorovulbozor tuman", "Qorovulbozor tuman", "karavulbazar tuman", "Karavulbazar tuman",
+        "qorovulbozor t.", "Qorovulbozor t.", "karavulbazar t.", "Karavulbazar t.",
+        "qorovulbozor r.", "Qorovulbozor r.", "karavulbazar r.", "Karavulbazar r.",
+        "Qor tum", "qor tum", "QOR TUM", "Qor district", "qor district",
+        "qorovulbozorga", "Qorovulbozorga", "karavulbazarga", "Karavulbazarga",
+        "qorovulbozordan", "Qorovulbozordan", "karavulbazardan", "Karavulbazardan",
+        "qorovulbozor tumaniga", "Qorovulbozor tumaniga", "qorovulbozor tumanidan", "Qorovulbozor tumanidan",
+        "Қоровулбозорга", "қоровулбозорга", "Қоровулбозордан", "қоровулбозордан",
+        "Қоровулбозор туманига", "қоровулбозор туманига", "Қоровулбозор туманидан", "қоровулбозор туманидан",
+        "qorovulbozor tmn", "Qorovulbozor tmn", "QOROVULBOZOR TMN", "qorovulbozor tumani markazi",
+        "Qorovulbozor tumani shahri", "qorovulbozor tumani qalasi", "Qorovulbozor tumani qishloq",
+        "qоrovulbozor", "Qоrovulbozor", "qorovulbоzor", "Qorovulbоzor", "karavulbozor", "Karavulbozor"
+      ]
+    },
+    "romitan": {
+      "name": "Romitan",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Romitan", "romitan", "Ромитан", "ромитан", "Ramitan", "ramitan",
+        "Romitan tumani", "romitan tumani", "Ромитан тумани", "ромитан тумани",
+        "Romitan district", "romitan district", "Ромитан район", "ромитан район",
+        "Romitan rayon", "romitan rayon", "Romitan rayoni", "romitan rayoni",
+        "Romitantumani", "romitantumani", "ROMITAN", "ROMitan", "RoMiTaN",
+        "romitan tuman", "Romitan tuman", "ramitan tuman", "Ramitan tuman",
+        "romitan t.", "Romitan t.", "ramitan t.", "Ramitan t.",
+        "romitan r.", "Romitan r.", "ramitan r.", "Ramitan r.",
+        "Rom tum", "rom tum", "ROM TUM", "Rom district", "rom district",
+        "romitanga", "Romitanga", "ramitanga", "Ramitanga",
+        "romitandan", "Romitandan", "ramitandan", "Ramitandan",
+        "romitan tumaniga", "Romitan tumaniga", "romitan tumanidan", "Romitan tumanidan",
+        "Ромитанга", "ромитанга", "Ромитандан", "ромитандан",
+        "Ромитан туманига", "ромитан туманига", "Ромитан туманидан", "ромитан туманидан",
+        "romitan tmn", "Romitan tmn", "ROMITAN TMN", "romitan tumani markazi",
+        "Romitan tumani shahri", "romitan tumani qalasi", "Romitan tumani qishloq",
+        "rоmitan", "Rоmitan", "romitan", "rоmitan", "ramitan", "Ramitan"
       ]
     },
     "qashqadaryo": {
@@ -529,6 +1674,116 @@
         "китобга", "китобдан", "Китаб", "китаб", "Ketob", "ketob"
       ]
     },
+    "guzor": {
+      "name": "G'uzor",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "G'uzor", "g'uzor", "Ғузор", "ғузор", "Guzor", "guzor",
+        "Ghuzor", "ghuzor", "G'uzorga", "G'uzordan", "Ғузорга", "Ғузордан",
+        "ғузорга", "ғузордан", "Guzorga", "Guzordan", "Гузор", "гузор",
+        "G'uz", "g'uz", "Guz", "guz", "Ghuz", "ghuz",
+        "Ғуз", "ғуз", "Гуз", "гуз", "G'uzori", "g'uzori",
+        "Guzori", "guzori", "Ghuzori", "ghuzori", "Ғузори", "ғузори",
+        "g'uzor tumani", "guzor tumani", "g'uzor rayon", "guzor rayon",
+        "g'uzor district", "guzor district", "G'uzor tumani", "Guzor tumani",
+        "g'uzordan", "guzordan", "g'uzorga", "guzorga", "ғузор тумани",
+        "гузор тумани", "g'uzorni", "guzorni", "G'uzorni", "Guzorni"
+      ]
+    },
+    "qamashi": {
+      "name": "Qamashi",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Qamashi", "qamashi", "Қамаши", "қамаши", "Kamashi", "kamashi",
+        "Qam", "qam", "Qamashiga", "Qamashidan", "Қамашига", "Қамашидан",
+        "қамашига", "қамашидан", "Kamashiga", "Kamashidan", "Камаши", "камаши",
+        "Qamash", "qamash", "Kamash", "kamash", "Қамаш", "қамаш",
+        "Камаш", "камаш", "Qamoshi", "qamoshi", "Kamoshi", "kamoshi",
+        "Қамоши", "қамоши", "Камоши", "камоши", "qamashi tumani",
+        "kamashi tumani", "qamashi rayon", "kamashi rayon", "qamashi district",
+        "Qamashi tumani", "Kamashi tumani", "qamashiga", "kamashiga",
+        "qamashidan", "kamashidan", "qamashini", "kamashini", "Qamashini"
+      ]
+    },
+    "qarshi_tuman": {
+      "name": "Qarshi tumani",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Qarshi tumani", "qarshi tumani", "Қарши тумани", "қарши тумани",
+        "Karshi tumani", "karshi tumani", "Qarshi rayon", "qarshi rayon",
+        "Qarshi district", "qarshi district", "Қарши район", "қарши район",
+        "Karshi rayon", "karshi rayon", "Karshi district", "karshi district",
+        "Qarshi tuman", "qarshi tuman", "Karshi tuman", "karshi tuman",
+        "Карши район", "карши район", "Карши тумани", "карши тумани",
+        "qarshi tumaniga", "karshi tumaniga", "qarshi tumanidan", "karshi tumanidan",
+        "Qarshi tumaniga", "Qarshi tumanidan", "Karshi tumaniga", "Karshi tumanidan",
+        "qarshi tuman", "karshi tuman", "qarshi tumanи", "karshi tumanи",
+        "Qarshi t-ni", "qarshi t-ni", "Karshi t-ni", "karshi t-ni"
+      ]
+    },
+    "kasbi": {
+      "name": "Kasbi",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Kasbi", "kasbi", "Касби", "касби", "Kasbi tumani", "kasbi tumani",
+        "Kas", "kas", "Kasbiga", "Kasbidan", "Касбига", "Касбидан",
+        "касбига", "касбидан", "Kasb", "kasb", "Касб", "касб",
+        "Kasby", "kasby", "Касбы", "касбы", "Kasbi rayon", "kasbi rayon",
+        "Kasbi district", "kasbi district", "Касби район", "касби район",
+        "kasbiga", "kasbidan", "kasbini", "Kasbini", "Kasbi t-ni",
+        "kasbi t-ni", "Kasbi tuman", "kasbi tuman", "Kasby tumani",
+        "kasby tumani", "Kasbi tumaniga", "kasbi tumaniga", "Kasbidan", "kasbidan"
+      ]
+    },
+    "nishon": {
+      "name": "Nishon",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Nishon", "nishon", "Нишон", "нишон", "Nishan", "nishan",
+        "Nish", "nish", "Nishonga", "Nishondan", "Нишонга", "Нишондан",
+        "нишонга", "нишондан", "Nishanga", "Nishandan", "Нишан", "нишан",
+        "Nishon tumani", "nishon tumani", "Nishan tumani", "nishan tumani",
+        "Nishon rayon", "nishon rayon", "Nishon district", "nishon district",
+        "Нишон тумани", "нишон тумани", "Нишан тумани", "нишан тумани",
+        "nishondan", "nishandan", "nishonga", "nishanga", "nishonni",
+        "nishanni", "Nishonni", "Nishanni", "Nishon t-ni", "nishon t-ni"
+      ]
+    },
+    "dehqonobod": {
+      "name": "Dehqonobod",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Dehqonobod", "dehqonobod", "Деҳқонобод", "деҳқонобод", "Dekhkanabad", "dekhkanabad",
+        "Deh", "deh", "Dehqonobodga", "Dehqonoboddan", "Деҳқонободга", "Деҳқонободдан",
+        "деҳқонободга", "деҳқонободдан", "Dexqonobod", "dexqonobod", "Дехканабад", "дехканабад",
+        "Dehkanabad", "dehkanabad", "Dekhkonobod", "dekhkonobod", "Dehqonabad", "dehqonabad",
+        "Dehqonobod tumani", "dehqonobod tumani", "Dekhkanabad tumani", "dekhkanabad tumani",
+        "Dehqonobod rayon", "dehqonobod rayon", "Dehqonobod district", "dehqonobod district",
+        "dehqonobodga", "dekhkanabadga", "dehqonoboddan", "dekhkanabaddan",
+        "Dehqonobod t-ni", "dehqonobod t-ni", "dehqonobodni", "Dehqonobodni"
+      ]
+    },
+    "yakkabog": {
+      "name": "Yakkabog'",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Yakkabog'", "yakkabog'", "Яккабоғ", "яккабоғ", "Yakkabog", "yakkabog",
+        "Yakkabagh", "yakkabagh", "Yakka", "yakka", "Yakkabog'ga", "Yakkabog'dan",
+        "Яккабоғга", "Яккабоғдан", "яккабоғга", "яккабоғдан", "Yakkabogga", "Yakkabogdan",
+        "Яккабаг", "яккабаг", "Yakkabag", "yakkabag", "Yakkabagh", "yakkabagh",
+        "Yakkabog' tumani", "yakkabog' tumani", "Yakkabog tumani", "yakkabog tumani",
+        "Yakkabog' rayon", "yakkabog' rayon", "Yakkabog' district", "yakkabog' district",
+        "yakkabog'ga", "yakkabogga", "yakkabog'dan", "yakkabogdan",
+        "yakkabog'ni", "yakkabogni", "Yakkabog'ni", "Yakkabogni", "Yakkabog' t-ni"
+      ]
+    },
     "surxondaryo": {
       "name": "Surxondaryo",
       "type": "region",
@@ -590,6 +1845,125 @@
         "музработга", "музработдан", "Музрабад", "музрабад", "Muzrobod", "muzrobod"
       ]
     },
+    "angor": {
+      "name": "Angor",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Angor", "angor", "Ангор", "ангор", "Angar", "angar",
+        "Ang", "ang", "Angorga", "Angordan", "Ангорга", "Ангордан",
+        "ангорга", "ангордан", "Angarga", "Angardan", "Ангар", "ангар",
+        "Angor tumani", "angor tumani", "Angar tumani", "angar tumani",
+        "Angor rayon", "angor rayon", "Angor district", "angor district",
+        "Ангор тумани", "ангор тумани", "Ангар тумани", "ангар тумани",
+        "angorga", "angarga", "angordan", "angardan", "angorni",
+        "angarni", "Angorni", "Angarni", "Angor t-ni", "angor t-ni"
+      ]
+    },
+    "bandixon": {
+      "name": "Bandixon",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Bandixon", "bandixon", "Бандихон", "бандихон", "Bandikhan", "bandikhan",
+        "Bandi", "bandi", "Bandixonga", "Bandixondan", "Бандихонга", "Бандихондан",
+        "бандихонга", "бандихондан", "Bandikhanga", "Bandikhandan", "Бандихан", "бандихан",
+        "Bandihon", "bandihon", "Bandixan", "bandixan", "Бандихан", "бандихан",
+        "Bandixon tumani", "bandixon tumani", "Bandikhan tumani", "bandikhan tumani",
+        "Bandixon rayon", "bandixon rayon", "Bandixon district", "bandixon district",
+        "bandixonga", "bandikhanga", "bandixondan", "bandikhandan", "bandixonni",
+        "bandikhanni", "Bandixonni", "Bandikhanni", "Bandixon t-ni", "bandixon t-ni"
+      ]
+    },
+    "jarqorgon": {
+      "name": "Jarqo'rg'on",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Jarqo'rg'on", "jarqo'rg'on", "Жарқўрғон", "жарқўрғон", "Jarqorgon", "jarqorgon",
+        "Jarkurgan", "jarkurgan", "Jar", "jar", "Jarqo'rg'onga", "Jarqo'rg'ondan",
+        "Жарқўрғонга", "Жарқўрғондан", "жарқўрғонга", "жарқўрғондан", "Jarqorgonga", "Jarqorgondan",
+        "Жаркурган", "жаркурган", "Jarkurganga", "Jarkurgandan", "Jarkorgan", "jarkorgan",
+        "Jarqo'rg'on tumani", "jarqo'rg'on tumani", "Jarqorgon tumani", "jarqorgon tumani",
+        "Jarkurgan tumani", "jarkurgan tumani", "Jarqo'rg'on rayon", "jarqo'rg'on rayon",
+        "jarqo'rg'onga", "jarqorgonga", "jarqo'rg'ondan", "jarqorgondan", "jarqo'rg'onni"
+      ]
+    },
+    "qiziriq": {
+      "name": "Qiziriq",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Qiziriq", "qiziriq", "Қизириқ", "қизириқ", "Kizirik", "kizirik",
+        "Qiz", "qiz", "Qiziriqqa", "Qiziriqdan", "Қизириққа", "Қизириқдан",
+        "қизириққа", "қизириқдан", "Kiziriqqa", "Kiziriqdan", "Кизирик", "кизирик",
+        "Qiziriq tumani", "qiziriq tumani", "Kizirik tumani", "kizirik tumani",
+        "Qiziriq rayon", "qiziriq rayon", "Qiziriq district", "qiziriq district",
+        "Қизириқ тумани", "қизириқ тумани", "Кизирик тумани", "кизирик тумани",
+        "qiziriqqa", "kiziriqqa", "qiziriqdan", "kiziriqdan", "qiziriqni",
+        "kiziriqni", "Qiziriqni", "Kiziriqni", "Qiziriq t-ni", "qiziriq t-ni"
+      ]
+    },
+    "qumqorgon": {
+      "name": "Qumqo'rg'on",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Qumqo'rg'on", "qumqo'rg'on", "Қумқўрғон", "қумқўрғон", "Qumqorgon", "qumqorgon",
+        "Kumkurgan", "kumkurgan", "Qum", "qum", "Qumqo'rg'onga", "Qumqo'rg'ondan",
+        "Қумқўрғонга", "Қумқўрғондан", "қумқўрғонга", "қумқўрғондан", "Qumqorgonga", "Qumqorgondan",
+        "Кумкурган", "кумкурган", "Kumkurganga", "Kumkurgandan", "Qumkorgan", "qumkorgan",
+        "Qumqo'rg'on tumani", "qumqo'rg'on tumani", "Qumqorgon tumani", "qumqorgon tumani",
+        "Kumkurgan tumani", "kumkurgan tumani", "Qumqo'rg'on rayon", "qumqo'rg'on rayon",
+        "qumqo'rg'onga", "qumqorgonga", "qumqo'rg'ondan", "qumqorgondan", "qumqo'rg'onni"
+      ]
+    },
+    "oltinsoy": {
+      "name": "Oltinsoy",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Oltinsoy", "oltinsoy", "Олтинсой", "олтинсой", "Altinsay", "altinsay",
+        "Oltin", "oltin", "Oltinsoyga", "Oltinsoydan", "Олтинсойга", "Олтинсойдан",
+        "олтинсойга", "олтинсойдан", "Altinsayga", "Altinsaydan", "Алтинсай", "алтинсай",
+        "Oltinsoy tumani", "oltinsoy tumani", "Altinsay tumani", "altinsay tumani",
+        "Oltinsoy rayon", "oltinsoy rayon", "Oltinsoy district", "oltinsoy district",
+        "Олтинсой тумани", "олтинсой тумани", "Алтинсай тумани", "алтинсай тумани",
+        "oltinsoyga", "altinsayga", "oltinsoydan", "altinsaydan", "oltinsoyni",
+        "altinsayni", "Oltinsoyni", "Altinsayni", "Oltinsoy t-ni", "oltinsoy t-ni"
+      ]
+    },
+    "sariosiyo": {
+      "name": "Sariosiyo",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Sariosiyo", "sariosiyo", "Сариосиё", "сариосиё", "Sariasiya", "sariasiya",
+        "Sari", "sari", "Sariosiyoga", "Sariosiyodan", "Сариосиёга", "Сариосиёдан",
+        "сариосиёга", "сариосиёдан", "Sariasiyaga", "Sariasiyadan", "Сариасия", "сариасия",
+        "Sariosiyo tumani", "sariosiyo tumani", "Sariasiya tumani", "sariasiya tumani",
+        "Sariosiyo rayon", "sariosiyo rayon", "Sariosiyo district", "sariosiyo district",
+        "Сариосиё тумани", "сариосиё тумани", "Сариасия тумани", "сариасия тумани",
+        "sariosiyoga", "sariasiyaga", "sariosiyodan", "sariasiyadan", "sariosiyoni",
+        "sariasiyani", "Sariosiyoni", "Sariasiyani", "Sariosiyo t-ni", "sariosiyo t-ni"
+      ]
+    },
+    "termiz_tuman": {
+      "name": "Termiz tumani",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Termiz tumani", "termiz tumani", "Термиз тумани", "термиз тумани",
+        "Termez tumani", "termez tumani", "Termiz rayon", "termiz rayon",
+        "Termiz district", "termiz district", "Термиз район", "термиз район",
+        "Termez rayon", "termez rayon", "Termez district", "termez district",
+        "Termiz tuman", "termiz tuman", "Termez tuman", "termez tuman",
+        "Термез тумани", "термез тумани", "Термиз району", "термиз району",
+        "termiz tumaniga", "termez tumaniga", "termiz tumanidan", "termez tumanidan",
+        "Termiz tumaniga", "Termiz tumanidan", "Termez tumaniga", "Termez tumanidan",
+        "termiz tuman", "termez tuman", "Termiz t-ni", "termiz t-ni"
+      ]
+    },
     "sirdaryo": {
       "name": "Sirdaryo",
       "type": "region",
@@ -639,6 +2013,68 @@
         "Mirzaobod", "mirzaobod", "Мирзаобод", "мирзаобод", "Mirzaabad", "mirzaabad",
         "Mir", "mir", "Mirzaobodga", "Mirzaoboddan", "Мирзаободга", "Мирзаободдан",
         "мирзаободга", "мирзаободдан", "Мирзаабад", "мирзаабад", "Mirzobod", "mirzobod"
+      ]
+    },
+    "guliston_tuman": {
+      "name": "Guliston tumani",
+      "type": "district",
+      "parent_region": "sirdaryo",
+      "keywords": [
+        "Guliston tumani", "guliston tumani", "Гулистон тумани", "гулистон тумани",
+        "Gulistan tumani", "gulistan tumani", "Guliston rayon", "guliston rayon",
+        "Guliston district", "guliston district", "Гулистон район", "гулистон район",
+        "Gulistan rayon", "gulistan rayon", "Gulistan district", "gulistan district",
+        "Guliston tuman", "guliston tuman", "Gulistan tuman", "gulistan tuman",
+        "Гулистан тумани", "гулистан тумани", "Гулистон району", "гулистон району",
+        "guliston tumaniga", "gulistan tumaniga", "guliston tumanidan", "gulistan tumanidan",
+        "Guliston tumaniga", "Guliston tumanidan", "Gulistan tumaniga", "Gulistan tumanidan",
+        "guliston tuman", "gulistan tuman", "Guliston t-ni", "guliston t-ni"
+      ]
+    },
+    "xovos": {
+      "name": "Xovos",
+      "type": "district",
+      "parent_region": "sirdaryo",
+      "keywords": [
+        "Xovos", "xovos", "Ховос", "ховос", "Khovos", "khovos",
+        "Xov", "xov", "Xovosga", "Xovosdan", "Ховосга", "Ховосдан",
+        "ховосга", "ховосдан", "Khovosga", "Khovosdan", "Хавос", "хавос",
+        "Xavos", "xavos", "Khavos", "khavos", "Xovos tumani", "xovos tumani",
+        "Khovos tumani", "khovos tumani", "Xovos rayon", "xovos rayon",
+        "Xovos district", "xovos district", "Ховос тумани", "ховос тумани",
+        "xovosga", "khovosga", "xovosdan", "khovosdan", "xovosni",
+        "khovosni", "Xovosni", "Khovosni", "Xovos t-ni", "xovos t-ni"
+      ]
+    },
+    "oqoltin": {
+      "name": "Oqoltin",
+      "type": "district",
+      "parent_region": "sirdaryo",
+      "keywords": [
+        "Oqoltin", "oqoltin", "Оқолтин", "оқолтин", "Akaltyn", "akaltyn",
+        "Oq", "oq", "Oqoltinga", "Oqoltindan", "Оқолтинга", "Оқолтиндан",
+        "оқолтинга", "оқолтиндан", "Akaltinga", "Akaltindan", "Акалтын", "акалтын",
+        "Oqaltin", "oqaltin", "Akoltin", "akoltin", "Oqoltin tumani", "oqoltin tumani",
+        "Akaltyn tumani", "akaltyn tumani", "Oqoltin rayon", "oqoltin rayon",
+        "Oqoltin district", "oqoltin district", "Оқолтин тумани", "оқолтин тумани",
+        "oqoltinga", "akaltinga", "oqoltindan", "akaltindan", "oqoltinni",
+        "akaltinni", "Oqoltinni", "Akaltinni", "Oqoltin t-ni", "oqoltin t-ni"
+      ]
+    },
+    "sirdaryo_tuman": {
+      "name": "Sirdaryo tumani",
+      "type": "district",
+      "parent_region": "sirdaryo",
+      "keywords": [
+        "Sirdaryo tumani", "sirdaryo tumani", "Сирдарё тумани", "сирдарё тумани",
+        "Syrdarya tumani", "syrdarya tumani", "Sirdaryo rayon", "sirdaryo rayon",
+        "Sirdaryo district", "sirdaryo district", "Сирдарё район", "сирдарё район",
+        "Syrdarya rayon", "syrdarya rayon", "Syrdarya district", "syrdarya district",
+        "Sirdaryo tuman", "sirdaryo tuman", "Syrdarya tuman", "syrdarya tuman",
+        "Сырдарья тумани", "сырдарья тумани", "Сирдарё району", "сирдарё району",
+        "sirdaryo tumaniga", "syrdarya tumaniga", "sirdaryo tumanidan", "syrdarya tumanidan",
+        "Sirdaryo tumaniga", "Sirdaryo tumanidan", "Syrdarya tumaniga", "Syrdarya tumanidan",
+        "sirdaryo tuman", "syrdarya tuman", "Sirdaryo t-ni", "sirdaryo t-ni"
       ]
     },
     "jizzax": {
@@ -702,6 +2138,110 @@
         "бахмалга", "бахмалдан", "Бахмаль", "бахмаль", "Baхmal", "baхmal"
       ]
     },
+    "arnasoy": {
+      "name": "Arnasoy",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Arnasoy", "arnasoy", "Арнасой", "арнасой", "Arnasay", "arnasay",
+        "Arn", "arn", "Arnasoyga", "Arnasoydan", "Арнасойга", "Арнасойдан",
+        "арнасойга", "арнасойдан", "Arnasayga", "Arnasaydan", "Арнасай", "арнасай",
+        "Arnasoy tumani", "arnasoy tumani", "Arnasay tumani", "arnasay tumani",
+        "Arnasoy rayon", "arnasoy rayon", "Arnasoy district", "arnasoy district",
+        "Арнасой тумани", "арнасой тумани", "Арнасай тумани", "арнасай тумани",
+        "arnasoyga", "arnasayga", "arnasoydan", "arnasaydan", "arnasoyni",
+        "arnasayni", "Arnasoyni", "Arnasayni", "Arnasoy t-ni", "arnasoy t-ni"
+      ]
+    },
+    "gallaorol": {
+      "name": "G'allaorol",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "G'allaorol", "g'allaorol", "Ғаллаорол", "ғаллаорол", "Gallaorol", "gallaorol",
+        "Ghallaorol", "ghallaorol", "G'alla", "g'alla", "G'allaorolga", "G'allaoroldan",
+        "Ғаллаоролга", "Ғаллаоролдан", "ғаллаоролга", "ғаллаоролдан", "Gallaorolga", "Gallaoroldan",
+        "Галлаорол", "галлаорол", "Galla", "galla", "Ghalla", "ghalla",
+        "G'allaorol tumani", "g'allaorol tumani", "Gallaorol tumani", "gallaorol tumani",
+        "G'allaorol rayon", "g'allaorol rayon", "G'allaorol district", "g'allaorol district",
+        "g'allaorolga", "gallaorolga", "g'allaoroldan", "gallaoroldan", "g'allaorolni"
+      ]
+    },
+    "jizzax_tuman": {
+      "name": "Jizzax tumani",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Jizzax tumani", "jizzax tumani", "Жиззах тумани", "жиззах тумани",
+        "Jizzakh tumani", "jizzakh tumani", "Jizzax rayon", "jizzax rayon",
+        "Jizzax district", "jizzax district", "Жиззах район", "жиззах район",
+        "Jizzakh rayon", "jizzakh rayon", "Jizzakh district", "jizzakh district",
+        "Jizzax tuman", "jizzax tuman", "Jizzakh tuman", "jizzakh tuman",
+        "Джиззах тумани", "джиззах тумани", "Жиззах району", "жиззах району",
+        "jizzax tumaniga", "jizzakh tumaniga", "jizzax tumanidan", "jizzakh tumanidan",
+        "Jizzax tumaniga", "Jizzax tumanidan", "Jizzakh tumaniga", "Jizzakh tumanidan",
+        "jizzax tuman", "jizzakh tuman", "Jizzax t-ni", "jizzax t-ni"
+      ]
+    },
+    "mirzachol": {
+      "name": "Mirzacho'l",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Mirzacho'l", "mirzacho'l", "Мирзачўл", "мирзачўл", "Mirzachol", "mirzachol",
+        "Mirzachul", "mirzachul", "Mirza", "mirza", "Mirzacho'lga", "Mirzacho'ldan",
+        "Мирзачўлга", "Мирзачўлдан", "мирзачўлга", "мирзачўлдан", "Mirzacholga", "Mirzacholdan",
+        "Мирзачуль", "мирзачуль", "Mirzachulga", "Mirzachuldan", "Mirzachol", "mirzachol",
+        "Mirzacho'l tumani", "mirzacho'l tumani", "Mirzachol tumani", "mirzachol tumani",
+        "Mirzachul tumani", "mirzachul tumani", "Mirzacho'l rayon", "mirzacho'l rayon",
+        "mirzacho'lga", "mirzacholga", "mirzacho'ldan", "mirzacholdan", "mirzacho'lni"
+      ]
+    },
+    "sharof_rashidov": {
+      "name": "Sharof Rashidov",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Sharof Rashidov", "sharof rashidov", "Шароф Рашидов", "шароф рашидов",
+        "Sharof", "sharof", "Rashidov", "rashidov", "Sharof Rashidovga", "Sharof Rashidovdan",
+        "Шароф Рашидовга", "Шароф Рашидовдан", "шароф рашидовга", "шароф рашидовдан",
+        "Sharaf Rashidov", "sharaf rashidov", "Шараф Рашидов", "шараф рашидов",
+        "Sharof Rashidov tumani", "sharof rashidov tumani", "Sharaf Rashidov tumani",
+        "Sharof Rashidov rayon", "sharof rashidov rayon", "Sharof Rashidov district",
+        "sharof rashidovga", "sharaf rashidovga", "sharof rashidovdan", "sharaf rashidovdan",
+        "Sharof Rashidov t-ni", "sharof rashidov t-ni", "Sh.Rashidov", "sh.rashidov"
+      ]
+    },
+    "yangiobod": {
+      "name": "Yangiobod",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Yangiobod", "yangiobod", "Янгиобод", "янгиобод", "Yangiabad", "yangiabad",
+        "Yangi", "yangi", "Yangiobodga", "Yangioboddan", "Янгиободга", "Янгиободдан",
+        "янгиободга", "янгиободдан", "Yangiabadga", "Yangiabaddan", "Янгиабад", "янгиабад",
+        "Yangiobod tumani", "yangiobod tumani", "Yangiabad tumani", "yangiabad tumani",
+        "Yangiobod rayon", "yangiobod rayon", "Yangiobod district", "yangiobod district",
+        "Янгиобод тумани", "янгиобод тумани", "Янгиабад тумани", "янгиабад тумани",
+        "yangiobodga", "yangiabadga", "yangioboddan", "yangiabaddan", "yangiobodni",
+        "yangiabadni", "Yangiobodni", "Yangiabadni", "Yangiobod t-ni", "yangiobod t-ni"
+      ]
+    },
+    "zafarobod": {
+      "name": "Zafarobod",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Zafarobod", "zafarobod", "Зафаробод", "зафаробод", "Zafarabad", "zafarabad",
+        "Zafar", "zafar", "Zafarobodga", "Zafaroboddan", "Зафаробoдга", "Зафаробoддан",
+        "зафаробoдга", "зафаробoддан", "Zafarabadga", "Zafarabaddan", "Зафарабад", "зафарабад",
+        "Zafarobod tumani", "zafarobod tumani", "Zafarabad tumani", "zafarabad tumani",
+        "Zafarobod rayon", "zafarobod rayon", "Zafarobod district", "zafarobod district",
+        "Зафаробод тумани", "зафаробод тумани", "Зафарабад тумани", "зафарабад тумани",
+        "zafarobodga", "zafarabadga", "zafaroboddan", "zafarabaddan", "zafarobodni",
+        "zafarabadni", "Zafarobodni", "Zafarabadni", "Zafarobod t-ni", "zafarobod t-ni"
+      ]
+    },
     "navoiy": {
       "name": "Navoiy",
       "type": "region",
@@ -761,6 +2301,52 @@
         "Qiziltepa", "qiziltepa", "Қизилтепа", "қизилтепа", "Kiziltepa", "kiziltepa",
         "Qiz", "qiz", "Qiziltepaga", "Qiziltepadan", "Қизилтепага", "Қизилтепадан",
         "қизилтепага", "қизилтепадан", "Кызылтепа", "кызылтепа", "Kziltepa", "kziltepa"
+      ]
+    },
+    "konimex": {
+      "name": "Konimex",
+      "type": "district",
+      "parent_region": "navoiy",
+      "keywords": [
+        "Konimex", "konimex", "Конимех", "конимех", "Konimekh", "konimekh",
+        "Koni", "koni", "Konimexga", "Konimexdan", "Конимехга", "Конимехдан",
+        "конимехга", "конимехдан", "Konimekhga", "Konimekhdan", "Канимех", "канимех",
+        "Konimex tumani", "konimex tumani", "Konimekh tumani", "konimekh tumani",
+        "Konimex rayon", "konimex rayon", "Konimex district", "konimex district",
+        "Конимех тумани", "конимех тумани", "Канимех тумани", "канимех тумани",
+        "konimexga", "konimekhga", "konimexdan", "konimekhdan", "konimexni",
+        "konimekhni", "Konimexni", "Konimekhni", "Konimex t-ni", "konimex t-ni"
+      ]
+    },
+    "navoiy_tuman": {
+      "name": "Navoiy tumani",
+      "type": "district",
+      "parent_region": "navoiy",
+      "keywords": [
+        "Navoiy tumani", "navoiy tumani", "Навоий тумани", "навоий тумани",
+        "Navoi tumani", "navoi tumani", "Navoiy rayon", "navoiy rayon",
+        "Navoiy district", "navoiy district", "Навоий район", "навоий район",
+        "Navoi rayon", "navoi rayon", "Navoi district", "navoi district",
+        "Navoiy tuman", "navoiy tuman", "Navoi tuman", "navoi tuman",
+        "Навои тумани", "навои тумани", "Навоий району", "навоий району",
+        "navoiy tumaniga", "navoi tumaniga", "navoiy tumanidan", "navoi tumanidan",
+        "Navoiy tumaniga", "Navoiy tumanidan", "Navoi tumaniga", "Navoi tumanidan",
+        "navoiy tuman", "navoi tuman", "Navoiy t-ni", "navoiy t-ni"
+      ]
+    },
+    "tomdi": {
+      "name": "Tomdi",
+      "type": "district",
+      "parent_region": "navoiy",
+      "keywords": [
+        "Tomdi", "tomdi", "Томди", "томди", "Tamdi", "tamdi",
+        "Tom", "tom", "Tomdiga", "Tomdidan", "Томдига", "Томдидан",
+        "томдига", "томдидан", "Tamdiga", "Tamdidan", "Тамди", "тамди",
+        "Tomdi tumani", "tomdi tumani", "Tamdi tumani", "tamdi tumani",
+        "Tomdi rayon", "tomdi rayon", "Tomdi district", "tomdi district",
+        "Томди тумани", "томди тумани", "Тамди тумани", "тамди тумани",
+        "tomdiga", "tamdiga", "tomdidan", "tamdidan", "tomdini",
+        "tamdini", "Tomdini", "Tamdini", "Tomdi t-ni", "tomdi t-ni"
       ]
     },
     "xorazm": {
@@ -824,6 +2410,81 @@
         "янгиарикка", "янгиарикдан", "Янгиарык", "янгиарык", "Yangiaryk", "yangiaryk"
       ]
     },
+    "bogot": {
+      "name": "Bog'ot",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Bog'ot", "bog'ot", "Боғот", "боғот", "Bogot", "bogot",
+        "Boghot", "boghot", "Bog", "bog", "Bog'otga", "Bog'otdan",
+        "Боғотга", "Боғотдан", "боғотга", "боғотдан", "Bogotga", "Bogotdan",
+        "Богот", "богот", "Boghоt", "boghоt", "Bog'ot tumani", "bog'ot tumani",
+        "Bogot tumani", "bogot tumani", "Bog'ot rayon", "bog'ot rayon",
+        "Bog'ot district", "bog'ot district", "Боғот тумани", "боғот тумани",
+        "bog'otga", "bogotga", "bog'otdan", "bogotdan", "bog'otni",
+        "bogotni", "Bog'otni", "Bogotni", "Bog'ot t-ni", "bog'ot t-ni"
+      ]
+    },
+    "gurlan": {
+      "name": "Gurlan",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Gurlan", "gurlan", "Гурлан", "гурлан", "Gurlen", "gurlen",
+        "Gur", "gur", "Gurlanga", "Gurlandan", "Гурланга", "Гурландан",
+        "гурланга", "гурландан", "Gurlenga", "Gurlendan", "Гурлен", "гурлен",
+        "Gurlan tumani", "gurlan tumani", "Gurlen tumani", "gurlen tumani",
+        "Gurlan rayon", "gurlan rayon", "Gurlan district", "gurlan district",
+        "Гурлан тумани", "гурлан тумани", "Гурлен тумани", "гурлен тумани",
+        "gurlanga", "gurlenga", "gurlandan", "gurlendan", "gurlanni",
+        "gurlenni", "Gurlanni", "Gurlenni", "Gurlan t-ni", "gurlan t-ni"
+      ]
+    },
+    "qoshkopir": {
+      "name": "Qo'shko'pir",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Qo'shko'pir", "qo'shko'pir", "Қўшкўпир", "қўшкўпир", "Qoshkopir", "qoshkopir",
+        "Koshkupir", "koshkupir", "Qosh", "qosh", "Qo'shko'pirga", "Qo'shko'pirdan",
+        "Қўшкўпирга", "Қўшкўпирдан", "қўшкўпирга", "қўшкўпирдан", "Qoshkopirga", "Qoshkopirdan",
+        "Кошкупир", "кошкупир", "Koshkupirga", "Koshkupirdan", "Qoshkupir", "qoshkupir",
+        "Qo'shko'pir tumani", "qo'shko'pir tumani", "Qoshkopir tumani", "qoshkopir tumani",
+        "Koshkupir tumani", "koshkupir tumani", "Qo'shko'pir rayon", "qo'shko'pir rayon",
+        "qo'shko'pirga", "qoshkopirga", "qo'shko'pirdan", "qoshkopirdan", "qo'shko'pirni"
+      ]
+    },
+    "urganch_tuman": {
+      "name": "Urganch tumani",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Urganch tumani", "urganch tumani", "Урганч тумани", "урганч тумани",
+        "Urgench tumani", "urgench tumani", "Urganch rayon", "urganch rayon",
+        "Urganch district", "urganch district", "Урганч район", "урганч район",
+        "Urgench rayon", "urgench rayon", "Urgench district", "urgench district",
+        "Urganch tuman", "urganch tuman", "Urgench tuman", "urgench tuman",
+        "Ургенч тумани", "ургенч тумани", "Урганч району", "урганч району",
+        "urganch tumaniga", "urgench tumaniga", "urganch tumanidan", "urgench tumanidan",
+        "Urganch tumaniga", "Urganch tumanidan", "Urgench tumaniga", "Urgench tumanidan",
+        "urganch tuman", "urgench tuman", "Urganch t-ni", "urganch t-ni"
+      ]
+    },
+    "hazorasp": {
+      "name": "Hazorasp",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Hazorasp", "hazorasp", "Хазорасп", "хазорасп", "Khazarasp", "khazarasp",
+        "Hazo", "hazo", "Hazoraspga", "Hazoraspdan", "Хазораспга", "Хазораспдан",
+        "хазораспга", "хазораспдан", "Khazaraspga", "Khazaraspdan", "Хазарасп", "хазарасп",
+        "Hazorasp tumani", "hazorasp tumani", "Khazarasp tumani", "khazarasp tumani",
+        "Hazorasp rayon", "hazorasp rayon", "Hazorasp district", "hazorasp district",
+        "Хазорасп тумани", "хазорасп тумани", "Хазарасп тумани", "хазарасп тумани",
+        "hazoraspga", "khazaraspga", "hazoraspdan", "khazaraspdan", "hazoraspni",
+        "khazaraspni", "Hazoraspni", "Khazaraspni", "Hazorasp t-ni", "hazorasp t-ni"
+      ]
+    },
     "qoraqalpogiston": {
       "name": "Qoraqalpog'iston",
       "type": "region",
@@ -883,6 +2544,620 @@
         "Taxtako'pir", "taxtakopir", "Тахтакўпир", "тахтакўпир", "Takhtakupir", "takhtakupir",
         "Tax", "tax", "Taxtako'pirga", "Taxtako'pirdan", "Тахтакўпирга", "Тахтакўпирдан",
         "тахтакўпирга", "тахтакўпирдан", "Тахтакупыр", "тахтакупыр", "Taхtakupir", "taхtakupir"
+      ]
+    },
+    "amudaryo": {
+      "name": "Amudaryo",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Amudaryo", "amudaryo", "Амударё", "амударё", "Amudarya", "amudarya",
+        "Amu", "amu", "Amudaryoga", "Amudaryodan", "Амударёга", "Амударёдан",
+        "амударёга", "амударёдан", "Amudaryaga", "Amudaryadan", "Амударья", "амударья",
+        "Amudaryo tumani", "amudaryo tumani", "Amudarya tumani", "amudarya tumani",
+        "Amudaryo rayon", "amudaryo rayon", "Amudaryo district", "amudaryo district",
+        "Амударё тумани", "амударё тумани", "Амударья тумани", "амударья тумани",
+        "amudaryoga", "amudaryaga", "amudaryodan", "amudaryadan", "amudaryoni",
+        "amudaryani", "Amudaryoni", "Amudaryani", "Amudaryo t-ni", "amudaryo t-ni"
+      ]
+    },
+    "beruniy": {
+      "name": "Beruniy",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Beruniy", "beruniy", "Беруний", "беруний", "Beruni", "beruni",
+        "Ber", "ber", "Beruniyga", "Beruniydan", "Берунийга", "Берунийдан",
+        "берунийга", "берунийдан", "Beruniga", "Berunidan", "Беруни", "беруни",
+        "Beruniy tumani", "beruniy tumani", "Beruni tumani", "beruni tumani",
+        "Beruniy rayon", "beruniy rayon", "Beruniy district", "beruniy district",
+        "Беруний тумани", "беруний тумани", "Беруни тумани", "беруни тумани",
+        "beruniyga", "beruniga", "beruniydan", "berunidan", "beruniyni",
+        "berunini", "Beruniyni", "Berunini", "Beruniy t-ni", "beruniy t-ni"
+      ]
+    },
+    "ellikqala": {
+      "name": "Ellikqal'a",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Ellikqal'a", "ellikqala", "Элликқалъа", "элликқалъа", "Ellikqala", "ellikqala",
+        "Ellikkala", "ellikkala", "Elli", "elli", "Ellikqal'aga", "Ellikqal'adan",
+        "Элликқалъага", "Элликқалъадан", "элликқалъага", "элликқалъадан", "Ellikqalaga", "Ellikqaladan",
+        "Элликкала", "элликкала", "Ellikkalaga", "Ellikkaladan", "Ellikkal'a", "ellikkal'a",
+        "Ellikqal'a tumani", "ellikqal'a tumani", "Ellikqala tumani", "ellikqala tumani",
+        "Ellikqal'a rayon", "ellikqal'a rayon", "Ellikqal'a district", "ellikqal'a district",
+        "ellikqal'aga", "ellikqalaga", "ellikqal'adan", "ellikqaladan", "ellikqal'ani"
+      ]
+    },
+    "kegeyli": {
+      "name": "Kegeyli",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Kegeyli", "kegeyli", "Кегейли", "кегейли", "Kegeili", "kegeili",
+        "Keg", "keg", "Kegeyliga", "Kegeylidan", "Кегейлига", "Кегейлидан",
+        "кегейлига", "кегейлидан", "Kegeiliga", "Kegeilidan", "Кегейлы", "кегейлы",
+        "Kegeyli tumani", "kegeyli tumani", "Kegeili tumani", "kegeili tumani",
+        "Kegeyli rayon", "kegeyli rayon", "Kegeyli district", "kegeyli district",
+        "Кегейли тумани", "кегейли тумани", "Кегейлы тумани", "кегейлы тумани",
+        "kegeyliga", "kegeiliga", "kegeylidan", "kegeilidan", "kegeylini",
+        "kegeilini", "Kegeylini", "Kegeilini", "Kegeyli t-ni", "kegeyli t-ni"
+      ]
+    },
+    "moynoq": {
+      "name": "Mo'ynoq",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Mo'ynoq", "moynoq", "Мўйноқ", "мўйноқ", "Moynak", "moynak",
+        "Muynak", "muynak", "Moy", "moy", "Mo'ynoqqa", "Mo'ynoqdan",
+        "Мўйноққа", "Мўйноқдан", "мўйноққа", "мўйноқдан", "Moynakka", "Moynakdan",
+        "Муйнак", "муйнак", "Muynakka", "Muynakdan", "Moynoq", "moynoq",
+        "Mo'ynoq tumani", "mo'ynoq tumani", "Moynak tumani", "moynak tumani",
+        "Mo'ynoq rayon", "mo'ynoq rayon", "Mo'ynoq district", "mo'ynoq district",
+        "mo'ynoqqa", "moynakka", "mo'ynoqdan", "moynakdan", "mo'ynoqni"
+      ]
+    },
+    "nukus_tuman": {
+      "name": "Nukus tumani",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Nukus tumani", "nukus tumani", "Нукус тумани", "нукус тумани",
+        "Nukus rayon", "nukus rayon", "Nukus district", "nukus district",
+        "Нукус район", "нукус район", "Nukus tuman", "nukus tuman",
+        "Nukus tumaniga", "nukus tumaniga", "Nukus tumanidan", "nukus tumanidan",
+        "Нукус туманига", "нукус туманига", "Нукус туманидан", "нукус туманидан",
+        "nukus tumaniga", "nukus tumanidan", "nukus tuman", "Nukus t-ni",
+        "nukus t-ni", "Nukus rayoni", "nukus rayoni", "Nukus rajoni"
+      ]
+    },
+    "qanlıkol": {
+      "name": "Qanliko'l",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Qanliko'l", "qanlikol", "Қанликўл", "қанликўл", "Kanlikol", "kanlikol",
+        "Qanli", "qanli", "Qanliko'lga", "Qanliko'ldan", "Қанликўлга", "Қанликўлдан",
+        "қанликўлга", "қанликўлдан", "Kanlikolga", "Kanlikoldan", "Канлыкуль", "канлыкуль",
+        "Qanliko'l tumani", "qanliko'l tumani", "Kanlikol tumani", "kanlikol tumani",
+        "Qanliko'l rayon", "qanliko'l rayon", "Qanliko'l district", "qanliko'l district",
+        "Қанликўл тумани", "қанликўл тумани", "Канлыкуль тумани", "канлыкуль тумани",
+        "qanliko'lga", "kanlikolga", "qanliko'ldan", "kanlikoldan", "qanliko'lni",
+        "kanlikolni", "Qanliko'lni", "Kanlikolni", "Qanliko'l t-ni", "qanliko'l t-ni"
+      ]
+    },
+    "qoraozak": {
+      "name": "Qorao'zak",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Qorao'zak", "qoraozak", "Қораўзак", "қораўзак", "Karauzak", "karauzak",
+        "Qora", "qora", "Qorao'zakka", "Qorao'zakdan", "Қораўзакка", "Қораўзакдан",
+        "қораўзакка", "қораўзакдан", "Karauzakka", "Karauzakdan", "Караузяк", "караузяк",
+        "Qorao'zak tumani", "qorao'zak tumani", "Karauzak tumani", "karauzak tumani",
+        "Qorao'zak rayon", "qorao'zak rayon", "Qorao'zak district", "qorao'zak district",
+        "Қораўзак тумани", "қораўзак тумани", "Караузяк тумани", "караузяк тумани",
+        "qorao'zakka", "karauzakka", "qorao'zakdan", "karauzakdan", "qorao'zakni",
+        "karauzakni", "Qorao'zakni", "Karauzakni", "Qorao'zak t-ni", "qorao'zak t-ni"
+      ]
+    },
+    "shumanay": {
+      "name": "Shumanay",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Shumanay", "shumanay", "Шуманай", "шуманай", "Shumanai", "shumanai",
+        "Shum", "shum", "Shumanayga", "Shumanaydan", "Шуманайга", "Шуманайдан",
+        "шуманайга", "шуманайдан", "Shumanaiga", "Shumanaidan", "Шуманай", "шуманай",
+        "Shumanay tumani", "shumanay tumani", "Shumanai tumani", "shumanai tumani",
+        "Shumanay rayon", "shumanay rayon", "Shumanay district", "shumanay district",
+        "Шуманай тумани", "шуманай тумани", "Шуманай району", "шуманай району",
+        "shumanayga", "shumanaiga", "shumanaydan", "shumanaidan", "shumanayni",
+        "shumanaini", "Shumanayni", "Shumanaini", "Shumanay t-ni", "shumanay t-ni"
+      ]
+    },
+    "tortkol": {
+      "name": "To'rtko'l",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "To'rtko'l", "tortkol", "Тўрткўл", "тўрткўл", "Turtkul", "turtkul",
+        "Tort", "tort", "To'rtko'lga", "To'rtko'ldan", "Тўрткўлга", "Тўрткўлдан",
+        "тўрткўлга", "тўрткўлдан", "Turtkulga", "Turtkuldan", "Турткуль", "турткуль",
+        "To'rtko'l tumani", "to'rtko'l tumani", "Turtkul tumani", "turtkul tumani",
+        "To'rtko'l rayon", "to'rtko'l rayon", "To'rtko'l district", "to'rtko'l district",
+        "Тўрткўл тумани", "тўрткўл тумани", "Турткуль тумани", "турткуль тумани",
+        "to'rtko'lga", "turtkulga", "to'rtko'ldan", "turtkuldan", "to'rtko'lni",
+        "turtkulni", "To'rtko'lni", "Turtkulni", "To'rtko'l t-ni", "to'rtko'l t-ni"
+      ]
+    },
+    "yangiyul_tumani": {
+      "name": "Yangiyul tumani",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Yangiyul tumani", "yangiyul tumani", "Янгийўл тумани", "янгийўл тумани",
+        "Yangiyul district", "yangiyul district", "Янгиюль район", "янгиюль район",
+        "Yangiyol tumani", "yangiyol tumani", "Yangiyul tuman", "yangiyul tuman",
+        "Yangiyol tuman", "yangiyol tuman", "Yangiyo'l tumani", "yangiyo'l tumani",
+        "Yangiyul rayoni", "yangiyul rayoni", "Yangiyul rayon", "yangiyul rayon",
+        "Yangiyultumani", "yangiyultumani", "YANGIYUL TUMANI", "YANGIYUL DISTRICT",
+        "yangiul tumani", "Yangiul tumani", "yangiul tuman", "Yangiul tuman",
+        "yangiul rayon", "Yangiul rayon", "yangiul district", "Yangiul district",
+        "yangiyl tumani", "Yangiyl tumani", "yangiyl tuman", "Yangiyl tuman",
+        "yangiyl rayon", "Yangiyl rayon", "yangiyl district", "Yangiyl district",
+        "yanguyul tumani", "Yanguyul tumani", "yanguyul tuman", "Yanguyul tuman",
+        "Янгийул тумани", "янгийул тумани", "Янгийул район", "янгийул район",
+        "Янгиюл тумани", "янгиюл тумани", "Янгиюл район", "янгиюл район",
+        "Yangiyul t.", "yangiyul t.", "Yangiyul r.", "yangiyul r.",
+        "Yangiyul tum.", "yangiyul tum.", "Yangiyul ray.", "yangiyul ray.",
+        "Yng tum", "yng tum", "YNG TUM", "Yng district", "yng district",
+        "Yangiyul tumaniga", "yangiyul tumaniga", "Yangiyul tumanidan", "yangiyul tumanidan",
+        "Янгийўл туманига", "янгийўл туманига", "Янгийўл туманидан", "янгийўл туманидан",
+        "yangiul tumaniga", "Yangiul tumaniga", "yangiul tumanidan", "Yangiul tumanidan",
+        "yangiyul tmn", "Yangiyul tmn", "YANGIYUL TMN", "yangiyul tmni",
+        "Yangiyul tumani shahri", "yangiyul tumani qalasi", "Yangiyul tumani markazi"
+      ]
+    },
+    "boka": {
+      "name": "Bo'ka",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Bo'ka", "boka", "Бўка", "бўка", "Buka", "buka",
+        "Boka tumani", "boka tumani", "Bo'ka tumani", "bo'ka tumani",
+        "Бўка тумани", "бўка тумани", "Бука тумани", "бука тумани",
+        "Boka district", "boka district", "Bo'ka district", "bo'ka district",
+        "Boka rayon", "boka rayon", "Bo'ka rayon", "bo'ka rayon",
+        "Boka rayoni", "boka rayoni", "Bo'ka rayoni", "bo'ka rayoni",
+        "Bokatumani", "bokatumani", "BOKA", "BOKa", "BoKa", "boKa",
+        "boka tuman", "Boka tuman", "bo'ka tuman", "Bo'ka tuman",
+        "boka t.", "Boka t.", "bo'ka t.", "Bo'ka t.",
+        "boka r.", "Boka r.", "bo'ka r.", "Bo'ka r.",
+        "Bk tum", "bk tum", "BK TUM", "Bk district", "bk district",
+        "bokaga", "Bokaga", "bo'kaga", "Bo'kaga", "bokadan", "Bokadan",
+        "bo'kadan", "Bo'kadan", "boka tumaniga", "Boka tumaniga",
+        "bo'ka tumaniga", "Bo'ka tumaniga", "boka tumanidan", "Boka tumanidan",
+        "bo'ka tumanidan", "Bo'ka tumanidan", "Бўкага", "бўкага",
+        "Бўкадан", "бўкадан", "Бўка туманига", "бўка туманига",
+        "Бўка туманидан", "бўка туманидан", "boka tmn", "Boka tmn",
+        "bo'ka tmn", "Bo'ka tmn", "BOKA TMN", "boka tumani markazi",
+        "Boka tumani shahri", "bo'ka tumani qalasi", "Boka tumani qishloq"
+      ]
+    },
+    "bostonliq": {
+      "name": "Bo'stonliq",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Bo'stonliq", "bostonliq", "Бўстонлиқ", "бўстонлиқ", "Bostonlik", "bostonlik",
+        "Bostonliq tumani", "bostonliq tumani", "Bo'stonliq tumani", "bo'stonliq tumani",
+        "Бўстонлиқ тумани", "бўстонлиқ тумани", "Бостонлик тумани", "бостонлик тумани",
+        "Bostonliq district", "bostonliq district", "Bo'stonliq district", "bo'stonliq district",
+        "Bostonliq rayon", "bostonliq rayon", "Bo'stonliq rayon", "bo'stonliq rayon",
+        "Bostonliq rayoni", "bostonliq rayoni", "Bo'stonliq rayoni", "bo'stonliq rayoni",
+        "Bostonliqtumani", "bostonliqtumani", "BOSTONLIQ", "BOSTONLiq", "BoStOnLiQ",
+        "bostonliq tuman", "Bostonliq tuman", "bo'stonliq tuman", "Bo'stonliq tuman",
+        "bostonliq t.", "Bostonliq t.", "bo'stonliq t.", "Bo'stonliq t.",
+        "bostonliq r.", "Bostonliq r.", "bo'stonliq r.", "Bo'stonliq r.",
+        "Bst tum", "bst tum", "BST TUM", "Bst district", "bst district",
+        "bostonliqqa", "Bostonliqqa", "bo'stonliqqa", "Bo'stonliqqa",
+        "bostonliqdan", "Bostonliqdan", "bo'stonliqdan", "Bo'stonliqdan",
+        "bostonliq tumaniga", "Bostonliq tumaniga", "bo'stonliq tumaniga", "Bo'stonliq tumaniga",
+        "bostonliq tumanidan", "Bostonliq tumanidan", "bo'stonliq tumanidan", "Bo'stonliq tumanidan",
+        "Бўстонлиққа", "бўстонлиққа", "Бўстонлиқдан", "бўстонлиқдан",
+        "Бўстонлиқ туманига", "бўстонлиқ туманига", "Бўстонлиқ туманидан", "бўстонлиқ туманидан",
+        "bostonliq tmn", "Bostonliq tmn", "bo'stonliq tmn", "Bo'stonliq tmn",
+        "BOSTONLIQ TMN", "bostonliq tumani markazi", "Bostonliq tumani shahri",
+        "bo'stonliq tumani qalasi", "Bostonliq tumani qishloq", "bostanliq", "Bostanliq"
+      ]
+    },
+    "zangiota": {
+      "name": "Zangiota",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Zangiota", "zangiota", "Зангиота", "зангиота", "Zangiata", "zangiata",
+        "Zangiota tumani", "zangiota tumani", "Зангиота тумани", "зангиота тумани",
+        "Zangiota district", "zangiota district", "Зангиота район", "зангиота район",
+        "Zangiota rayon", "zangiota rayon", "Zangiota rayoni", "zangiota rayoni",
+        "Zangiotatumani", "zangiotatumani", "ZANGIOTA", "ZANGiota", "ZaNgIoTa",
+        "zangiota tuman", "Zangiota tuman", "zangiata tuman", "Zangiata tuman",
+        "zangiota t.", "Zangiota t.", "zangiata t.", "Zangiata t.",
+        "zangiota r.", "Zangiota r.", "zangiata r.", "Zangiata r.",
+        "Zng tum", "zng tum", "ZNG TUM", "Zng district", "zng district",
+        "zangiotaga", "Zangiotaga", "zangiataga", "Zangiataga",
+        "zangiotadan", "Zangiotadan", "zangiatadan", "Zangiatadan",
+        "zangiota tumaniga", "Zangiota tumaniga", "zangiota tumanidan", "Zangiota tumanidan",
+        "Зангиотага", "зангиотага", "Зангиотадан", "зангиотадан",
+        "Зангиота туманига", "зангиота туманига", "Зангиота туманидан", "зангиота туманидан",
+        "zangiota tmn", "Zangiota tmn", "ZANGIOTA TMN", "zangiota tumani markazi",
+        "Zangiota tumani shahri", "zangiota tumani qalasi", "Zangiota tumani qishloq",
+        "zangiyota", "Zangiyota", "zangiyata", "Zangiyata", "zangyota", "Zangyota",
+        "zangyata", "Zangyata", "zangiоta", "Zangiоta", "zangіota", "Zangіota"
+      ]
+    },
+    "qibray": {
+      "name": "Qibray",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Qibray", "qibray", "Қибрай", "қибрай", "Kibray", "kibray",
+        "Qibray tumani", "qibray tumani", "Қибрай тумани", "қибрай тумани",
+        "Qibray district", "qibray district", "Қибрай район", "қибрай район",
+        "Qibray rayon", "qibray rayon", "Qibray rayoni", "qibray rayoni",
+        "Qibraytumani", "qibraytumani", "QIBRAY", "QIBray", "QiBrAy",
+        "qibray tuman", "Qibray tuman", "kibray tuman", "Kibray tuman",
+        "qibray t.", "Qibray t.", "kibray t.", "Kibray t.",
+        "qibray r.", "Qibray r.", "kibray r.", "Kibray r.",
+        "Qbr tum", "qbr tum", "QBR TUM", "Qbr district", "qbr district",
+        "qibrayga", "Qibrayga", "kibrayga", "Kibrayga",
+        "qibraydan", "Qibraydan", "kibraydan", "Kibraydan",
+        "qibray tumaniga", "Qibray tumaniga", "qibray tumanidan", "Qibray tumanidan",
+        "Қибрайга", "қибрайга", "Қибрайдан", "қибрайдан",
+        "Қибрай туманига", "қибрай туманига", "Қибрай туманидан", "қибрай туманидан",
+        "qibray tmn", "Qibray tmn", "QIBRAY TMN", "qibray tumani markazi",
+        "Qibray tumani shahri", "qibray tumani qalasi", "Qibray tumani qishloq",
+        "qibrai", "Qibrai", "kibrai", "Kibrai", "qibroy", "Qibroy",
+        "kibroy", "Kibroy", "qibrаy", "Qibrаy", "kibrаy", "Kibrаy",
+        "Кибрай", "кибрай", "Кибрай тумани", "кибрай тумани"
+      ]
+    },
+    "oqqorgon": {
+      "name": "Oqqo'rg'on",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Oqqo'rg'on", "oqqorgon", "Оққўрғон", "оққўрғон", "Okkurgan", "okkurgan",
+        "Oqqorgon tumani", "oqqorgon tumani", "Oqqo'rg'on tumani", "oqqo'rg'on tumani",
+        "Оққўрғон тумани", "оққўрғон тумани", "Оккурган тумани", "оккурган тумани",
+        "Oqqorgon district", "oqqorgon district", "Oqqo'rg'on district", "oqqo'rg'on district",
+        "Oqqorgon rayon", "oqqorgon rayon", "Oqqo'rg'on rayon", "oqqo'rg'on rayon",
+        "Oqqorgon rayoni", "oqqorgon rayoni", "Oqqo'rg'on rayoni", "oqqo'rg'on rayoni",
+        "Oqqorgontumani", "oqqorgontumani", "OQQORGON", "OQQORgon", "OqQoRgOn",
+        "oqqorgon tuman", "Oqqorgon tuman", "oqqo'rg'on tuman", "Oqqo'rg'on tuman",
+        "oqqorgon t.", "Oqqorgon t.", "oqqo'rg'on t.", "Oqqo'rg'on t.",
+        "oqqorgon r.", "Oqqorgon r.", "oqqo'rg'on r.", "Oqqo'rg'on r.",
+        "Oqq tum", "oqq tum", "OQQ TUM", "Oqq district", "oqq district",
+        "oqqorgonga", "Oqqorgonga", "oqqo'rg'onga", "Oqqo'rg'onga",
+        "oqqorgondan", "Oqqorgondan", "oqqo'rg'ondan", "Oqqo'rg'ondan",
+        "oqqorgon tumaniga", "Oqqorgon tumaniga", "oqqorgon tumanidan", "Oqqorgon tumanidan",
+        "Оққўрғонга", "оққўрғонга", "Оққўрғондан", "оққўрғондан",
+        "Оққўрғон туманига", "оққўрғон туманига", "Оққўрғон туманидан", "оққўрғон туманидан",
+        "oqqorgon tmn", "Oqqorgon tmn", "OQQORGON TMN", "oqqorgon tumani markazi",
+        "Oqqorgon tumani shahri", "oqqorgon tumani qalasi", "Oqqorgon tumani qishloq",
+        "okqorgon", "Okqorgon", "oqkorgon", "Oqkorgon", "oqqorgan", "Oqqorgan"
+      ]
+    },
+    "parkent": {
+      "name": "Parkent",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Parkent", "parkent", "Паркент", "паркент", "Parkent tumani", "parkent tumani",
+        "Паркент тумани", "паркент тумани", "Parkent district", "parkent district",
+        "Паркент район", "паркент район", "Parkent rayon", "parkent rayon",
+        "Parkent rayoni", "parkent rayoni", "Parkenttumani", "parkenttumani",
+        "PARKENT", "PARkent", "PaRkEnT", "parkent tuman", "Parkent tuman",
+        "parkent t.", "Parkent t.", "parkent r.", "Parkent r.",
+        "Prk tum", "prk tum", "PRK TUM", "Prk district", "prk district",
+        "parkentga", "Parkentga", "parkentdan", "Parkentdan",
+        "parkent tumaniga", "Parkent tumaniga", "parkent tumanidan", "Parkent tumanidan",
+        "Паркентга", "паркентга", "Паркентдан", "паркентдан",
+        "Паркент туманига", "паркент туманига", "Паркент туманидан", "паркент туманидан",
+        "parkent tmn", "Parkent tmn", "PARKENT TMN", "parkent tumani markazi",
+        "Parkent tumani shahri", "parkent tumani qalasi", "Parkent tumani qishloq",
+        "porkent", "Porkent", "parkant", "Parkant", "parkint", "Parkint",
+        "parкent", "Parкent", "parkеnt", "Parkеnt", "parkenт", "Parkenт",
+        "Паркэнт", "паркэнт", "Паркинт", "паркинт", "Паркант", "паркант"
+      ]
+    },
+    "piskent": {
+      "name": "Piskent",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Piskent", "piskent", "Пискент", "пискент", "Piskent tumani", "piskent tumani",
+        "Пискент тумани", "пискент тумани", "Piskent district", "piskent district",
+        "Пискент район", "пискент район", "Piskent rayon", "piskent rayon",
+        "Piskent rayoni", "piskent rayoni", "Piskenttumani", "piskenttumani",
+        "PISKENT", "PISkent", "PiSkEnT", "piskent tuman", "Piskent tuman",
+        "piskent t.", "Piskent t.", "piskent r.", "Piskent r.",
+        "Psk tum", "psk tum", "PSK TUM", "Psk district", "psk district",
+        "piskentga", "Piskentga", "piskentdan", "Piskentdan",
+        "piskent tumaniga", "Piskent tumaniga", "piskent tumanidan", "Piskent tumanidan",
+        "Пискентга", "пискентга", "Пискентдан", "пискентдан",
+        "Пискент туманига", "пискент туманига", "Пискент туманидан", "пискент туманидан",
+        "piskent tmn", "Piskent tmn", "PISKENT TMN", "piskent tumani markazi",
+        "Piskent tumani shahri", "piskent tumani qalasi", "Piskent tumani qishloq",
+        "piskant", "Piskant", "piskint", "Piskint", "piskend", "Piskend",
+        "pisкent", "Pisкent", "piskeнt", "Piskeнt", "piskenт", "Piskenт",
+        "Пискэнт", "пискэнт", "Пискинт", "пискинт", "Пискант", "пискант"
+      ]
+    },
+    "ortachirchiq": {
+      "name": "O'rtachirchiq",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "O'rtachirchiq", "ortachirchiq", "Ўртачирчиқ", "ўртачирчиқ", "Urtachirchik", "urtachirchik",
+        "Ortachirchiq tumani", "ortachirchiq tumani", "O'rtachirchiq tumani", "o'rtachirchiq tumani",
+        "Ўртачирчиқ тумани", "ўртачирчиқ тумани", "Уртачирчик тумани", "уртачирчик тумани",
+        "Ortachirchiq district", "ortachirchiq district", "O'rtachirchiq district", "o'rtachirchiq district",
+        "Ortachirchiq rayon", "ortachirchiq rayon", "O'rtachirchiq rayon", "o'rtachirchiq rayon",
+        "Ortachirchiq rayoni", "ortachirchiq rayoni", "O'rtachirchiq rayoni", "o'rtachirchiq rayoni",
+        "Ortachirchiqtumani", "ortachirchiqtumani", "ORTACHIRCHIQ", "ORTACHIRchiq", "OrTaChIrChIq",
+        "ortachirchiq tuman", "Ortachirchiq tuman", "o'rtachirchiq tuman", "O'rtachirchiq tuman",
+        "ortachirchiq t.", "Ortachirchiq t.", "o'rtachirchiq t.", "O'rtachirchiq t.",
+        "ortachirchiq r.", "Ortachirchiq r.", "o'rtachirchiq r.", "O'rtachirchiq r.",
+        "Ort tum", "ort tum", "ORT TUM", "Ort district", "ort district",
+        "ortachirchiqqa", "Ortachirchiqqa", "o'rtachirchiqqa", "O'rtachirchiqqa",
+        "ortachirchiqdan", "Ortachirchiqdan", "o'rtachirchiqdan", "O'rtachirchiqdan",
+        "ortachirchiq tumaniga", "Ortachirchiq tumaniga", "ortachirchiq tumanidan", "Ortachirchiq tumanidan",
+        "Ўртачирчиққа", "ўртачирчиққа", "Ўртачирчиқдан", "ўртачирчиқдан",
+        "Ўртачирчиқ туманига", "ўртачирчиқ туманига", "Ўртачирчиқ туманидан", "ўртачирчиқ туманидан",
+        "ortachirchiq tmn", "Ortachirchiq tmn", "ORTACHIRCHIQ TMN", "ortachirchiq tumani markazi",
+        "Ortachirchiq tumani shahri", "ortachirchiq tumani qalasi", "Ortachirchiq tumani qishloq",
+        "ortachiriq", "Ortachiriq", "urtachiriq", "Urtachiriq"
+      ]
+    },
+    "chinoz": {
+      "name": "Chinoz",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Chinoz", "chinoz", "Чиноз", "чиноз", "Chinaz", "chinaz",
+        "Chinoz tumani", "chinoz tumani", "Чиноз тумани", "чиноз тумани",
+        "Chinoz district", "chinoz district", "Чиноз район", "чиноз район",
+        "Chinoz rayon", "chinoz rayon", "Chinoz rayoni", "chinoz rayoni",
+        "Chinoztumani", "chinoztumani", "CHINOZ", "CHInoz", "ChInOz",
+        "chinoz tuman", "Chinoz tuman", "chinaz tuman", "Chinaz tuman",
+        "chinoz t.", "Chinoz t.", "chinaz t.", "Chinaz t.",
+        "chinoz r.", "Chinoz r.", "chinaz r.", "Chinaz r.",
+        "Chn tum", "chn tum", "CHN TUM", "Chn district", "chn district",
+        "chinozga", "Chinozga", "chinazga", "Chinazga",
+        "chinozdan", "Chinozdan", "chinazdan", "Chinazdan",
+        "chinoz tumaniga", "Chinoz tumaniga", "chinoz tumanidan", "Chinoz tumanidan",
+        "Чинозга", "чинозга", "Чиноздан", "чиноздан",
+        "Чиноз туманига", "чиноз туманига", "Чиноз туманидан", "чиноз туманидан",
+        "chinoz tmn", "Chinoz tmn", "CHINOZ TMN", "chinoz tumani markazi",
+        "Chinoz tumani shahri", "chinoz tumani qalasi", "Chinoz tumani qishloq",
+        "chinоz", "Chinоz", "chіnoz", "Chіnoz", "chinоs", "Chinоs",
+        "Чинос", "чинос", "Чинас", "чинас", "chinaz", "Chinaz"
+      ]
+    },
+    "yuqorichirchiq": {
+      "name": "Yuqorichirchiq",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Yuqorichirchiq", "yuqorichirchiq", "Юқоричирчиқ", "юқоричирчиқ", "Yukori Chirchik", "yukori chirchik",
+        "Yuqorichirchiq tumani", "yuqorichirchiq tumani", "Юқоричирчиқ тумани", "юқоричирчиқ тумани",
+        "Yuqorichirchiq district", "yuqorichirchiq district", "Юкоричирчик район", "юкоричирчик район",
+        "Yuqorichirchiq rayon", "yuqorichirchiq rayon", "Yuqorichirchiq rayoni", "yuqorichirchiq rayoni",
+        "Yuqorichirchiqtumani", "yuqorichirchiqtumani", "YUQORICHIRCHIQ", "YUQORIchirchiq", "YuQoRiChIrChIq",
+        "yuqorichirchiq tuman", "Yuqorichirchiq tuman", "yukori chirchiq tuman", "Yukori Chirchiq tuman",
+        "yuqorichirchiq t.", "Yuqorichirchiq t.", "yukori chirchiq t.", "Yukori Chirchiq t.",
+        "yuqorichirchiq r.", "Yuqorichirchiq r.", "yukori chirchiq r.", "Yukori Chirchiq r.",
+        "Yuq tum", "yuq tum", "YUQ TUM", "Yuq district", "yuq district",
+        "yuqorichirchiqqa", "Yuqorichirchiqqa", "yukori chirchiqqa", "Yukori Chirchiqqa",
+        "yuqorichirchiqdan", "Yuqorichirchiqdan", "yukori chirchiqdan", "Yukori Chirchiqdan",
+        "yuqorichirchiq tumaniga", "Yuqorichirchiq tumaniga", "yuqorichirchiq tumanidan", "Yuqorichirchiq tumanidan",
+        "Юқоричирчиққа", "юқоричирчиққа", "Юқоричирчиқдан", "юқоричирчиқдан",
+        "Юқоричирчиқ туманига", "юқоричирчиқ туманига", "Юқоричирчиқ туманидан", "юқоричирчиқ туманидан",
+        "yuqorichirchiq tmn", "Yuqorichirchiq tmn", "YUQORICHIRCHIQ TMN", "yuqorichirchiq tumani markazi",
+        "Yuqorichirchiq tumani shahri", "yuqorichirchiq tumani qalasi", "Yuqorichirchiq tumani qishloq",
+        "yuqori chirchiq", "Yuqori Chirchiq", "yuqorichiriq", "Yuqorichiriq", "yukari chirchiq"
+      ]
+    },
+    "mirzoulugbek": {
+      "name": "Mirzo Ulug'bek",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Mirzo Ulug'bek", "mirzo ulugbek", "Мирзо Улуғбек", "мирзо улуғбек", "Mirzo Ulugbek", "mirzo ulugbek",
+        "Mirzo Ulug'bek tumani", "mirzo ulug'bek tumani", "Мирзо Улуғбек тумани", "мирзо улуғбек тумани",
+        "Mirzo Ulug'bek district", "mirzo ulug'bek district", "Мирзо Улугбек район", "мирзо улугбек район",
+        "Mirzo Ulug'bek rayon", "mirzo ulug'bek rayon", "Mirzo Ulug'bek rayoni", "mirzo ulug'bek rayoni",
+        "MirzoUlugbek", "mirzoulugbek", "MIRZO ULUGBEK", "MIRZOulugbek", "MiRzOuLuGbEk",
+        "mirzo ulugbek tuman", "Mirzo Ulugbek tuman", "mirza ulugbek", "Mirza Ulugbek",
+        "mirzo ulugbek t.", "Mirzo Ulugbek t.", "mirza ulugbek t.", "Mirza Ulugbek t.",
+        "mirzo ulugbek r.", "Mirzo Ulugbek r.", "mirza ulugbek r.", "Mirza Ulugbek r.",
+        "Muz tum", "muz tum", "MUZ TUM", "Muz district", "muz district",
+        "mirzo ulugbekka", "Mirzo Ulugbekka", "mirza ulugbekka", "Mirza Ulugbekka",
+        "mirzo ulugbekdan", "Mirzo Ulugbekdan", "mirza ulugbekdan", "Mirza Ulugbekdan",
+        "mirzo ulugbek tumaniga", "Mirzo Ulugbek tumaniga", "mirzo ulugbek tumanidan", "Mirzo Ulugbek tumanidan",
+        "Мирзо Улуғбекка", "мирзо улуғбекка", "Мирзо Улуғбекдан", "мирзо улуғбекдан",
+        "Мирзо Улуғбек туманига", "мирзо улуғбек туманига", "Мирзо Улуғбек туманидан", "мирзо улуғбек туманидан",
+        "mirzo ulugbek tmn", "Mirzo Ulugbek tmn", "MIRZO ULUGBEK TMN", "mirzo ulugbek tumani markazi",
+        "Mirzo Ulugbek tumani shahri", "mirzo ulugbek tumani qalasi", "Mirzo Ulugbek tumani qishloq",
+        "mirzo ulughbek", "Mirzo Ulughbek", "mirza ulughbek", "Mirza Ulughbek"
+      ]
+    },
+    "shayxontohur": {
+      "name": "Shayxontohur",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Shayxontohur", "shayxontohur", "Шайхонтоҳур", "шайхонтоҳур", "Shayhantahur", "shayhantahur",
+        "Shayxontohur tumani", "shayxontohur tumani", "Шайхонтоҳур тумани", "шайхонтоҳур тумани",
+        "Shayxontohur district", "shayxontohur district", "Шайхонтохур район", "шайхонтохур район",
+        "Shayxontohur rayon", "shayxontohur rayon", "Shayxontohur rayoni", "shayxontohur rayoni",
+        "Shayxontohurtumani", "shayxontohurtumani", "SHAYXONTOHUR", "SHAYXONtohur", "ShAyXoNtOhUr",
+        "shayxontohur tuman", "Shayxontohur tuman", "shayhantahur tuman", "Shayhantahur tuman",
+        "shayxontohur t.", "Shayxontohur t.", "shayhantahur t.", "Shayhantahur t.",
+        "shayxontohur r.", "Shayxontohur r.", "shayhantahur r.", "Shayhantahur r.",
+        "Shy tum", "shy tum", "SHY TUM", "Shy district", "shy district",
+        "shayxontohurga", "Shayxontohurga", "shayhantahurga", "Shayhantahurga",
+        "shayxontohurdan", "Shayxontohurdan", "shayhantahurdan", "Shayhantahurdan",
+        "shayxontohur tumaniga", "Shayxontohur tumaniga", "shayxontohur tumanidan", "Shayxontohur tumanidan",
+        "Шайхонтоҳурга", "шайхонтоҳурга", "Шайхонтоҳурдан", "шайхонтоҳурдан",
+        "Шайхонтоҳур туманига", "шайхонтоҳур туманига", "Шайхонтоҳур туманидан", "шайхонтоҳур туманидан",
+        "shayxontohur tmn", "Shayxontohur tmn", "SHAYXONTOHUR TMN", "shayxontohur tumani markazi",
+        "Shayxontohur tumani shahri", "shayxontohur tumani qalasi", "Shayxontohur tumani qishloq",
+        "shayhontohur", "Shayhontohur", "shaxontohur", "Shaxontohur"
+      ]
+    },
+    "yakkasaroy": {
+      "name": "Yakkasaroy",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Yakkasaroy", "yakkasaroy", "Яккасарой", "яккасарой", "Yakkasaray", "yakkasaray",
+        "Yakkasaroy tumani", "yakkasaroy tumani", "Яккасарой тумани", "яккасарой тумани",
+        "Yakkasaroy district", "yakkasaroy district", "Яккасарой район", "яккасарой район",
+        "Yakkasaroy rayon", "yakkasaroy rayon", "Yakkasaroy rayoni", "yakkasaroy rayoni",
+        "Yakkasaroytumani", "yakkasaroytumani", "YAKKASAROY", "YAKKAsaroy", "YaKkAsArOy",
+        "yakkasaroy tuman", "Yakkasaroy tuman", "yakkasaray tuman", "Yakkasaray tuman",
+        "yakkasaroy t.", "Yakkasaroy t.", "yakkasaray t.", "Yakkasaray t.",
+        "yakkasaroy r.", "Yakkasaroy r.", "yakkasaray r.", "Yakkasaray r.",
+        "Yak tum", "yak tum", "YAK TUM", "Yak district", "yak district",
+        "yakkasaroyga", "Yakkasaroyga", "yakkasarayga", "Yakkasarayga",
+        "yakkasaroydan", "Yakkasaroydan", "yakkasaraydan", "Yakkasaraydan",
+        "yakkasaroy tumaniga", "Yakkasaroy tumaniga", "yakkasaroy tumanidan", "Yakkasaroy tumanidan",
+        "Яккасаройга", "яккасаройга", "Яккасаройдан", "яккасаройдан",
+        "Яккасарой туманига", "яккасарой туманига", "Яккасарой туманидан", "яккасарой туманидан",
+        "yakkasaroy tmn", "Yakkasaroy tmn", "YAKKASAROY TMN", "yakkasaroy tumani markazi",
+        "Yakkasaroy tumani shahri", "yakkasaroy tumani qalasi", "Yakkasaroy tumani qishloq",
+        "yakkasarоy", "Yakkasarоy", "yakkasarai", "Yakkasarai"
+      ]
+    },
+    "uchtepa": {
+      "name": "Uchtepa",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Uchtepa", "uchtepa", "Учтепа", "учтепа", "Uchtepa tumani", "uchtepa tumani",
+        "Учтепа тумани", "учтепа тумани", "Uchtepa district", "uchtepa district",
+        "Учтепа район", "учтепа район", "Uchtepa rayon", "uchtepa rayon",
+        "Uchtepa rayoni", "uchtepa rayoni", "Uchtepaumani", "uchtepaumani",
+        "UCHTEPA", "UCHtepa", "UcHtEpA", "uchtepa tuman", "Uchtepa tuman",
+        "uchtepa t.", "Uchtepa t.", "uchtepa r.", "Uchtepa r.",
+        "Uct tum", "uct tum", "UCT TUM", "Uct district", "uct district",
+        "uchtepaga", "Uchtepaga", "uchtepadan", "Uchtepadan",
+        "uchtepa tumaniga", "Uchtepa tumaniga", "uchtepa tumanidan", "Uchtepa tumanidan",
+        "Учтепага", "учтепага", "Учтепадан", "учтепадан",
+        "Учтепа туманига", "учтепа туманига", "Учтепа туманидан", "учтепа туманидан",
+        "uchtepa tmn", "Uchtepa tmn", "UCHTEPA TMN", "uchtepa tumani markazi",
+        "Uchtepa tumani shahri", "uchtepa tumani qalasi", "Uchtepa tumani qishloq",
+        "uchtеpa", "Uchtеpa", "uchтepa", "Uchтepa", "uchtepe", "Uchtepe",
+        "Учтэпа", "учтэпа", "Учтепе", "учтепе", "uch tepa", "Uch tepa"
+      ]
+    },
+    "mirobod": {
+      "name": "Mirobod",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Mirobod", "mirobod", "Миробод", "миробод", "Miroбad", "mirobad",
+        "Mirobod tumani", "mirobod tumani", "Миробод тумани", "миробод тумани",
+        "Mirobod district", "mirobod district", "Миробод район", "миробод район",
+        "Mirobod rayon", "mirobod rayon", "Mirobod rayoni", "mirobod rayoni",
+        "Mirobodtumani", "mirobodtumani", "MIROBOD", "MIRobod", "MiRoBod",
+        "mirobod tuman", "Mirobod tuman", "mirobad tuman", "Mirobad tuman",
+        "mirobod t.", "Mirobod t.", "mirobad t.", "Mirobad t.",
+        "mirobod r.", "Mirobod r.", "mirobad r.", "Mirobad r.",
+        "Mir tum", "mir tum", "MIR TUM", "Mir district", "mir district",
+        "mirobodga", "Mirobodga", "mirobadga", "Mirobadga",
+        "miroboddan", "Miroboddan", "mirobaddan", "Mirobaddan",
+        "mirobod tumaniga", "Mirobod tumaniga", "mirobod tumanidan", "Mirobod tumanidan",
+        "Мироободга", "мироободга", "Мироободдан", "мироободдан",
+        "Миробод туманига", "миробод туманига", "Миробод туманидан", "миробод туманидан",
+        "mirobod tmn", "Mirobod tmn", "MIROBOD TMN", "mirobod tumani markazi",
+        "Mirobod tumani shahri", "mirobod tumani qalasi", "Mirobod tumani qishloq",
+        "mirоbod", "Mirоbod", "mіrobod", "Mіrobod", "mirobоd", "Mirobоd"
+      ]
+    },
+    "olmazor": {
+      "name": "Olmazor",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Olmazor", "olmazor", "Олмазор", "олмазор", "Almazor", "almazor",
+        "Olmazor tumani", "olmazor tumani", "Олмазор тумани", "олмазор тумани",
+        "Olmazor district", "olmazor district", "Олмазор район", "олмазор район",
+        "Olmazor rayon", "olmazor rayon", "Olmazor rayoni", "olmazor rayoni",
+        "Olmazortumani", "olmazortumani", "OLMAZOR", "OLMAzor", "OlMaZoR",
+        "olmazor tuman", "Olmazor tuman", "almazor tuman", "Almazor tuman",
+        "olmazor t.", "Olmazor t.", "almazor t.", "Almazor t.",
+        "olmazor r.", "Olmazor r.", "almazor r.", "Almazor r.",
+        "Olm tum", "olm tum", "OLM TUM", "Olm district", "olm district",
+        "olmazorga", "Olmazorga", "almazorga", "Almazorga",
+        "olmazordan", "Olmazordan", "almazordan", "Almazordan",
+        "olmazor tumaniga", "Olmazor tumaniga", "olmazor tumanidan", "Olmazor tumanidan",
+        "Олмазорга", "олмазорга", "Олмазордан", "олмазордан",
+        "Олмазор туманига", "олмазор туманига", "Олмазор туманидан", "олмазор туманидан",
+        "olmazor tmn", "Olmazor tmn", "OLMAZOR TMN", "olmazor tumani markazi",
+        "Olmazor tumani shahri", "olmazor tumani qalasi", "Olmazor tumani qishloq",
+        "olmazоr", "Olmazоr", "olmasor", "Olmasor", "almozor", "Almozor"
+      ]
+    },
+    "yashnobod": {
+      "name": "Yashnobod",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Yashnobod", "yashnobod", "Яшнобод", "яшнобод", "Yashnabad", "yashnabad",
+        "Yashnobod tumani", "yashnobod tumani", "Яшнобод тумани", "яшнобод тумани",
+        "Yashnobod district", "yashnobod district", "Яшнобод район", "яшнобод район",
+        "Yashnobod rayon", "yashnobod rayon", "Yashnobod rayoni", "yashnobod rayoni",
+        "Yashnobodtumani", "yashnobodtumani", "YASHNOBOD", "YASHNobod", "YaShNoBod",
+        "yashnobod tuman", "Yashnobod tuman", "yashnabad tuman", "Yashnabad tuman",
+        "yashnobod t.", "Yashnobod t.", "yashnabad t.", "Yashnabad t.",
+        "yashnobod r.", "Yashnobod r.", "yashnabad r.", "Yashnabad r.",
+        "Ysh tum", "ysh tum", "YSH TUM", "Ysh district", "ysh district",
+        "yashnobodga", "Yashnobodga", "yashnabadga", "Yashnabadga",
+        "yashnoboddan", "Yashnoboddan", "yashnabaddan", "Yashnabaddan",
+        "yashnobod tumaniga", "Yashnobod tumaniga", "yashnobod tumanidan", "Yashnobod tumanidan",
+        "Яшнободга", "яшнободга", "Яшнободдан", "яшнободдан",
+        "Яшнобод туманига", "яшнобод туманига", "Яшнобод туманидан", "яшнобод туманидан",
+        "yashnobod tmn", "Yashnobod tmn", "YASHNOBOD TMN", "yashnobod tumani markazi",
+        "Yashnobod tumani shahri", "yashnobod tumani qalasi", "Yashnobod tumani qishloq",
+        "yashnоbod", "Yashnоbod", "yashnobot", "Yashnobot"
+      ]
+    },
+    "hamza": {
+      "name": "Hamza",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Hamza", "hamza", "Ҳамза", "ҳамза", "Hamza tumani", "hamza tumani",
+        "Ҳамза тумани", "ҳамза тумани", "Hamza district", "hamza district",
+        "Хамза район", "хамза район", "Hamza rayon", "hamza rayon",
+        "Hamza rayoni", "hamza rayoni", "Hamzatumani", "hamzatumani",
+        "HAMZA", "HAMza", "HaMzA", "hamza tuman", "Hamza tuman",
+        "hamza t.", "Hamza t.", "hamza r.", "Hamza r.",
+        "Hmz tum", "hmz tum", "HMZ TUM", "Hmz district", "hmz district",
+        "hamzaga", "Hamzaga", "hamzadan", "Hamzadan",
+        "hamza tumaniga", "Hamza tumaniga", "hamza tumanidan", "Hamza tumanidan",
+        "Ҳамзага", "ҳамзага", "Ҳамзадан", "ҳамзадан",
+        "Ҳамза туманига", "ҳамза туманига", "Ҳамза туманидан", "ҳамза туманидан",
+        "hamza tmn", "Hamza tmn", "HAMZA TMN", "hamza tumani markazi",
+        "Hamza tumani shahri", "hamza tumani qalasi", "Hamza tumani qishloq",
+        "hamzа", "Hamzа", "hаmza", "Hаmza", "homza", "Homza",
+        "Хамза", "хамза", "Хамзе", "хамзе", "Гамза", "гамза"
       ]
     }
   }
