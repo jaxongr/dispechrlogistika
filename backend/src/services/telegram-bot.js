@@ -127,7 +127,7 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
         const keyboard = {
           keyboard: [
             [{ text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+            [{ text: '📊 Mening statistikam' }],
             [{ text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
           ],
@@ -148,7 +148,6 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 /start - Bot haqida
 /help - Bu yordam
 /stats - Mening statistikam
-/autoreplies - Auto-reply tarixi (havolalar bilan)
 /haydovchilar - Haydovchilarni boshqarish
 
 <b>Qanday ishlaydi:</b>
@@ -167,10 +166,6 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 • Yaxshi haydovchilarni oq ro'yxatga qo'shing
 • Telefon raqam orqali qidiring
 
-<b>Auto-Reply:</b>
-• Bloklangan dispatcher'larga avtomatik javob yuboriladi
-• /autoreplies - So'nggi 20 ta javobni ko'rish
-
 Savol bo'lsa, admin bilan bog'laning.`;
 
         await ctx.reply(helpMessage, { parse_mode: 'HTML' });
@@ -180,18 +175,49 @@ Savol bo'lsa, admin bilan bog'laning.`;
       this.bot.command('stats', async (ctx) => {
         try {
           const userId = ctx.from.id.toString();
-          const DispatcherReport = require('../models/DispatcherReport');
-          const reports = await DispatcherReport.getReportsByUser(userId);
+
+          // E'lonlar statistikasi
+          const userMessages = db.get('messages')
+            .filter({ sender_user_id: userId })
+            .value();
+
+          const approvedCount = userMessages.filter(m => m.is_approved).length;
+          const dispatcherCount = userMessages.filter(m => m.is_dispatcher).length;
+          const rejectedCount = userMessages.filter(m => m.is_rejected).length;
+          const pendingCount = userMessages.filter(m => !m.is_approved && !m.is_dispatcher && !m.is_rejected).length;
+
+          // Haydovchilar statistikasi
+          const allDrivers = db.get('drivers').value() || [];
+          const userDrivers = allDrivers.filter(d => d.added_by_user_id === userId);
+
+          // Qora ro'yxatdagilar
+          const blackListDrivers = userDrivers.filter(d => d.list_type === 'black' && !d.removed);
+          const totalDebt = blackListDrivers.reduce((sum, d) => sum + (d.debt_amount || 0), 0);
+
+          // Oq ro'yxatdagilar
+          const whiteListDrivers = userDrivers.filter(d => d.list_type === 'white' && !d.removed);
 
           const statsMessage = `📊 <b>SIZNING STATISTIKANGIZ</b>
 
 👤 User: ${ctx.from.first_name || 'Noma\'lum'}
 🆔 ID: <code>${userId}</code>
 
-📝 <b>Jami bloklagan:</b> ${reports.length} ta e'lon`;
+📨 <b>E'lonlar:</b>
+• Jami yuborilgan: ${userMessages.length} ta
+• ✅ Tasdiqlangan: ${approvedCount} ta
+• 🚫 Dispetcher deb topilgan: ${dispatcherCount} ta
+• ❌ Rad etilgan: ${rejectedCount} ta
+• ⏳ Kutilmoqda: ${pendingCount} ta
+
+🚛 <b>Haydovchilar:</b>
+• Jami qo'shilgan: ${userDrivers.length} ta
+• ⚫ Qora ro'yxat: ${blackListDrivers.length} ta
+• 💰 Jami qarz: ${totalDebt.toLocaleString()} so'm
+• ⚪ Oq ro'yxat: ${whiteListDrivers.length} ta`;
 
           await ctx.reply(statsMessage, { parse_mode: 'HTML' });
         } catch (error) {
+          console.error('Stats command error:', error);
           await ctx.reply('❌ Statistikani yuklashda xatolik yuz berdi.');
         }
       });
@@ -247,60 +273,6 @@ Savol bo'lsa, admin bilan bog'laning.`;
         }
       });
 
-      // Setup /autoreplies command - Show auto-reply history with links
-      this.bot.command('autoreplies', async (ctx) => {
-        try {
-          const history = autoReply.getReplyHistory(20); // Last 20 replies
-          const stats = autoReply.getStatistics();
-
-          if (history.length === 0) {
-            await ctx.reply('📭 Hali auto-reply yuborilmagan.');
-            return;
-          }
-
-          let message = `📨 <b>AUTO-REPLY TARIXI</b>\n\n`;
-          message += `📊 <b>Statistika:</b>\n`;
-          message += `• Jami: ${stats.total_replies} ta\n`;
-          message += `• So'nggi 1 soat: ${stats.replies_last_hour} ta\n`;
-          message += `• Noyob userlar: ${stats.unique_users} ta\n`;
-          message += `• Noyob guruhlar: ${stats.unique_groups} ta\n\n`;
-          message += `🔗 <b>So'nggi 20 ta auto-reply:</b>\n\n`;
-
-          for (const reply of history) {
-            const date = new Date(reply.replied_at);
-            const timeStr = date.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
-            const dateStr = date.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit' });
-
-            // Try to create message link
-            const groupId = reply.group_id.toString();
-            const messageId = reply.reply_message_id;
-
-            // Check if it's a public group (has username)
-            const telegramGroups = db.get('telegram_groups').value() || [];
-            const groupInfo = telegramGroups.find(g => g.group_id === groupId);
-
-            let messageLink = '';
-            if (groupInfo && groupInfo.group_username) {
-              // Public group
-              messageLink = `https://t.me/${groupInfo.group_username}/${messageId}`;
-            } else {
-              // Private group - use t.me/c/ format (remove -100 prefix)
-              const cleanGroupId = groupId.replace('-100', '');
-              messageLink = `https://t.me/c/${cleanGroupId}/${messageId}`;
-            }
-
-            message += `📍 <a href="${messageLink}">${dateStr} ${timeStr}</a> - ${reply.username || 'User'} (${reply.group_name || 'Group'})\n`;
-          }
-
-          await ctx.reply(message, {
-            parse_mode: 'HTML',
-            disable_web_page_preview: true
-          });
-        } catch (error) {
-          console.error('Auto-reply history error:', error);
-          await ctx.reply('❌ Auto-reply tarixini yuklashda xatolik yuz berdi.');
-        }
-      });
 
       // Klavyatura tugmalarini qabul qilish - to'g'ridan-to'g'ri funksiya chaqirish
       this.bot.hears('📊 Mening statistikam', async (ctx) => {
@@ -313,11 +285,34 @@ Savol bo'lsa, admin bilan bog'laning.`;
 
           const approvedCount = userMessages.filter(m => m.is_approved).length;
           const dispatcherCount = userMessages.filter(m => m.is_dispatcher).length;
+          const rejectedCount = userMessages.filter(m => m.is_rejected).length;
+          const pendingCount = userMessages.filter(m => !m.is_approved && !m.is_dispatcher && !m.is_rejected).length;
+
+          // Haydovchilar statistikasi
+          const allDrivers = db.get('drivers').value() || [];
+          const userDrivers = allDrivers.filter(d => d.added_by_user_id === userId.toString());
+
+          // Qora ro'yxatdagilar
+          const blackListDrivers = userDrivers.filter(d => d.list_type === 'black' && !d.removed);
+          const totalDebt = blackListDrivers.reduce((sum, d) => sum + (d.debt_amount || 0), 0);
+
+          // Oq ro'yxatdagilar
+          const whiteListDrivers = userDrivers.filter(d => d.list_type === 'white' && !d.removed);
 
           let message = `📊 <b>Sizning statistikangiz:</b>\n\n`;
-          message += `📨 Jami xabarlar: ${userMessages.length}\n`;
-          message += `✅ Tasdiqlangan: ${approvedCount}\n`;
-          message += `🚫 Dispetcher: ${dispatcherCount}\n`;
+
+          message += `📨 <b>E'lonlar:</b>\n`;
+          message += `• Jami yuborilgan: ${userMessages.length} ta\n`;
+          message += `• ✅ Tasdiqlangan: ${approvedCount} ta\n`;
+          message += `• 🚫 Dispetcher deb topilgan: ${dispatcherCount} ta\n`;
+          message += `• ❌ Rad etilgan: ${rejectedCount} ta\n`;
+          message += `• ⏳ Kutilmoqda: ${pendingCount} ta\n\n`;
+
+          message += `🚛 <b>Haydovchilar:</b>\n`;
+          message += `• Jami qo'shilgan: ${userDrivers.length} ta\n`;
+          message += `• ⚫ Qora ro'yxat: ${blackListDrivers.length} ta\n`;
+          message += `• 💰 Jami qarz: ${totalDebt.toLocaleString()} so'm\n`;
+          message += `• ⚪ Oq ro'yxat: ${whiteListDrivers.length} ta\n`;
 
           await ctx.reply(message, { parse_mode: 'HTML' });
         } catch (error) {
@@ -326,44 +321,6 @@ Savol bo'lsa, admin bilan bog'laning.`;
         }
       });
 
-      this.bot.hears('📝 Auto-reply tarixi', async (ctx) => {
-        // /autoreplies komandasi bilan bir xil
-        try {
-          const history = autoReply.getReplyHistory(20);
-          const stats = autoReply.getStatistics();
-
-          if (history.length === 0) {
-            await ctx.reply('📝 Auto-reply tarixi bo\'sh');
-            return;
-          }
-
-          let message = `📝 <b>Auto-reply tarixi (oxirgi 20 ta):</b>\n\n`;
-          message += `📊 Jami yuborilgan: ${stats.total_sent} ta\n`;
-          message += `⏱ Oxirgi 24 soat: ${stats.last_24h} ta\n\n`;
-
-          for (const reply of history) {
-            const date = new Date(reply.timestamp);
-            const dateStr = date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
-            const timeStr = date.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
-
-            let messageLink = '#';
-            if (reply.group_id && reply.message_id) {
-              const groupIdStr = reply.group_id.toString().replace('-100', '');
-              messageLink = `https://t.me/c/${groupIdStr}/${reply.message_id}`;
-            }
-
-            message += `📍 <a href="${messageLink}">${dateStr} ${timeStr}</a> - ${reply.username || 'User'} (${reply.group_name || 'Group'})\n`;
-          }
-
-          await ctx.reply(message, {
-            parse_mode: 'HTML',
-            disable_web_page_preview: true
-          });
-        } catch (error) {
-          console.error('Auto-reply history error:', error);
-          await ctx.reply('❌ Auto-reply tarixini yuklashda xatolik yuz berdi.');
-        }
-      });
 
       this.bot.hears('🚛 Haydovchilar', async (ctx) => {
         // /haydovchilar komandasi bilan bir xil - driver handler qo'ng'iroq qilish
@@ -412,7 +369,7 @@ Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
         const keyboard = {
           keyboard: [
             [{ text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+            [{ text: '📊 Mening statistikam' }],
             [{ text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
           ],
@@ -470,7 +427,7 @@ Tanlang:`;
           // Asosiy menyu klavyaturasi
           const keyboard = {
             keyboard: [
-              [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+              [{ text: '📊 Mening statistikam' }],
               [{ text: '🚛 Haydovchilar' }],
               [{ text: 'ℹ️ Yordam' }]
             ],
@@ -2084,7 +2041,7 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         const mainKeyboard = {
           keyboard: [
             [{ text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+            [{ text: '📊 Mening statistikam' }],
             [{ text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
           ],
@@ -2177,7 +2134,7 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
           const mainKeyboard = {
             keyboard: [
               [{ text: '🔍 Yuk qidirish' }],
-              [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+              [{ text: '📊 Mening statistikam' }],
               [{ text: '🚛 Haydovchilar' }],
               [{ text: 'ℹ️ Yordam' }]
             ],
@@ -2228,7 +2185,7 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         const mainKeyboard = {
           keyboard: [
             [{ text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+            [{ text: '📊 Mening statistikam' }],
             [{ text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
           ],
