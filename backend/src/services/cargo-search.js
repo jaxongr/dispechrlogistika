@@ -83,9 +83,15 @@ class CargoSearchService {
     const text = messageText.toLowerCase();
 
     // Yo'nalish belgilarini qidirish: "dan", "ga", "→", "-", "=>", "ga"
+    // FAQAT aniq yo'nalish belgilariga mos keladigan xabarlar
     const routePatterns = [
-      /(.+?)(дан|dan|dan|дон|don)\s*(.+?)(га|ga|га|ga)/i,
-      /(.+?)\s*(→|->|=>|—|–)\s*(.+)/i,
+      // "...dan ...ga" pattern (eng aniq)
+      /(.+?)\s*(дан|dan|дон|don)\s+(.+?)\s*(га|ga|ға)/i,
+      // "...dan ..." pattern (ga bo'lmasa ham)
+      /(.+?)\s*(дан|dan|дон|don)\s+(.+)/i,
+      // "... -> ..." pattern (strelka)
+      /(.+?)\s*(→|->|–)\s*(.+)/i,
+      // "...ga" pattern (faqat ga bilan tugasa)
       /(.+?)\s+(ga|га)\s+(.+)/i
     ];
 
@@ -95,9 +101,15 @@ class CargoSearchService {
         let fromText, toText;
 
         if (pattern.source.includes('дан')) {
+          // "dan" pattern
+          fromText = match[1].trim();
+          toText = match[3].trim();
+        } else if (pattern.source.includes('→')) {
+          // Strelka pattern
           fromText = match[1].trim();
           toText = match[3].trim();
         } else {
+          // "ga" pattern
           fromText = match[1].trim();
           toText = match[3] ? match[3].trim() : match[2].trim();
         }
@@ -105,7 +117,8 @@ class CargoSearchService {
         const fromLocation = this.findLocation(fromText);
         const toLocation = this.findLocation(toText);
 
-        if (fromLocation || toLocation) {
+        // Faqat ikkala yo'nalish ham topilgan bo'lsa qaytarish
+        if (fromLocation && toLocation) {
           return {
             from: fromLocation,
             to: toLocation,
@@ -113,20 +126,21 @@ class CargoSearchService {
             toText
           };
         }
+
+        // Yoki kamida from topilgan bo'lsa
+        if (fromLocation) {
+          return {
+            from: fromLocation,
+            to: toLocation, // null bo'lishi mumkin
+            fromText,
+            toText
+          };
+        }
       }
     }
 
-    // Agar yo'nalish topilmasa, matndan birorta shahar nomini qidirish
-    const foundLocation = this.findLocation(text);
-    if (foundLocation) {
-      return {
-        from: foundLocation,
-        to: null,
-        fromText: text,
-        toText: null
-      };
-    }
-
+    // Agar hech qanday yo'nalish belgisi topilmasa, NULL qaytarish
+    // Bu qator OLIB TASHLANDI - faqat aniq pattern bo'lganda qaytarish
     return null;
   }
 
