@@ -145,19 +145,36 @@ pm2 logs dispatchr-logistics --lines 20
 
 ### 3️⃣ Backup Joylari
 
-**Har soatlik backup:**
-- Jami: 24 ta (oxirgi 24 soat)
-- Auto-delete: 24 soatdan eski
-
-**Kunlik backup:**
+**Kunlik backup (Avtomatik):**
 ```
-/var/www/dispatchr-logistics/backups/daily/
+📂 Joylashuv: /var/www/dispatchr-logistics/backups/daily/
+⏰ Vaqt: Har kecha 02:00 da
+📊 Saqlanish: 7-10 kun
+🗑️ Auto-delete: 10 kundan eski
+
+Hozirgi backuplar:
+- db_backup_2025-10-30_02-00-01.json (13 MB)
+- db_backup_2025-10-29_02-00-01.json (11 MB)
 - db_backup_2025-10-28_02-00-02.json (6.4 MB)
 - db_backup_2025-10-27_02-00-01.json (9.4 MB)
 - db_backup_2025-10-26_02-00-01.json (7.4 MB)
 - db_backup_2025-10-25_02-00-01.json (58 KB)
 - db_backup_2025-10-24_02-00-01.json (782 KB)
 ```
+
+**Manual backup:**
+```
+📂 Joylashuv: /var/www/dispatchr-logistics/database/backups/
+💾 Saqlanish: Doimiy (o'chirilmaydi)
+
+Hozirgi backuplar:
+- db.backup.manual_v2.3_20251030_154955.json (15 MB) ← OXIRGI
+```
+
+**⚠️ ESLATMA:**
+- Avtomatik backup 10 kundan keyin o'chiriladi
+- Agar uzoq muddatli backup kerak bo'lsa, manual backup yarating
+- Manual backuplar hech qachon o'chirilmaydi
 
 ---
 
@@ -219,6 +236,97 @@ Kerakli o'zgaruvchilar:
 | v1.3 | - | - | 6986 userlar backup |
 | v1.2 | - | - | Broadcast bot |
 | v1.1 | - | - | Asosiy funksiyalar |
+
+---
+
+## 🎬 SENARYOLAR (Real Misollar)
+
+### Senariya 1: Kod Buzildi, Database Saqlansin
+
+**Vaziyat:** 20 Noyabr 2025 da kod xato kiritdingiz va bot ishlamay qoldi. Database'da 20,000 bloklangan, 500+ ro'yxatdan o'tgan bor.
+
+**Yechim:**
+```bash
+# 1. Kod tiklash (database o'zgarmaydi)
+ssh root@5.189.141.151
+cd /var/www/dispatchr-logistics
+git checkout v2.3-stable
+pm2 restart dispatchr-logistics
+```
+
+**Natija:**
+- ✅ Kod: 30 Okt 2025 holatiga qaytdi (v2.3-stable)
+- ✅ Database: 20 Noyabr holatida qoldi (20k bloklangan, 500+ user)
+- ✅ Bot ishlaydi, hamma ma'lumotlar saqlanadi!
+
+---
+
+### Senariya 2: Database Buzildi, Bir Necha Kun Orqaga Qaytish
+
+**Vaziyat:** 25 Noyabr da database'ga xato kiritdingiz. 22 Noyabr holatiga qaytmoqchisiz (oxirgi 7 kun ichida).
+
+**Yechim:**
+```bash
+# 1. Mavjud backuplarni ko'rish
+ssh root@5.189.141.151
+ls -lth /var/www/dispatchr-logistics/backups/daily/ | head -10
+
+# 2. 22 Noyabr backupni tiklash
+cd /var/www/dispatchr-logistics
+cp backups/daily/db_backup_2025-11-22_02-00-01.json database/db.json
+pm2 restart dispatchr-logistics
+```
+
+**Natija:**
+- ✅ Kod: O'zgarmaydi (hozirgi holat)
+- ✅ Database: 22 Noyabr 02:00 holatiga qaytdi
+- ⚠️ 22-25 Noyabr orasidagi ma'lumotlar yo'qoldi
+
+---
+
+### Senariya 3: Kod va Database Ikkalasi Ham Buzildi
+
+**Vaziyat:** 15 Noyabr da hamma narsa buzildi. Kod ham, database ham tiklash kerak.
+
+**Yechim:**
+```bash
+ssh root@5.189.141.151
+cd /var/www/dispatchr-logistics
+
+# 1. Kod tiklash
+git checkout v2.3-stable
+git reset --hard f0b39f9
+
+# 2. Database tiklash (oxirgi 7 kun ichida)
+ls -lth backups/daily/ | head -7
+cp backups/daily/db_backup_2025-11-14_02-00-01.json database/db.json
+
+# 3. Restart
+pm2 restart dispatchr-logistics
+```
+
+**Natija:**
+- ✅ Kod: 30 Okt 2025 holatiga qaytdi
+- ✅ Database: 14 Noyabr 02:00 holatiga qaytdi
+- ⚠️ 14 Noyabrdan keyingi database o'zgarishlari yo'qoldi
+
+---
+
+### Senariya 4: 10 Kundan Ortiq Database Tiklash (MUMKIN EMAS)
+
+**Vaziyat:** 1 Dekabr da 10 Noyabr holatiga qaytmoqchisiz (10+ kun orqaga).
+
+**Muammo:**
+- ❌ Avtomatik backup faqat 7-10 kun saqlanadi
+- ❌ 10 Noyabr backup o'chirilgan
+
+**Yechim:**
+- Agar manual backup qilgan bo'lsangiz, uni tiklang
+- Aks holda, database'ni tiklash mumkin emas
+
+**Xulosa:**
+- ⚠️ **Har oyda bir marta manual backup qiling!**
+- ⚠️ Manual backup'lar hech qachon o'chirilmaydi
 
 ---
 
@@ -306,10 +414,54 @@ cp database/backups/db.backup.manual_v2.3_20251030_154955.json database/db.json
 pm2 restart dispatchr-logistics
 ```
 
-### ⚠️ ESLATMA:
-- **Kod tiklash** - hozirgi stable versiyaga qaytaradi (v2.3-stable)
-- **Database tiklash** - oxirgi backup holatga qaytaradi (30 Okt 2025, 15:49)
-- **Ikkalasini tiklash** - kod v2.3, database 30 Okt holatiga qaytadi
+### ⚠️ MUHIM ESLATMA:
+
+#### **Kod Buzilganda:**
+- ✅ Git tag orqali hozirgi holatga qaytaradi: `v2.3-stable`
+- ✅ Kod: 30 Okt 2025 holatiga qaytadi (reklama scheduler bilan)
+- ✅ Database: **O'ZGARMAYDI** (oxirgi holat saqlanadi)
+
+#### **Database Buzilganda:**
+- ✅ Avtomatik kunlik backup'dan tiklash mumkin
+- ⚠️ **Cheklash:** Faqat oxirgi 7-10 kunlik backuplar mavjud
+- ✅ Har kecha 02:00 da avtomatik backup olinadi
+
+#### **Misol:**
+Agar **20 Noyabr 2025** da kod buzilsa:
+1. **Kod** → 30 Okt 2025 holatiga qaytadi (v2.3-stable)
+2. **Database** → 20 Noyabr holatida qoladi (11900+ bloklangan, 500+ ro'yxatdan o'tgan)
+3. **Natija:** Kod eski, lekin database oxirgi holat ✅
+
+Agar **database** ham tiklash kerak bo'lsa:
+- Faqat oxirgi 7-10 kunlik backup mavjud
+- Masalan: 13-20 Noyabr oralig'idagi backupni tiklash mumkin
+
+---
+
+---
+
+## 🔥 ENG MUHIM QOIDALAR
+
+1. **✅ Kod tiklash = Database saqlanadi**
+   - Kod buzilganda: `git checkout v2.3-stable`
+   - Database o'zgarmaydi (oxirgi holat)
+
+2. **⚠️ Database tiklash = Ma'lumot yo'qoladi**
+   - Faqat oxirgi 7-10 kunlik backup mavjud
+   - Tiklasangiz, oxirgi o'zgarishlar yo'qoladi
+
+3. **💾 Har oyda manual backup qiling!**
+   ```bash
+   ssh root@5.189.141.151
+   cd /var/www/dispatchr-logistics
+   timestamp=$(date +%Y%m%d_%H%M%S)
+   cp database/db.json database/backups/db.backup.manual_v2.X_${timestamp}.json
+   ```
+
+4. **📊 Database o'sishini kuzating**
+   - Hozir: 15 MB (87 users)
+   - 20k bloklangan, 500+ user = ~50-100 MB (taxminiy)
+   - Katta database = katta backup
 
 ---
 
@@ -318,3 +470,6 @@ pm2 restart dispatchr-logistics
 **📅 Oxirgi yangilanish:** 30 Oktyabr 2025
 **👤 Muallif:** AI Assistant
 **🤖 Bot:** @Yukchiborbot
+
+**🔗 GitHub:** https://github.com/jaxongr/dispechrlogistika
+**🏷️ Tag:** v2.3-stable
