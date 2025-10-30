@@ -7,7 +7,9 @@
         "Ташкент", "ташкент", "Toshkentga", "Toshkentdan", "Toshkentga",
         "Тошкентга", "Тошкентдан", "тошкентга", "тошкентдан",
         "Tsh", "Tshk", "TSH", "TSHK", "тшк", "ТШК",
-        "столица", "Столица", "poytaxt", "Poytaxt"
+        "столица", "Столица", "poytaxt", "Poytaxt",
+        "Chilonzor", "Yunusobod", "Sergeli", "Bektemir", "Mirzo Ulugbek", "Yakkasaroy",
+        "Чилонзор", "Юнусобод", "Сергели", "Бектемир", "chilonzor", "yunusobod", "sergeli", "bektemir"
       ],
       "districts": ["Chilonzor", "Yunusobod", "Sergeli", "Bektemir", "Mirzo Ulugbek", "Yakkasaroy"]
     },
@@ -18,7 +20,10 @@
         "Самарканд", "самарканд", "Samarqandga", "Samarqanddan",
         "Самарқандга", "Самарқанддан", "самарқандга", "самарқанддан",
         "Smq", "SMQ", "смқ", "СМҚ", "Smr", "SMR",
-        "Samarqant", "samarqant", "Samarqan", "samarqan"
+        "Samarqant", "samarqant", "Samarqan", "samarqan",
+        "Urgut", "Jomboy", "Ishtixon", "Kattaqo'rg'on", "Payariq",
+        "Ургут", "Жомбой", "Иштихон", "Каттақўрғон", "Паярик",
+        "urgut", "jomboy", "ishtixon", "kattaqorgon", "payariq", "kattaqo'rg'on"
       ],
       "districts": ["Urgut", "Jomboy", "Ishtixon", "Kattaqo'rg'on", "Payariq"]
     },
@@ -29,7 +34,10 @@
         "Андижан", "андижан", "Andijoniga", "Andijondan",
         "Андижонга", "Андижондан", "андижонга", "андижондан",
         "Adj", "ADJ", "адж", "АДЖ", "And", "AND",
-        "Andjon", "andjon", "Andizhon", "andizhon"
+        "Andjon", "andjon", "Andizhon", "andizhon",
+        "Asaka", "Paxtaobod", "Xo'jaobod", "Marhamat", "Oltinko'l",
+        "Асака", "Пахтаобод", "Хўжаобод", "Мархамат", "Олтинкўл",
+        "asaka", "paxtaobod", "xojaobod", "marhamat", "oltinkol"
       ],
       "districts": ["Asaka", "Paxtaobod", "Xo'jaobod", "Marhamat", "Oltinko'l"]
     },
@@ -40,7 +48,10 @@
         "Фергана", "фергана", "Farg'ona", "farg'ona",
         "Fargonaga", "Fargonadan", "Фарғонага", "Фарғонадан",
         "Frg", "FRG", "фрг", "ФРГ", "Far", "FAR",
-        "Fergana", "fergana", "Farghona", "farghona"
+        "Fergana", "fergana", "Farghona", "farghona",
+        "Qo'qon", "Marg'ilon", "Quvasoy", "Rishton", "Beshariq",
+        "Қўқон", "Марғилон", "Қувасой", "Риштон", "Бешариқ", "Кукон",
+        "qoqon", "margilon", "quvasoy", "rishton", "beshariq", "kokand", "margilan"
       ],
       "districts": ["Qo'qon", "Marg'ilon", "Quvasoy", "Rishton", "Beshariq"]
     },
@@ -50,7 +61,10 @@
         "Наманган", "Namangan", "наманган", "namangan",
         "Namanganга", "Namangandan", "Наманганга", "Намангандан",
         "Nmg", "NMG", "нмг", "НМГ", "Nam", "NAM",
-        "Namangon", "namangon", "Namongan", "namongan"
+        "Namangon", "namangon", "Namongan", "namongan",
+        "Chust", "Pop", "To'raqo'rg'on", "Uchqo'rg'on", "Yangiqo'rg'on",
+        "Чуст", "Поп", "Тўрақўрғон", "Учқўрғон", "Янгиқўрғон",
+        "chust", "pop", "toraqorgon", "uchqorgon", "yangiqorgon"
       ],
       "districts": ["Chust", "Pop", "To'raqo'rg'on", "Uchqo'rg'on", "Yangiqo'rg'on"]
     },
@@ -61,7 +75,10 @@
         "Бухара", "бухара", "Buxoroga", "Buxorodan",
         "Бухорога", "Бухородан", "бухорога", "бухородан",
         "Bxr", "BXR", "бхр", "БХР", "Bux", "BUX",
-        "Bukhoro", "bukhoro", "Buhoro", "buhoro"
+        "Bukhoro", "bukhoro", "Buhoro", "buhoro",
+        "G'ijduvon", "Kogon", "Vobkent", "Olot", "Shofirkon",
+        "Ғиждувон", "Когон", "Вобкент", "Олот", "Шофиркон", "Коган",
+        "gijduvon", "kogon", "vobkent", "olot", "shofirkon", "kogan", "g'ijduvon"
       ],
       "districts": ["G'ijduvon", "Kogon", "Vobkent", "Olot", "Shofirkon"]
     },
@@ -72,7 +89,10 @@
         "Кашкадарья", "кашкадарья", "Qarshi", "Qarshiga", "Qarshidan",
         "Қарши", "Қаршига", "Қаршидан", "қарши", "қаршига",
         "Qsh", "QSH", "қш", "ҚШ", "Ksh", "KSH",
-        "Karshi", "karshi", "Qashqa", "qashqa"
+        "Karshi", "karshi", "Qashqa", "qashqa",
+        "Shahrisabz", "Muborak", "Koson", "Kitob",
+        "Шахрисабз", "Муборак", "Косон", "Китоб",
+        "shahrisabz", "muborak", "koson", "kitob", "shaxrisabz"
       ],
       "districts": ["Qarshi", "Shahrisabz", "Muborak", "Koson", "Kitob"]
     },
@@ -83,7 +103,10 @@
         "Сурхандарья", "сурхандарья", "Termiz", "Termizga", "Termizdan",
         "Термиз", "Термизга", "Термиздан", "термиз", "термизга",
         "Sur", "SUR", "сур", "СУР", "Trm", "TRM",
-        "Termez", "termez", "Surxon", "surxon"
+        "Termez", "termez", "Surxon", "surxon",
+        "Denov", "Sherobod", "Boysun", "Muzrabot",
+        "Денов", "Шеробод", "Бойсун", "Музработ",
+        "denov", "sherobod", "boysun", "muzrabot"
       ],
       "districts": ["Termiz", "Denov", "Sherobod", "Boysun", "Muzrabot"]
     },
@@ -94,7 +117,10 @@
         "Сырдарья", "сырдарья", "Guliston", "Gulistonga", "Gulistondan",
         "Гулистон", "Гулистонга", "Гулистондан", "гулистон",
         "Sir", "SIR", "сир", "СИР", "Gul", "GUL",
-        "Gulistan", "gulistan", "Sirdarya", "sirdarya"
+        "Gulistan", "gulistan", "Sirdarya", "sirdarya",
+        "Sardoba", "Boyovut", "Mirzaobod",
+        "Сардоба", "Боёвут", "Мирзаобод",
+        "sardoba", "boyovut", "mirzaobod"
       ],
       "districts": ["Guliston", "Sirdaryo", "Sardoba", "Boyovut", "Mirzaobod"]
     },
@@ -105,7 +131,10 @@
         "Джиззах", "джиззах", "Jizzaxga", "Jizzaxdan",
         "Жиззахга", "Жиззахдан", "жиззахга", "жиззахдан",
         "Jzx", "JZX", "жзх", "ЖЗХ", "Jiz", "JIZ",
-        "Djizzakh", "djizzakh", "Jizax", "jizax"
+        "Djizzakh", "djizzakh", "Jizax", "jizax",
+        "Do'stlik", "Forish", "Paxtakor", "Zomin", "Baxmal",
+        "Дўстлик", "Фориш", "Пахтакор", "Зомин", "Бахмал",
+        "dostlik", "forish", "paxtakor", "zomin", "baxmal"
       ],
       "districts": ["Do'stlik", "Forish", "Paxtakor", "Zomin", "Baxmal"]
     },
@@ -116,7 +145,10 @@
         "Навои", "навои", "Navoiyga", "Navoiydan",
         "Навоийга", "Навоийдан", "навоийга", "навоийдан",
         "Nvy", "NVY", "нвй", "НВЙ", "Nav", "NAV",
-        "Navoy", "navoy", "Navoyi", "navoyi"
+        "Navoy", "navoy", "Navoyi", "navoyi",
+        "Zarafshon", "Nurota", "Karmana", "Navbahor", "Qiziltepa",
+        "Зарафшон", "Нурота", "Кармана", "Навбаҳор", "Қизилтепа",
+        "zarafshon", "nurota", "karmana", "navbahor", "qiziltepa", "zarafshan"
       ],
       "districts": ["Zarafshon", "Nurota", "Karmana", "Navbahor", "Qiziltepa"]
     },
@@ -127,7 +159,10 @@
         "Хорезм", "хорезм", "Urganch", "Urganchga", "Urganchdan",
         "Урганч", "Урганчга", "Урганчдан", "урганч", "урганчга",
         "Xrz", "XRZ", "хрз", "ХРЗ", "Urg", "URG",
-        "Urgench", "urgench", "Khorazm", "khorazm"
+        "Urgench", "urgench", "Khorazm", "khorazm",
+        "Xiva", "Xonqa", "Shovot", "Yangiariq",
+        "Хива", "Хонқа", "Шовот", "Янгиариқ", "Khiva",
+        "xiva", "xonqa", "shovot", "yangiariq", "khiva"
       ],
       "districts": ["Urganch", "Xiva", "Xonqa", "Shovot", "Yangiariq"]
     },
@@ -138,7 +173,10 @@
         "Каракалпакстан", "каракалпакстан", "Nukus", "Nukusga", "Nukusdan",
         "Нукус", "Нукусга", "Нукусдан", "нукус", "нукусга",
         "Qqp", "QQP", "ққп", "ҚҚП", "Nuk", "NUK",
-        "Qoraqalpoq", "qoraqalpoq", "QQR", "qqr"
+        "Qoraqalpoq", "qoraqalpoq", "QQR", "qqr",
+        "Xo'jayli", "Qo'ng'irot", "Chimboy", "Taxtako'pir",
+        "Хўжайли", "Қўнғирот", "Чимбой", "Тахтакўпир",
+        "xojayli", "qongirot", "chimboy", "taxtakopir"
       ],
       "districts": ["Nukus", "Xo'jayli", "Qo'ng'irot", "Chimboy", "Taxtako'pir"]
     }

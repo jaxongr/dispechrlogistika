@@ -164,6 +164,7 @@ class CargoSearchService {
 
   /**
    * A -> B yo'nalish bo'yicha qidirish (ikki tomonlama)
+   * Viloyat bo'yicha qidirsa, o'sha viloyatdagi tumanlarni ham topadi
    */
   searchTwoWayRoute(fromLocation, toLocation) {
     const recentMessages = this.getRecentMessages();
@@ -174,15 +175,33 @@ class CargoSearchService {
 
       if (!route) continue;
 
-      // A -> B yoki B -> A
+      // To'g'ridan-to'g'ri mos kelish: A -> B yoki B -> A
       const matchesForward = route.from === fromLocation && route.to === toLocation;
       const matchesBackward = route.from === toLocation && route.to === fromLocation;
+
+      // Viloyat ichidagi tuman bo'yicha mos kelish
+      // Misol: qidiruv "Samarqand -> Buxoro", xabar "Kattaqo'rg'on -> Ko'gon"
+      const fromMatches = route.from === fromLocation || route.to === fromLocation;
+      const toMatches = route.from === toLocation || route.to === toLocation;
+
+      // Viloyatlar bir xil bo'lmasligi kerak (bir viloyat ichidagi yo'nalishlarni chiqarish)
+      const sameRegionRoute = route.from === route.to;
 
       if (matchesForward || matchesBackward) {
         results.push({
           ...msg,
           route: route,
           direction: matchesForward ? 'forward' : 'backward',
+          timeAgo: this.getTimeAgo(msg.created_at)
+        });
+      } else if (!sameRegionRoute && fromMatches && toMatches) {
+        // Viloyat ichidagi tumanlar ham mos keladi
+        // Yo'nalishni aniqlash: from -> to yoki to -> from
+        const isForward = route.from === fromLocation || route.to === toLocation;
+        results.push({
+          ...msg,
+          route: route,
+          direction: isForward ? 'forward' : 'backward',
           timeAgo: this.getTimeAgo(msg.created_at)
         });
       }
@@ -194,6 +213,7 @@ class CargoSearchService {
 
   /**
    * A -> ? (ixtiyoriy) yo'nalish bo'yicha qidirish
+   * Viloyat bo'yicha qidirsa, o'sha viloyatdagi tumanlarni ham topadi
    */
   searchFromLocation(fromLocation) {
     const recentMessages = this.getRecentMessages();
@@ -204,7 +224,8 @@ class CargoSearchService {
 
       if (!route) continue;
 
-      // Faqat "from" mos kelishi kerak
+      // "from" mos kelishi kerak (viloyat yoki tuman)
+      // Misol: qidiruv "Samarqand -> ?", xabar "Kattaqo'rg'on -> Toshkent" ham topiladi
       if (route.from === fromLocation) {
         results.push({
           ...msg,
