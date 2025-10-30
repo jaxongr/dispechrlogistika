@@ -8,6 +8,7 @@ const Message = require('../models/Message');
 const semySMS = require('./semysms');
 const autoReply = require('./autoReply');
 const driverBotHandler = require('./driver-bot-handler');
+const cargoSearch = require('./cargo-search');
 
 class TelegramBotService {
   constructor() {
@@ -16,6 +17,8 @@ class TelegramBotService {
     this.targetGroupId = null;
     // Cache for user announcement counts - prevents slow DB queries
     this.userAnnouncementCache = new Map();
+    // User state for cargo search (yuk qidirish)
+    this.userSearchState = new Map();
   }
 
   async start() {
@@ -123,6 +126,7 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
         // Reply keyboard qo'shish
         const keyboard = {
           keyboard: [
+            [{ text: '🔍 Yuk qidirish' }],
             [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
             [{ text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
@@ -367,6 +371,11 @@ Savol bo'lsa, admin bilan bog'laning.`;
         await driverBotHandler.showMainMenu(ctx);
       });
 
+      // Yuk qidirish tugmasi
+      this.bot.hears('🔍 Yuk qidirish', async (ctx) => {
+        await this.handleCargoSearchStart(ctx);
+      });
+
       this.bot.hears('ℹ️ Yordam', async (ctx) => {
         // /help komandasi bilan bir xil
         const helpMessage = `ℹ️ <b>YORDAM</b>
@@ -402,6 +411,7 @@ Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
         // Reply keyboard qo'shish
         const keyboard = {
           keyboard: [
+            [{ text: '🔍 Yuk qidirish' }],
             [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
             [{ text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
@@ -495,6 +505,26 @@ Tanlang:`;
         } catch (error) {
           console.error('Contact handler error:', error);
           await ctx.reply('❌ Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+        }
+      });
+
+      // Text message handler for cargo search input
+      this.bot.on('text', async (ctx) => {
+        try {
+          const userId = ctx.from.id.toString();
+          const userState = this.userSearchState.get(userId);
+
+          // Agar user cargo search mode'da bo'lsa
+          if (userState) {
+            await this.handleCargoSearchInput(ctx, userState);
+            return;
+          }
+
+          // Boshqa text handler'lar davom etadi (bu yerda)
+          // Masalan: driver-bot-handler yoki boshqa funksiyalar
+
+        } catch (error) {
+          console.error('Text handler error:', error);
         }
       });
 
@@ -1987,6 +2017,230 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         success: false,
         error: error.message
       };
+    }
+  }
+
+  /**
+   * ========================================
+   * CARGO SEARCH HANDLERS (YUK QIDIRISH)
+   * ========================================
+   */
+
+  /**
+   * Yuk qidirish boshlanganida
+   */
+  async handleCargoSearchStart(ctx) {
+    try {
+      const userId = ctx.from.id.toString();
+
+      // Qidirish turini tanlash
+      const keyboard = {
+        keyboard: [
+          [{ text: '🔄 A ↔️ B (Ikki yo\'nalish)' }],
+          [{ text: '➡️ A → ? (Ixtiyoriy yo\'nalish)' }],
+          [{ text: '🔙 Orqaga' }]
+        ],
+        resize_keyboard: true,
+        one_time_keyboard: true
+      };
+
+      await ctx.reply(
+        '🔍 <b>Yuk Qidirish</b>\n\n' +
+        'Qidirish turini tanlang:\n\n' +
+        '🔄 <b>A ↔️ B</b> - Ikki yo\'nalishda qidirish\n' +
+        '   Masalan: Toshkent ↔️ Samarqand\n' +
+        '   (ikkala yo\'nalish ham ko\'rsatiladi)\n\n' +
+        '➡️ <b>A → ?</b> - Bir yo\'nalishda qidirish\n' +
+        '   Masalan: Toshkent → har qanday\n' +
+        '   (faqat Toshkentdan ketayotganlar)',
+        { parse_mode: 'HTML', reply_markup: keyboard }
+      );
+
+      // User state'ni saqlash
+      this.userSearchState.set(userId, {
+        step: 'choose_type',
+        type: null,
+        fromLocation: null,
+        toLocation: null
+      });
+
+    } catch (error) {
+      console.error('Cargo search start error:', error);
+      await ctx.reply('❌ Xatolik yuz berdi. /start ni bosing.');
+    }
+  }
+
+  /**
+   * Yuk qidirish input'larini boshqarish
+   */
+  async handleCargoSearchInput(ctx, userState) {
+    try {
+      const userId = ctx.from.id.toString();
+      const text = ctx.message.text;
+
+      // Orqaga
+      if (text === '🔙 Orqaga') {
+        this.userSearchState.delete(userId);
+        const mainKeyboard = {
+          keyboard: [
+            [{ text: '🔍 Yuk qidirish' }],
+            [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+            [{ text: '🚛 Haydovchilar' }],
+            [{ text: 'ℹ️ Yordam' }]
+          ],
+          resize_keyboard: true
+        };
+        await ctx.reply('Asosiy menyuga qaytdingiz', { reply_markup: mainKeyboard });
+        return;
+      }
+
+      // Step 1: Qidirish turini tanlash
+      if (userState.step === 'choose_type') {
+        if (text === '🔄 A ↔️ B (Ikki yo\'nalish)') {
+          userState.type = 'two-way';
+          userState.step = 'input_from';
+
+          await ctx.reply(
+            '📍 <b>A punktini kiriting</b>\n\n' +
+            'Qayerdan yo\'nalish?\n\n' +
+            '✍️ Viloyat, shahar yoki tuman nomini yozing:\n' +
+            'Masalan: <i>Toshkent</i>, <i>Samarqand</i>, <i>Andijon</i>\n\n' +
+            '💡 Xato yozsangiz ham tushunaman!',
+            { parse_mode: 'HTML' }
+          );
+        } else if (text === '➡️ A → ? (Ixtiyoriy yo\'nalish)') {
+          userState.type = 'from-any';
+          userState.step = 'input_from';
+
+          await ctx.reply(
+            '📍 <b>A punktini kiriting</b>\n\n' +
+            'Qayerdan yo\'nalish?\n\n' +
+            '✍️ Viloyat, shahar yoki tuman nomini yozing:\n' +
+            'Masalan: <i>Toshkent</i>, <i>Samarqand</i>, <i>Andijon</i>\n\n' +
+            '💡 Xato yozsangiz ham tushunaman!',
+            { parse_mode: 'HTML' }
+          );
+        }
+
+        this.userSearchState.set(userId, userState);
+        return;
+      }
+
+      // Step 2: A punktini kiritish
+      if (userState.step === 'input_from') {
+        const fromLocation = cargoSearch.findLocation(text);
+
+        if (!fromLocation) {
+          await ctx.reply(
+            '❌ Kechirasiz, "<b>' + text + '</b>" ni taniy olmadim.\n\n' +
+            '💡 Iltimos, viloyat yoki shahar nomini to\'g\'ri yozing:\n' +
+            'Masalan: Toshkent, Samarqand, Andijon, Fargona, Namangan va h.k.',
+            { parse_mode: 'HTML' }
+          );
+          return;
+        }
+
+        userState.fromLocation = fromLocation;
+        const locationName = cargoSearch.getLocationName(fromLocation);
+
+        if (userState.type === 'two-way') {
+          // Ikki yo'nalish uchun B punktini so'rash
+          userState.step = 'input_to';
+
+          await ctx.reply(
+            '✅ A punkt: <b>' + locationName + '</b>\n\n' +
+            '📍 <b>B punktini kiriting</b>\n\n' +
+            'Qayerga yo\'nalish?\n\n' +
+            '✍️ Viloyat, shahar yoki tuman nomini yozing:',
+            { parse_mode: 'HTML' }
+          );
+        } else {
+          // Ixtiyoriy yo'nalish uchun darhol qidirish
+          await ctx.reply(
+            '✅ Qidirish boshlandi...\n\n' +
+            '📍 Qayerdan: <b>' + locationName + '</b>\n' +
+            '📍 Qayerga: <b>Ixtiyoriy yo\'nalish</b>\n\n' +
+            '⏳ Oxirgi 3 soatdagi e\'lonlar qidirilmoqda...',
+            { parse_mode: 'HTML' }
+          );
+
+          // Qidirish
+          const results = cargoSearch.searchFromLocation(fromLocation);
+          const formattedResults = cargoSearch.formatResults(results, 'from-any', fromLocation);
+
+          await ctx.reply(formattedResults, { parse_mode: 'HTML' });
+
+          // State'ni tozalash
+          this.userSearchState.delete(userId);
+
+          // Asosiy menyuga qaytarish
+          const mainKeyboard = {
+            keyboard: [
+              [{ text: '🔍 Yuk qidirish' }],
+              [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+              [{ text: '🚛 Haydovchilar' }],
+              [{ text: 'ℹ️ Yordam' }]
+            ],
+            resize_keyboard: true
+          };
+          await ctx.reply('Boshqa yo\'nalish bo\'yicha qidirish uchun "🔍 Yuk qidirish" ni bosing', { reply_markup: mainKeyboard });
+        }
+
+        this.userSearchState.set(userId, userState);
+        return;
+      }
+
+      // Step 3: B punktini kiritish (faqat two-way uchun)
+      if (userState.step === 'input_to' && userState.type === 'two-way') {
+        const toLocation = cargoSearch.findLocation(text);
+
+        if (!toLocation) {
+          await ctx.reply(
+            '❌ Kechirasiz, "<b>' + text + '</b>" ni taniy olmadim.\n\n' +
+            '💡 Iltimos, viloyat yoki shahar nomini to\'g\'ri yozing:',
+            { parse_mode: 'HTML' }
+          );
+          return;
+        }
+
+        userState.toLocation = toLocation;
+        const fromName = cargoSearch.getLocationName(userState.fromLocation);
+        const toName = cargoSearch.getLocationName(toLocation);
+
+        await ctx.reply(
+          '✅ Qidirish boshlandi...\n\n' +
+          '📍 Qayerdan: <b>' + fromName + '</b>\n' +
+          '📍 Qayerga: <b>' + toName + '</b>\n\n' +
+          '⏳ Oxirgi 3 soatdagi e\'lonlar qidirilmoqda...',
+          { parse_mode: 'HTML' }
+        );
+
+        // Qidirish
+        const results = cargoSearch.searchTwoWayRoute(userState.fromLocation, toLocation);
+        const formattedResults = cargoSearch.formatResults(results, 'two-way', userState.fromLocation, toLocation);
+
+        await ctx.reply(formattedResults, { parse_mode: 'HTML' });
+
+        // State'ni tozalash
+        this.userSearchState.delete(userId);
+
+        // Asosiy menyuga qaytarish
+        const mainKeyboard = {
+          keyboard: [
+            [{ text: '🔍 Yuk qidirish' }],
+            [{ text: '📊 Mening statistikam' }, { text: '📝 Auto-reply tarixi' }],
+            [{ text: '🚛 Haydovchilar' }],
+            [{ text: 'ℹ️ Yordam' }]
+          ],
+          resize_keyboard: true
+        };
+        await ctx.reply('Boshqa yo\'nalish bo\'yicha qidirish uchun "🔍 Yuk qidirish" ni bosing', { reply_markup: mainKeyboard });
+      }
+
+    } catch (error) {
+      console.error('Cargo search input error:', error);
+      await ctx.reply('❌ Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+      this.userSearchState.delete(ctx.from.id.toString());
     }
   }
 

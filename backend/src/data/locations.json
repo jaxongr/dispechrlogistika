@@ -1,0 +1,146 @@
+{
+  "regions": {
+    "toshkent": {
+      "name": "Toshkent",
+      "keywords": [
+        "Тошкент", "Toshkent", "Tashkent", "тошкент", "toshkent", "tashkent",
+        "Ташкент", "ташкент", "Toshkentga", "Toshkentdan", "Toshkentga",
+        "Тошкентга", "Тошкентдан", "тошкентга", "тошкентдан",
+        "Tsh", "Tshk", "TSH", "TSHK", "тшк", "ТШК",
+        "столица", "Столица", "poytaxt", "Poytaxt"
+      ],
+      "districts": ["Chilonzor", "Yunusobod", "Sergeli", "Bektemir", "Mirzo Ulugbek", "Yakkasaroy"]
+    },
+    "samarqand": {
+      "name": "Samarqand",
+      "keywords": [
+        "Самарқанд", "Samarqand", "Samarkand", "самарқанд", "samarqand", "samarkand",
+        "Самарканд", "самарканд", "Samarqandga", "Samarqanddan",
+        "Самарқандга", "Самарқанддан", "самарқандга", "самарқанддан",
+        "Smq", "SMQ", "смқ", "СМҚ", "Smr", "SMR",
+        "Samarqant", "samarqant", "Samarqan", "samarqan"
+      ],
+      "districts": ["Urgut", "Jomboy", "Ishtixon", "Kattaqo'rg'on", "Payariq"]
+    },
+    "andijon": {
+      "name": "Andijon",
+      "keywords": [
+        "Андижон", "Andijon", "Andijan", "андижон", "andijon", "andijan",
+        "Андижан", "андижан", "Andijoniga", "Andijondan",
+        "Андижонга", "Андижондан", "андижонга", "андижондан",
+        "Adj", "ADJ", "адж", "АДЖ", "And", "AND",
+        "Andjon", "andjon", "Andizhon", "andizhon"
+      ],
+      "districts": ["Asaka", "Paxtaobod", "Xo'jaobod", "Marhamat", "Oltinko'l"]
+    },
+    "fargona": {
+      "name": "Farg'ona",
+      "keywords": [
+        "Фарғона", "Fargona", "Ferghana", "фарғона", "fargona", "ferghana",
+        "Фергана", "фергана", "Farg'ona", "farg'ona",
+        "Fargonaga", "Fargonadan", "Фарғонага", "Фарғонадан",
+        "Frg", "FRG", "фрг", "ФРГ", "Far", "FAR",
+        "Fergana", "fergana", "Farghona", "farghona"
+      ],
+      "districts": ["Qo'qon", "Marg'ilon", "Quvasoy", "Rishton", "Beshariq"]
+    },
+    "namangan": {
+      "name": "Namangan",
+      "keywords": [
+        "Наманган", "Namangan", "наманган", "namangan",
+        "Namanganга", "Namangandan", "Наманганга", "Намангандан",
+        "Nmg", "NMG", "нмг", "НМГ", "Nam", "NAM",
+        "Namangon", "namangon", "Namongan", "namongan"
+      ],
+      "districts": ["Chust", "Pop", "To'raqo'rg'on", "Uchqo'rg'on", "Yangiqo'rg'on"]
+    },
+    "buxoro": {
+      "name": "Buxoro",
+      "keywords": [
+        "Бухоро", "Buxoro", "Bukhara", "бухоро", "buxoro", "bukhara",
+        "Бухара", "бухара", "Buxoroga", "Buxorodan",
+        "Бухорога", "Бухородан", "бухорога", "бухородан",
+        "Bxr", "BXR", "бхр", "БХР", "Bux", "BUX",
+        "Bukhoro", "bukhoro", "Buhoro", "buhoro"
+      ],
+      "districts": ["G'ijduvon", "Kogon", "Vobkent", "Olot", "Shofirkon"]
+    },
+    "qashqadaryo": {
+      "name": "Qashqadaryo",
+      "keywords": [
+        "Қашқадарё", "Qashqadaryo", "Kashkadarya", "қашқадарё", "qashqadaryo",
+        "Кашкадарья", "кашкадарья", "Qarshi", "Qarshiga", "Qarshidan",
+        "Қарши", "Қаршига", "Қаршидан", "қарши", "қаршига",
+        "Qsh", "QSH", "қш", "ҚШ", "Ksh", "KSH",
+        "Karshi", "karshi", "Qashqa", "qashqa"
+      ],
+      "districts": ["Qarshi", "Shahrisabz", "Muborak", "Koson", "Kitob"]
+    },
+    "surxondaryo": {
+      "name": "Surxondaryo",
+      "keywords": [
+        "Сурхондарё", "Surxondaryo", "Surkhandarya", "сурхондарё", "surxondaryo",
+        "Сурхандарья", "сурхандарья", "Termiz", "Termizga", "Termizdan",
+        "Термиз", "Термизга", "Термиздан", "термиз", "термизга",
+        "Sur", "SUR", "сур", "СУР", "Trm", "TRM",
+        "Termez", "termez", "Surxon", "surxon"
+      ],
+      "districts": ["Termiz", "Denov", "Sherobod", "Boysun", "Muzrabot"]
+    },
+    "sirdaryo": {
+      "name": "Sirdaryo",
+      "keywords": [
+        "Сирдарё", "Sirdaryo", "Syrdarya", "сирдарё", "sirdaryo",
+        "Сырдарья", "сырдарья", "Guliston", "Gulistonga", "Gulistondan",
+        "Гулистон", "Гулистонга", "Гулистондан", "гулистон",
+        "Sir", "SIR", "сир", "СИР", "Gul", "GUL",
+        "Gulistan", "gulistan", "Sirdarya", "sirdarya"
+      ],
+      "districts": ["Guliston", "Sirdaryo", "Sardoba", "Boyovut", "Mirzaobod"]
+    },
+    "jizzax": {
+      "name": "Jizzax",
+      "keywords": [
+        "Жиззах", "Jizzax", "Jizzakh", "жиззах", "jizzax", "jizzakh",
+        "Джиззах", "джиззах", "Jizzaxga", "Jizzaxdan",
+        "Жиззахга", "Жиззахдан", "жиззахга", "жиззахдан",
+        "Jzx", "JZX", "жзх", "ЖЗХ", "Jiz", "JIZ",
+        "Djizzakh", "djizzakh", "Jizax", "jizax"
+      ],
+      "districts": ["Do'stlik", "Forish", "Paxtakor", "Zomin", "Baxmal"]
+    },
+    "navoiy": {
+      "name": "Navoiy",
+      "keywords": [
+        "Навоий", "Navoiy", "Navoi", "навоий", "navoiy", "navoi",
+        "Навои", "навои", "Navoiyga", "Navoiydan",
+        "Навоийга", "Навоийдан", "навоийга", "навоийдан",
+        "Nvy", "NVY", "нвй", "НВЙ", "Nav", "NAV",
+        "Navoy", "navoy", "Navoyi", "navoyi"
+      ],
+      "districts": ["Zarafshon", "Nurota", "Karmana", "Navbahor", "Qiziltepa"]
+    },
+    "xorazm": {
+      "name": "Xorazm",
+      "keywords": [
+        "Хоразм", "Xorazm", "Khorezm", "хоразм", "xorazm", "khorezm",
+        "Хорезм", "хорезм", "Urganch", "Urganchga", "Urganchdan",
+        "Урганч", "Урганчга", "Урганчдан", "урганч", "урганчга",
+        "Xrz", "XRZ", "хрз", "ХРЗ", "Urg", "URG",
+        "Urgench", "urgench", "Khorazm", "khorazm"
+      ],
+      "districts": ["Urganch", "Xiva", "Xonqa", "Shovot", "Yangiariq"]
+    },
+    "qoraqalpogiston": {
+      "name": "Qoraqalpog'iston",
+      "keywords": [
+        "Қорақалпоғистон", "Qoraqalpogiston", "Karakalpakstan", "қорақалпоғистон",
+        "Каракалпакстан", "каракалпакстан", "Nukus", "Nukusga", "Nukusdan",
+        "Нукус", "Нукусга", "Нукусдан", "нукус", "нукусга",
+        "Qqp", "QQP", "ққп", "ҚҚП", "Nuk", "NUK",
+        "Qoraqalpoq", "qoraqalpoq", "QQR", "qqr"
+      ],
+      "districts": ["Nukus", "Xo'jayli", "Qo'ng'irot", "Chimboy", "Taxtako'pir"]
+    }
+  }
+}
