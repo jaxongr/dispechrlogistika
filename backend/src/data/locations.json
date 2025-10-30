@@ -61,7 +61,20 @@
       "keywords": [
         "Angren", "angren", "Ангрен", "ангрен", "Angiren", "angiren",
         "Ang", "ang", "Angrenga", "Angrendan", "Ангренга", "Ангрендан",
-        "ангренга", "ангрендан", "Angr", "angr", "АНГ", "анг"
+        "ангренга", "ангрендан", "Angr", "angr", "АНГ", "анг",
+        "angren", "Angren", "ANGREN", "aNGREN", "AnGrEn", "anGren",
+        "angrin", "Angrin", "angiren", "Angiren", "angirem", "Angirem",
+        "angrem", "Angrem", "angren", "angran", "Angran", "angren",
+        "angrin", "angern", "Angern", "angern", "angrin", "angirin",
+        "angren", "angren", "angren", "angren", "angren", "angren",
+        "ангрен", "Ангрен", "АНГРЕН", "ангрэн", "Ангрэн", "ангрін",
+        "Ангрін", "ангрин", "Ангрин", "ангрын", "Ангрын", "ангрен",
+        "angrenda", "angrendan", "angrendан", "angrengа", "angrenga",
+        "angringa", "angrindan", "angirenda", "angirendan", "angiringa",
+        "angremga", "angremdan", "angranga", "angrandan", "angerndan",
+        "angiremga", "angiremdan", "angremga", "angremdan", "angremа",
+        "angren shahri", "angren city", "angren shaxri", "angren qalasi",
+        "angren tumani", "angren district", "angren rayon", "angren rayoni"
       ]
     },
     "olmaliq": {
@@ -166,7 +179,23 @@
         "Kattakurgon", "kattakurgon", "Kattakurgan", "kattakurgan",
         "Ktq", "KTQ", "ктқ", "КТҚ", "Ккг", "ккг", "ККГ",
         "Kataqorgon", "kataqorgon", "Kattaqurghon", "kattaqurghon",
-        "Каттакурган", "каттакурган", "КаттаКўрғон", "каттакўрғон"
+        "Каттакурган", "каттакурган", "КаттаКўрғон", "каттакўрғон",
+        "katta kurgan", "Katta Kurgan", "KATTA KURGAN", "katta-kurgan",
+        "kattakurgan", "katakurgan", "katakurgon", "kata kurgan", "kata-kurgan",
+        "kattaqorgon", "kataqorgon", "katta qorgon", "kata qorgon", "kataқorgon",
+        "kattaqurgan", "kataqurgan", "katta kurgan", "kata kurgan", "katakurhan",
+        "kattakurhan", "katta-kurhan", "kata-kurhan", "kattakurgon", "katakurgon",
+        "каттакурган", "катакурган", "ката курган", "катта-курган", "ката-курган",
+        "каттақўрғон", "катақўрғон", "ката қўрғон", "каттакургон", "катакургон",
+        "каттакурғон", "катакурғон", "каттақоргон", "катақоргон", "каттакурхан",
+        "kkurgan", "kkurgon", "k-kurgan", "k.kurgan", "k kurgan", "kkurhan",
+        "kattaqorgan", "kataqorgan", "katta qorgan", "kata qorgan", "kataqorhan",
+        "kattaqo'rgon", "kataqo'rgon", "katta qo'rgon", "kata qo'rgon",
+        "kattaqorgonga", "kattaqorgondan", "kattakurganga", "kattakurgandan",
+        "katta kurganga", "katta kurgandan", "kata kurganga", "kata kurgandan",
+        "kattaqorgonga", "kataqorgonga", "kattakurgonga", "katakurgonga",
+        "каттақўрғонга", "каттақўрғондан", "каттакурганга", "каттакургандан",
+        "катта курганга", "катта кургандан", "ката курганга", "ката кургандан"
       ]
     },
     "payariq": {
@@ -259,7 +288,19 @@
         "Qo'qon", "qoqon", "Қўқон", "қўқон", "Kokand", "kokand",
         "Qoq", "qoq", "Qo'qonga", "Qo'qondan", "Қўқонга", "Қўқондан",
         "қўқонга", "қўқондан", "Kukan", "kukan", "Коканд", "коканд",
-        "Кукан", "кукан", "Qoqand", "qoqand", "Quqon", "quqon"
+        "Кукан", "кукан", "Qoqand", "qoqand", "Quqon", "quqon",
+        "qoqon", "Qoqon", "QOQON", "qokon", "Qokon", "qoqan", "Qoqan",
+        "kokan", "Kokan", "kokand", "Kokand", "KOKAND", "kokant", "Kokant",
+        "quqon", "Quqon", "QUQON", "quqan", "Quqan", "qoqоn", "Qoqоn",
+        "коқон", "Коқон", "КОҚОН", "кокон", "Кокон", "КОКОН", "кукон",
+        "Кукон", "КУКОН", "коканд", "Коканд", "КОКАНД", "кукан", "Кукан",
+        "qo'qon", "Qo'qon", "QO'QON", "qo'kon", "Qo'kon", "qo'қon", "Qo'қon",
+        "қўқон", "Қўқон", "ҚЎҚОН", "құқон", "Құқон", "қукон", "Қукон",
+        "qoqonga", "qoqondan", "qoқonga", "qoқondan", "kokandga", "kokanddan",
+        "kokanga", "kokandan", "quqonga", "quqondan", "qo'qonga", "qo'qondan",
+        "қўқонга", "қўқондан", "коканга", "кокандан", "кукандан", "куканга",
+        "qoqon shahri", "qoqon city", "kokand city", "kokand shahri",
+        "qoqon qalasi", "kokand qalasi", "quqon shahri", "qo'qon shahri"
       ]
     },
     "margilon": {
