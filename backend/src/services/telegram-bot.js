@@ -406,6 +406,46 @@ Tanlang:`;
       driverBotHandler.setupHandlers(this.bot);
       console.log('✅ Driver bot handlers yuklandi');
 
+      // Cargo search pagination callback handler
+      this.bot.action(/^cargo_page:(.+):(.+):(.+):(\d+)$/, async (ctx) => {
+        try {
+          await ctx.answerCbQuery();
+
+          const [_, searchType, fromLocation, toLocation, pageStr] = ctx.match;
+          const page = parseInt(pageStr, 10);
+
+          // Natijalarni qayta qidirish
+          let results;
+          if (searchType === 'two-way') {
+            results = cargoSearch.searchTwoWayRoute(fromLocation, toLocation || null);
+          } else {
+            results = cargoSearch.searchFromLocation(fromLocation);
+          }
+
+          const formatted = cargoSearch.formatResults(
+            results,
+            searchType,
+            fromLocation,
+            toLocation || null,
+            page
+          );
+
+          // Xabarni yangilash
+          await ctx.editMessageText(formatted.message, {
+            parse_mode: 'HTML',
+            reply_markup: formatted.keyboard
+          });
+        } catch (error) {
+          console.error('Cargo pagination error:', error);
+          await ctx.answerCbQuery('❌ Xatolik yuz berdi');
+        }
+      });
+
+      // Noop callback (sahifa ko'rsatkichi bosilganda)
+      this.bot.action('noop', async (ctx) => {
+        await ctx.answerCbQuery();
+      });
+
       // Contact (telefon raqam) yuborilganda
       this.bot.on('contact', async (ctx) => {
         try {
@@ -2123,9 +2163,12 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
 
           // Qidirish
           const results = cargoSearch.searchFromLocation(fromLocation);
-          const formattedResults = cargoSearch.formatResults(results, 'from-any', fromLocation);
+          const formatted = cargoSearch.formatResults(results, 'from-any', fromLocation, null, 0);
 
-          await ctx.reply(formattedResults, { parse_mode: 'HTML' });
+          await ctx.reply(formatted.message, {
+            parse_mode: 'HTML',
+            reply_markup: formatted.keyboard
+          });
 
           // State'ni tozalash
           this.userSearchState.delete(userId);
@@ -2174,9 +2217,12 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
 
         // Qidirish
         const results = cargoSearch.searchTwoWayRoute(userState.fromLocation, toLocation);
-        const formattedResults = cargoSearch.formatResults(results, 'two-way', userState.fromLocation, toLocation);
+        const formatted = cargoSearch.formatResults(results, 'two-way', userState.fromLocation, toLocation, 0);
 
-        await ctx.reply(formattedResults, { parse_mode: 'HTML' });
+        await ctx.reply(formatted.message, {
+          parse_mode: 'HTML',
+          reply_markup: formatted.keyboard
+        });
 
         // State'ni tozalash
         this.userSearchState.delete(userId);

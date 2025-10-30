@@ -286,14 +286,17 @@ class CargoSearchService {
   }
 
   /**
-   * Natijalarni format qilish (Telegram uchun)
+   * Natijalarni format qilish (Telegram uchun) - Pagination bilan
    */
-  formatResults(results, searchType, fromLocation, toLocation = null) {
+  formatResults(results, searchType, fromLocation, toLocation = null, page = 0) {
     if (results.length === 0) {
       const fromName = this.locations[fromLocation]?.name || fromLocation;
       const toName = toLocation ? this.locations[toLocation]?.name : 'har qanday yo\'nalish';
 
-      return `❌ Afsuski, oxirgi 3 soat ichida <b>${fromName}</b> → <b>${toName}</b> yo'nalishi bo'yicha e'lonlar topilmadi.\n\n💡 Keyinroq qayta urinib ko'ring yoki boshqa yo'nalishni qidiring.`;
+      return {
+        message: `❌ Afsuski, oxirgi 3 soat ichida <b>${fromName}</b> → <b>${toName}</b> yo'nalishi bo'yicha e'lonlar topilmadi.\n\n💡 Keyinroq qayta urinib ko'ring yoki boshqa yo'nalishni qidiring.`,
+        keyboard: null
+      };
     }
 
     const fromName = this.locations[fromLocation]?.name || fromLocation;
@@ -303,18 +306,24 @@ class CargoSearchService {
       ? `🔍 <b>${fromName} ↔️ ${toName}</b> yo'nalishi bo'yicha e'lonlar:\n\n`
       : `🔍 <b>${fromName} → ?</b> yo'nalishi bo'yicha e'lonlar:\n\n`;
 
+    const ITEMS_PER_PAGE = 10;
+    const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
+    const currentPage = Math.max(0, Math.min(page, totalPages - 1));
+    const startIndex = currentPage * ITEMS_PER_PAGE;
+    const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, results.length);
+
     message += `📊 Jami topildi: <b>${results.length} ta</b> e'lon\n`;
+    message += `📄 Sahifa: <b>${currentPage + 1}/${totalPages}</b>\n`;
     message += `⏰ Oxirgi 3 soat ichida\n\n`;
     message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
 
-    // Faqat birinchi 30 ta natijani ko'rsatish
-    const limitedResults = results.slice(0, 30);
+    const pageResults = results.slice(startIndex, endIndex);
 
-    limitedResults.forEach((result, index) => {
+    pageResults.forEach((result, index) => {
       const routeFrom = this.locations[result.route.from]?.name || result.route.fromText;
       const routeTo = result.route.to ? (this.locations[result.route.to]?.name || result.route.toText) : '?';
 
-      message += `${index + 1}. `;
+      message += `${startIndex + index + 1}. `;
 
       if (searchType === 'two-way' && result.direction === 'backward') {
         message += `🔄 <b>${routeFrom} → ${routeTo}</b>\n`;
@@ -322,10 +331,10 @@ class CargoSearchService {
         message += `🚛 <b>${routeFrom} → ${routeTo}</b>\n`;
       }
 
-      // Xabar matni (maksimal 100 belgi - qisqartirish)
+      // Xabar matni (to'liq ko'rsatish)
       let text = result.message_text || '';
-      if (text.length > 100) {
-        text = text.substring(0, 100) + '...';
+      if (text.length > 200) {
+        text = text.substring(0, 200) + '...';
       }
       message += `📝 ${text}\n`;
 
@@ -348,13 +357,39 @@ class CargoSearchService {
       message += `\n`;
     });
 
-    if (results.length > 30) {
-      message += `\n... va yana <b>${results.length - 30} ta</b> e'lon\n`;
-    }
-
     message += `\n💡 <i>E'lon beruvchi bilan bog'lanish uchun telefon raqamdan foydalaning</i>`;
 
-    return message;
+    // Inline keyboard yaratish (pagination tugmalari)
+    let keyboard = null;
+    if (totalPages > 1) {
+      const buttons = [];
+
+      // Oldingi sahifa tugmasi
+      if (currentPage > 0) {
+        buttons.push({
+          text: '⬅️ Oldingi',
+          callback_data: `cargo_page:${searchType}:${fromLocation}:${toLocation || ''}:${currentPage - 1}`
+        });
+      }
+
+      // Sahifa ko'rsatkichi
+      buttons.push({
+        text: `${currentPage + 1}/${totalPages}`,
+        callback_data: 'noop'
+      });
+
+      // Keyingi sahifa tugmasi
+      if (currentPage < totalPages - 1) {
+        buttons.push({
+          text: 'Keyingi ➡️',
+          callback_data: `cargo_page:${searchType}:${fromLocation}:${toLocation || ''}:${currentPage + 1}`
+        });
+      }
+
+      keyboard = { inline_keyboard: [buttons] };
+    }
+
+    return { message, keyboard };
   }
 
   /**
