@@ -14,7 +14,7 @@ class CargoSearchService {
   }
 
   /**
-   * Keyword index yaratish (har bir kalit so'z uchun region)
+   * Keyword index yaratish (har bir kalit so'z uchun region yoki district)
    */
   buildKeywordIndex() {
     const index = new Map();
@@ -24,19 +24,32 @@ class CargoSearchService {
       index.set(regionData.name.toLowerCase(), regionKey);
 
       // Barcha keywords
-      regionData.keywords.forEach(keyword => {
-        index.set(keyword.toLowerCase(), regionKey);
-      });
-
-      // Districts
-      if (regionData.districts) {
-        regionData.districts.forEach(district => {
-          index.set(district.toLowerCase(), regionKey);
+      if (regionData.keywords) {
+        regionData.keywords.forEach(keyword => {
+          index.set(keyword.toLowerCase(), regionKey);
         });
       }
     });
 
     return index;
+  }
+
+  /**
+   * Region yoki district'ning parent region'ini topish
+   * Agar district bo'lsa, uning parent_region'ini qaytaradi
+   * Agar region bo'lsa, o'zini qaytaradi
+   */
+  getParentRegion(locationKey) {
+    const location = this.locations[locationKey];
+    if (!location) return null;
+
+    // Agar parent_region bo'lsa (district), parent'ni qaytarish
+    if (location.parent_region) {
+      return location.parent_region;
+    }
+
+    // Aks holda o'zini qaytarish (bu region)
+    return locationKey;
   }
 
   /**
@@ -164,46 +177,54 @@ class CargoSearchService {
 
   /**
    * A -> B yo'nalish bo'yicha qidirish (ikki tomonlama)
-   * Viloyat bo'yicha qidirsa, o'sha viloyatdagi tumanlarni ham topadi
+   * Viloyat/tuman bo'yicha qidirsa, o'sha viloyatdagi tumanlarni ham topadi
    */
   searchTwoWayRoute(fromLocation, toLocation) {
     const recentMessages = this.getRecentMessages();
     const results = [];
+
+    // Qidiruv uchun parent region'larni olish
+    const searchFromParent = this.getParentRegion(fromLocation);
+    const searchToParent = this.getParentRegion(toLocation);
 
     for (const msg of recentMessages) {
       const route = this.extractRouteFromMessage(msg.message_text);
 
       if (!route) continue;
 
+      // Xabardagi yo'nalishlarning parent region'larini olish
+      const msgFromParent = this.getParentRegion(route.from);
+      const msgToParent = this.getParentRegion(route.to);
+
       // To'g'ridan-to'g'ri mos kelish: A -> B yoki B -> A
-      const matchesForward = route.from === fromLocation && route.to === toLocation;
-      const matchesBackward = route.from === toLocation && route.to === fromLocation;
+      const exactMatchForward = route.from === fromLocation && route.to === toLocation;
+      const exactMatchBackward = route.from === toLocation && route.to === fromLocation;
 
-      // Viloyat ichidagi tuman bo'yicha mos kelish
+      // Parent region bo'yicha mos kelish
       // Misol: qidiruv "Samarqand -> Buxoro", xabar "Kattaqo'rg'on -> Ko'gon"
-      const fromMatches = route.from === fromLocation || route.to === fromLocation;
-      const toMatches = route.from === toLocation || route.to === toLocation;
+      const parentMatchForward = msgFromParent === searchFromParent && msgToParent === searchToParent;
+      const parentMatchBackward = msgFromParent === searchToParent && msgToParent === searchFromParent;
 
-      // Viloyatlar bir xil bo'lmasligi kerak (bir viloyat ichidagi yo'nalishlarni chiqarish)
-      const sameRegionRoute = route.from === route.to;
+      // Bir viloyat ichidagi yo'nalishlarni chiqarish
+      const sameRegionRoute = msgFromParent === msgToParent;
 
-      if (matchesForward || matchesBackward) {
+      if (exactMatchForward || parentMatchForward) {
         results.push({
           ...msg,
           route: route,
-          direction: matchesForward ? 'forward' : 'backward',
+          direction: 'forward',
           timeAgo: this.getTimeAgo(msg.created_at)
         });
-      } else if (!sameRegionRoute && fromMatches && toMatches) {
-        // Viloyat ichidagi tumanlar ham mos keladi
-        // Yo'nalishni aniqlash: from -> to yoki to -> from
-        const isForward = route.from === fromLocation || route.to === toLocation;
-        results.push({
-          ...msg,
-          route: route,
-          direction: isForward ? 'forward' : 'backward',
-          timeAgo: this.getTimeAgo(msg.created_at)
-        });
+      } else if (exactMatchBackward || parentMatchBackward) {
+        // Bir xil viloyat ichidagi yo'nalishlarni skip qilish
+        if (!sameRegionRoute) {
+          results.push({
+            ...msg,
+            route: route,
+            direction: 'backward',
+            timeAgo: this.getTimeAgo(msg.created_at)
+          });
+        }
       }
     }
 
@@ -213,20 +234,29 @@ class CargoSearchService {
 
   /**
    * A -> ? (ixtiyoriy) yo'nalish bo'yicha qidirish
-   * Viloyat bo'yicha qidirsa, o'sha viloyatdagi tumanlarni ham topadi
+   * Viloyat/tuman bo'yicha qidirsa, o'sha viloyatdagi tumanlarni ham topadi
    */
   searchFromLocation(fromLocation) {
     const recentMessages = this.getRecentMessages();
     const results = [];
+
+    // Qidiruv uchun parent region'ni olish
+    const searchFromParent = this.getParentRegion(fromLocation);
 
     for (const msg of recentMessages) {
       const route = this.extractRouteFromMessage(msg.message_text);
 
       if (!route) continue;
 
-      // "from" mos kelishi kerak (viloyat yoki tuman)
+      // Xabardagi "from" ning parent region'ini olish
+      const msgFromParent = this.getParentRegion(route.from);
+
+      // To'g'ridan-to'g'ri mos kelish yoki parent region mos kelishi
       // Misol: qidiruv "Samarqand -> ?", xabar "Kattaqo'rg'on -> Toshkent" ham topiladi
-      if (route.from === fromLocation) {
+      const exactMatch = route.from === fromLocation;
+      const parentMatch = msgFromParent === searchFromParent;
+
+      if (exactMatch || parentMatch) {
         results.push({
           ...msg,
           route: route,

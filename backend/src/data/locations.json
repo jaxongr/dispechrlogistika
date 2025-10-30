@@ -2,183 +2,787 @@
   "regions": {
     "toshkent": {
       "name": "Toshkent",
+      "type": "region",
       "keywords": [
         "Тошкент", "Toshkent", "Tashkent", "тошкент", "toshkent", "tashkent",
-        "Ташкент", "ташкент", "Toshkentga", "Toshkentdan", "Toshkentga",
+        "Ташкент", "ташкент", "Toshkentga", "Toshkentdan",
         "Тошкентга", "Тошкентдан", "тошкентга", "тошкентдан",
         "Tsh", "Tshk", "TSH", "TSHK", "тшк", "ТШК",
-        "столица", "Столица", "poytaxt", "Poytaxt",
-        "Chilonzor", "Yunusobod", "Sergeli", "Bektemir", "Mirzo Ulugbek", "Yakkasaroy",
-        "Чилонзор", "Юнусобод", "Сергели", "Бектемир", "chilonzor", "yunusobod", "sergeli", "bektemir"
-      ],
-      "districts": ["Chilonzor", "Yunusobod", "Sergeli", "Bektemir", "Mirzo Ulugbek", "Yakkasaroy"]
+        "столица", "Столица", "poytaxt", "Poytaxt", "Toshken", "toshken"
+      ]
+    },
+    "chilonzor": {
+      "name": "Chilonzor",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Chilonzor", "chilonzor", "Чилонзор", "чилонзор", "Чилензур", "чилензур",
+        "Chilon", "chilon", "Chilanzar", "chilanzar", "Chilonzorga", "Chilonzordan",
+        "Чилонзорга", "Чилонзордан", "чилонзорга", "чилонзордан",
+        "Chl", "CHL", "чл", "ЧЛ", "Chilonzori", "chilonzori"
+      ]
+    },
+    "yunusobod": {
+      "name": "Yunusobod",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Yunusobod", "yunusobod", "Юнусобод", "юнусобод", "Yunusabad", "yunusabad",
+        "Yunus", "yunus", "Yunusobodga", "Yunusoboddan",
+        "Юнусободга", "Юнусободдан", "юнусободга", "юнусободдан",
+        "Yun", "YUN", "юн", "ЮН", "Yunusabod", "yunusabod"
+      ]
+    },
+    "sergeli": {
+      "name": "Sergeli",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Sergeli", "sergeli", "Сергели", "сергели", "Sergeley", "sergeley",
+        "Serg", "serg", "Sergeliy", "sergeliy", "Sergelini", "sergelini",
+        "Ser", "SER", "сер", "СЕР", "Sergali", "sergali"
+      ]
+    },
+    "bektemir": {
+      "name": "Bektemir",
+      "type": "district",
+      "parent_region": "toshkent",
+      "keywords": [
+        "Bektemir", "bektemir", "Бектемир", "бектемир", "Bektamir", "bektamir",
+        "Bek", "bek", "Bektemirga", "Bektemirdan",
+        "Бектемирга", "Бектемирдан", "бектемирга", "бектемирдан",
+        "Bkt", "BKT", "бкт", "БКТ", "Bektemur", "bektemur"
+      ]
     },
     "samarqand": {
       "name": "Samarqand",
+      "type": "region",
       "keywords": [
         "Самарқанд", "Samarqand", "Samarkand", "самарқанд", "samarqand", "samarkand",
         "Самарканд", "самарканд", "Samarqandga", "Samarqanddan",
         "Самарқандга", "Самарқанддан", "самарқандга", "самарқанддан",
         "Smq", "SMQ", "смқ", "СМҚ", "Smr", "SMR",
-        "Samarqant", "samarqant", "Samarqan", "samarqan",
-        "Urgut", "Jomboy", "Ishtixon", "Kattaqo'rg'on", "Payariq",
-        "Ургут", "Жомбой", "Иштихон", "Каттақўрғон", "Паярик",
-        "urgut", "jomboy", "ishtixon", "kattaqorgon", "payariq", "kattaqo'rg'on"
-      ],
-      "districts": ["Urgut", "Jomboy", "Ishtixon", "Kattaqo'rg'on", "Payariq"]
+        "Samarqant", "samarqant", "Samarqan", "samarqan", "Samarkan", "samarkan"
+      ]
+    },
+    "urgut": {
+      "name": "Urgut",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Urgut", "urgut", "Ургут", "ургут", "Urguti", "urguti",
+        "Urg", "urg", "Urgutga", "Urgutdan", "Ургутга", "Ургутдан",
+        "ургутга", "ургутдан", "Urguт", "urguт", "Urgud", "urgud"
+      ]
+    },
+    "jomboy": {
+      "name": "Jomboy",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Jomboy", "jomboy", "Жомбой", "жомбой", "Jambay", "jambay",
+        "Jom", "jom", "Jomboyga", "Jomboydan", "Жомбойга", "Жомбойдан",
+        "жомбойга", "жомбойдан", "Jambuy", "jambuy", "Джамбай", "джамбай"
+      ]
+    },
+    "ishtixon": {
+      "name": "Ishtixon",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Ishtixon", "ishtixon", "Иштихон", "иштихон", "Ishtiхon", "ishtiхon",
+        "Ish", "ish", "Ishtixonga", "Ishtixondan", "Иштихонга", "Иштихондан",
+        "иштихонга", "иштихондан", "Shtixon", "shtixon", "Иштыхон", "иштыхон"
+      ]
+    },
+    "kattaqorgon": {
+      "name": "Kattaqo'rg'on",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Kattaqo'rg'on", "kattaqorgon", "Каттақўрғон", "каттақўрғон",
+        "Kattaqurgan", "kattaqurgan", "Katta qo'rg'on", "katta qorgon",
+        "Katta-Kurgan", "katta-kurgan", "Катта Курган", "катта курган",
+        "Kattakurgon", "kattakurgon", "Kattakurgan", "kattakurgan",
+        "Ktq", "KTQ", "ктқ", "КТҚ", "Ккг", "ккг", "ККГ",
+        "Kataqorgon", "kataqorgon", "Kattaqurghon", "kattaqurghon",
+        "Каттакурган", "каттакурган", "КаттаКўрғон", "каттакўрғон"
+      ]
+    },
+    "payariq": {
+      "name": "Payariq",
+      "type": "district",
+      "parent_region": "samarqand",
+      "keywords": [
+        "Payariq", "payariq", "Паярик", "паярик", "Payarik", "payarik",
+        "Pay", "pay", "Payariqqa", "Payariqdan", "Паярикка", "Паярикдан",
+        "паярикка", "паярикдан", "Poyarik", "poyarik", "Паярық", "паярық"
+      ]
     },
     "andijon": {
       "name": "Andijon",
+      "type": "region",
       "keywords": [
         "Андижон", "Andijon", "Andijan", "андижон", "andijon", "andijan",
         "Андижан", "андижан", "Andijoniga", "Andijondan",
         "Андижонга", "Андижондан", "андижонга", "андижондан",
         "Adj", "ADJ", "адж", "АДЖ", "And", "AND",
-        "Andjon", "andjon", "Andizhon", "andizhon",
-        "Asaka", "Paxtaobod", "Xo'jaobod", "Marhamat", "Oltinko'l",
-        "Асака", "Пахтаобод", "Хўжаобод", "Мархамат", "Олтинкўл",
-        "asaka", "paxtaobod", "xojaobod", "marhamat", "oltinkol"
-      ],
-      "districts": ["Asaka", "Paxtaobod", "Xo'jaobod", "Marhamat", "Oltinko'l"]
+        "Andjon", "andjon", "Andizhon", "andizhon", "Andizhan", "andizhan"
+      ]
+    },
+    "asaka": {
+      "name": "Asaka",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Asaka", "asaka", "Асака", "асака", "Asaka city", "asaka city",
+        "Ask", "ask", "Asakaga", "Asakadan", "Асакага", "Асакадан",
+        "асакага", "асакадан", "Asoka", "asoka", "Асока", "асока"
+      ]
+    },
+    "paxtaobod": {
+      "name": "Paxtaobod",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Paxtaobod", "paxtaobod", "Пахтаобод", "пахтаобод", "Pakhtaabad", "pakhtaabad",
+        "Pxt", "pxt", "Paxtaobodga", "Paxtaoboddan", "Пахтаободга", "Пахтаободдан",
+        "пахтаободга", "пахтаободдан", "Pakhtaobod", "pakhtaobod", "Пахта-обод", "пахта-обод"
+      ]
+    },
+    "xojaobod": {
+      "name": "Xo'jaobod",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Xo'jaobod", "xojaobod", "Хўжаобод", "хўжаобод", "Khodjaobod", "khodjaobod",
+        "Xoj", "xoj", "Xo'jaobodga", "Xo'jaoboddan", "Хўжаободга", "Хўжаободдан",
+        "хўжаободга", "хўжаободдан", "Xojaabad", "xojaabad", "Ходжаобод", "ходжаобод"
+      ]
+    },
+    "marhamat": {
+      "name": "Marhamat",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Marhamat", "marhamat", "Мархамат", "мархамат", "Marhamet", "marhamet",
+        "Mar", "mar", "Marhamatga", "Marhamatdan", "Мархаматга", "Мархаматдан",
+        "мархаматга", "мархаматдан", "Marxamat", "marxamat", "Мархамет", "мархамет"
+      ]
+    },
+    "oltinkol": {
+      "name": "Oltinko'l",
+      "type": "district",
+      "parent_region": "andijon",
+      "keywords": [
+        "Oltinko'l", "oltinkol", "Олтинкўл", "олтинкўл", "Oltinkul", "oltinkul",
+        "Olt", "olt", "Oltinko'lga", "Oltinko'ldan", "Олтинкўлга", "Олтинкўлдан",
+        "олтинкўлга", "олтинкўлдан", "Oltinkol", "oltinkol", "Алтынкуль", "алтынкуль"
+      ]
     },
     "fargona": {
       "name": "Farg'ona",
+      "type": "region",
       "keywords": [
         "Фарғона", "Fargona", "Ferghana", "фарғона", "fargona", "ferghana",
         "Фергана", "фергана", "Farg'ona", "farg'ona",
         "Fargonaga", "Fargonadan", "Фарғонага", "Фарғонадан",
         "Frg", "FRG", "фрг", "ФРГ", "Far", "FAR",
-        "Fergana", "fergana", "Farghona", "farghona",
-        "Qo'qon", "Marg'ilon", "Quvasoy", "Rishton", "Beshariq",
-        "Қўқон", "Марғилон", "Қувасой", "Риштон", "Бешариқ", "Кукон",
-        "qoqon", "margilon", "quvasoy", "rishton", "beshariq", "kokand", "margilan"
-      ],
-      "districts": ["Qo'qon", "Marg'ilon", "Quvasoy", "Rishton", "Beshariq"]
+        "Fergana", "fergana", "Farghona", "farghona", "Фаргона", "фаргона"
+      ]
+    },
+    "qoqon": {
+      "name": "Qo'qon",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Qo'qon", "qoqon", "Қўқон", "қўқон", "Kokand", "kokand",
+        "Qoq", "qoq", "Qo'qonga", "Qo'qondan", "Қўқонга", "Қўқондан",
+        "қўқонга", "қўқондан", "Kukan", "kukan", "Коканд", "коканд",
+        "Кукан", "кукан", "Qoqand", "qoqand", "Quqon", "quqon"
+      ]
+    },
+    "margilon": {
+      "name": "Marg'ilon",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Marg'ilon", "margilon", "Марғилон", "марғилон", "Margilan", "margilan",
+        "Mar", "mar", "Marg'ilonga", "Marg'ilondan", "Марғилонга", "Марғилондан",
+        "марғилонга", "марғилондан", "Маргилан", "маргилан", "Marghilan", "marghilan",
+        "Margelan", "margelan", "Mrg", "mrg", "МРГ", "мрг"
+      ]
+    },
+    "quvasoy": {
+      "name": "Quvasoy",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Quvasoy", "quvasoy", "Қувасой", "қувасой", "Quvasay", "quvasay",
+        "Quv", "quv", "Quvasoyga", "Quvasoydan", "Қувасойга", "Қувасойдан",
+        "қувасойга", "қувасойдан", "Кувасай", "кувасай", "Kuvasoy", "kuvasoy"
+      ]
+    },
+    "rishton": {
+      "name": "Rishton",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Rishton", "rishton", "Риштон", "риштон", "Rishtоn", "rishtоn",
+        "Rsh", "rsh", "Rishtonga", "Rishtondan", "Риштонга", "Риштондан",
+        "риштонга", "риштондан", "Рыштон", "рыштон", "Rishtan", "rishtan"
+      ]
+    },
+    "beshariq": {
+      "name": "Beshariq",
+      "type": "district",
+      "parent_region": "fargona",
+      "keywords": [
+        "Beshariq", "beshariq", "Бешариқ", "бешариқ", "Besharik", "besharik",
+        "Bsh", "bsh", "Beshariqqa", "Beshariqdan", "Бешарикка", "Бешарикдан",
+        "бешарикка", "бешарикдан", "Бешарык", "бешарык", "Besharyk", "besharyk"
+      ]
     },
     "namangan": {
       "name": "Namangan",
+      "type": "region",
       "keywords": [
         "Наманган", "Namangan", "наманган", "namangan",
         "Namanganга", "Namangandan", "Наманганга", "Намангандан",
         "Nmg", "NMG", "нмг", "НМГ", "Nam", "NAM",
-        "Namangon", "namangon", "Namongan", "namongan",
-        "Chust", "Pop", "To'raqo'rg'on", "Uchqo'rg'on", "Yangiqo'rg'on",
-        "Чуст", "Поп", "Тўрақўрғон", "Учқўрғон", "Янгиқўрғон",
-        "chust", "pop", "toraqorgon", "uchqorgon", "yangiqorgon"
-      ],
-      "districts": ["Chust", "Pop", "To'raqo'rg'on", "Uchqo'rg'on", "Yangiqo'rg'on"]
+        "Namangon", "namangon", "Namongan", "namongan", "Намонган", "намонган"
+      ]
+    },
+    "chust": {
+      "name": "Chust",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Chust", "chust", "Чуст", "чуст", "Chustga", "Chustdan",
+        "Чустга", "Чустдан", "чустга", "чустдан",
+        "Chs", "chs", "ЧС", "чс", "Chusт", "chusт"
+      ]
+    },
+    "pop": {
+      "name": "Pop",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Pop", "pop", "Поп", "поп", "Popga", "Popdan",
+        "Попга", "Попдан", "попга", "попдан",
+        "Pp", "pp", "ПП", "пп", "Pap", "pap"
+      ]
+    },
+    "toraqorgon": {
+      "name": "To'raqo'rg'on",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "To'raqo'rg'on", "toraqorgon", "Тўрақўрғон", "тўрақўрғон",
+        "Toraqurgan", "toraqurgan", "Tura-Kurgan", "tura-kurgan",
+        "Turaqorgon", "turaqorgon", "Тура-Курган", "тура-курган",
+        "Trq", "trq", "ТРҚ", "трқ", "Turakurgan", "turakurgan"
+      ]
+    },
+    "uchqorgon": {
+      "name": "Uchqo'rg'on",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Uchqo'rg'on", "uchqorgon", "Учқўрғон", "учқўрғон",
+        "Uchkurgan", "uchkurgan", "Uch-Kurgan", "uch-kurgan",
+        "Uchqurgan", "uchqurgan", "Уч-Курган", "уч-курган",
+        "Ucq", "ucq", "УЧҚ", "учқ", "Uchkorgan", "uchkorgan"
+      ]
+    },
+    "yangiqorgon": {
+      "name": "Yangiqo'rg'on",
+      "type": "district",
+      "parent_region": "namangan",
+      "keywords": [
+        "Yangiqo'rg'on", "yangiqorgon", "Янгиқўрғон", "янгиқўрғон",
+        "Yangikurgan", "yangikurgan", "Yangi-Kurgan", "yangi-kurgan",
+        "Yangiqurgan", "yangiqurgan", "Янги-Курган", "янги-курган",
+        "Ynq", "ynq", "ЯНҚ", "янқ", "Yangikorgon", "yangikorgon"
+      ]
     },
     "buxoro": {
       "name": "Buxoro",
+      "type": "region",
       "keywords": [
         "Бухоро", "Buxoro", "Bukhara", "бухоро", "buxoro", "bukhara",
         "Бухара", "бухара", "Buxoroga", "Buxorodan",
         "Бухорога", "Бухородан", "бухорога", "бухородан",
         "Bxr", "BXR", "бхр", "БХР", "Bux", "BUX",
-        "Bukhoro", "bukhoro", "Buhoro", "buhoro",
-        "G'ijduvon", "Kogon", "Vobkent", "Olot", "Shofirkon",
-        "Ғиждувон", "Когон", "Вобкент", "Олот", "Шофиркон", "Коган",
-        "gijduvon", "kogon", "vobkent", "olot", "shofirkon", "kogan", "g'ijduvon"
-      ],
-      "districts": ["G'ijduvon", "Kogon", "Vobkent", "Olot", "Shofirkon"]
+        "Bukhoro", "bukhoro", "Buhoro", "buhoro", "Бухоро", "бухоро"
+      ]
+    },
+    "gijduvon": {
+      "name": "G'ijduvon",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "G'ijduvon", "gijduvon", "Ғиждувон", "ғиждувон", "Gizhduvan", "gizhduvan",
+        "Gij", "gij", "G'ijduvonga", "G'ijduvondan", "Ғиждувонга", "Ғиждувондан",
+        "ғиждувонга", "ғиждувондан", "Гиждуван", "гиждуван", "Gzhduvan", "gzhduvan"
+      ]
+    },
+    "kogon": {
+      "name": "Kogon",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Kogon", "kogon", "Когон", "когон", "Kogan", "kogan",
+        "Kog", "kog", "Kogonga", "Kogondan", "Когонга", "Когондан",
+        "когонга", "когондан", "Коган", "коган", "Kohan", "kohan"
+      ]
+    },
+    "vobkent": {
+      "name": "Vobkent",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Vobkent", "vobkent", "Вобкент", "вобкент", "Vabkent", "vabkent",
+        "Vob", "vob", "Vobkentga", "Vobkentdan", "Вобкентга", "Вобкентдан",
+        "вобкентга", "вобкентдан", "Вабкент", "вабкент", "Wobkent", "wobkent"
+      ]
+    },
+    "olot": {
+      "name": "Olot",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Olot", "olot", "Олот", "олот", "Alat", "alat",
+        "Olo", "olo", "Olotga", "Olotdan", "Олотга", "Олотдан",
+        "олотга", "олотдан", "Алат", "алат", "Olat", "olat"
+      ]
+    },
+    "shofirkon": {
+      "name": "Shofirkon",
+      "type": "district",
+      "parent_region": "buxoro",
+      "keywords": [
+        "Shofirkon", "shofirkon", "Шофиркон", "шофиркон", "Shafirkan", "shafirkan",
+        "Sho", "sho", "Shofirkonga", "Shofirkondan", "Шофиркорнга", "Шофиркондан",
+        "шофиркорнга", "шофиркондан", "Шафиркан", "шафиркан", "Shafirkon", "shafirkon"
+      ]
     },
     "qashqadaryo": {
       "name": "Qashqadaryo",
+      "type": "region",
       "keywords": [
         "Қашқадарё", "Qashqadaryo", "Kashkadarya", "қашқадарё", "qashqadaryo",
         "Кашкадарья", "кашкадарья", "Qarshi", "Qarshiga", "Qarshidan",
         "Қарши", "Қаршига", "Қаршидан", "қарши", "қаршига",
         "Qsh", "QSH", "қш", "ҚШ", "Ksh", "KSH",
-        "Karshi", "karshi", "Qashqa", "qashqa",
-        "Shahrisabz", "Muborak", "Koson", "Kitob",
-        "Шахрисабз", "Муборак", "Косон", "Китоб",
-        "shahrisabz", "muborak", "koson", "kitob", "shaxrisabz"
-      ],
-      "districts": ["Qarshi", "Shahrisabz", "Muborak", "Koson", "Kitob"]
+        "Karshi", "karshi", "Qashqa", "qashqa", "Кашка", "кашка"
+      ]
+    },
+    "qarshi": {
+      "name": "Qarshi",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Qarshi", "qarshi", "Қарши", "қарши", "Karshi", "karshi",
+        "Qar", "qar", "Qarshiga", "Qarshidan", "Қаршига", "Қаршидан",
+        "қаршига", "қаршидан", "Карши", "карши", "Karshi city", "karshi city"
+      ]
+    },
+    "shahrisabz": {
+      "name": "Shahrisabz",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Shahrisabz", "shahrisabz", "Шахрисабз", "шахрисабз", "Shakhrisabz", "shakhrisabz",
+        "Sha", "sha", "Shahrisabzga", "Shahrisabzdan", "Шахрисабзга", "Шахрисабздан",
+        "шахрисабзга", "шахрисабздан", "Shaxrisabz", "shaxrisabz", "Шахрисабс", "шахрисабс"
+      ]
+    },
+    "muborak": {
+      "name": "Muborak",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Muborak", "muborak", "Муборак", "муборак", "Mubarak", "mubarak",
+        "Mub", "mub", "Muborakka", "Muborakdan", "Муборакка", "Муборакдан",
+        "муборакка", "муборакдан", "Мубарак", "мубарак", "Mubarek", "mubarek"
+      ]
+    },
+    "koson": {
+      "name": "Koson",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Koson", "koson", "Косон", "косон", "Kason", "kason",
+        "Kos", "kos", "Kosonga", "Kosondan", "Косонга", "Косондан",
+        "косонга", "косондан", "Касон", "касон", "Kasson", "kasson"
+      ]
+    },
+    "kitob": {
+      "name": "Kitob",
+      "type": "district",
+      "parent_region": "qashqadaryo",
+      "keywords": [
+        "Kitob", "kitob", "Китоб", "китоб", "Kitab", "kitab",
+        "Kit", "kit", "Kitobga", "Kitobdan", "Китобга", "Китобдан",
+        "китобга", "китобдан", "Китаб", "китаб", "Ketob", "ketob"
+      ]
     },
     "surxondaryo": {
       "name": "Surxondaryo",
+      "type": "region",
       "keywords": [
         "Сурхондарё", "Surxondaryo", "Surkhandarya", "сурхондарё", "surxondaryo",
         "Сурхандарья", "сурхандарья", "Termiz", "Termizga", "Termizdan",
         "Термиз", "Термизга", "Термиздан", "термиз", "термизга",
         "Sur", "SUR", "сур", "СУР", "Trm", "TRM",
-        "Termez", "termez", "Surxon", "surxon",
-        "Denov", "Sherobod", "Boysun", "Muzrabot",
-        "Денов", "Шеробод", "Бойсун", "Музработ",
-        "denov", "sherobod", "boysun", "muzrabot"
-      ],
-      "districts": ["Termiz", "Denov", "Sherobod", "Boysun", "Muzrabot"]
+        "Termez", "termez", "Surxon", "surxon", "Сурхан", "сурхан"
+      ]
+    },
+    "termiz": {
+      "name": "Termiz",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Termiz", "termiz", "Термиз", "термиз", "Termez", "termez",
+        "Trm", "trm", "Termizga", "Termizdan", "Термизга", "Термиздан",
+        "термизга", "термиздан", "Термез", "термез", "Tirmiz", "tirmiz"
+      ]
+    },
+    "denov": {
+      "name": "Denov",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Denov", "denov", "Денов", "денов", "Denau", "denau",
+        "Den", "den", "Denovga", "Denovdan", "Деновга", "Деновдан",
+        "деновга", "деновдан", "Денау", "денау", "Dənəv", "dənəv"
+      ]
+    },
+    "sherobod": {
+      "name": "Sherobod",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Sherobod", "sherobod", "Шеробод", "шеробод", "Sherabad", "sherabad",
+        "She", "she", "Sherobodga", "Sheroboddan", "Шерободга", "Шерободдан",
+        "шерободга", "шерободдан", "Шерабад", "шерабад", "Shiroбod", "shirobod"
+      ]
+    },
+    "boysun": {
+      "name": "Boysun",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Boysun", "boysun", "Бойсун", "бойсун", "Baysun", "baysun",
+        "Boy", "boy", "Boysunga", "Boysundan", "Бойсунга", "Бойсундан",
+        "бойсунга", "бойсундан", "Байсун", "байсун", "Boisun", "boisun"
+      ]
+    },
+    "muzrabot": {
+      "name": "Muzrabot",
+      "type": "district",
+      "parent_region": "surxondaryo",
+      "keywords": [
+        "Muzrabot", "muzrabot", "Музработ", "музработ", "Muzrabod", "muzrabod",
+        "Muz", "muz", "Muzrabotga", "Muzrabotdan", "Музработга", "Музработдан",
+        "музработга", "музработдан", "Музрабад", "музрабад", "Muzrobod", "muzrobod"
+      ]
     },
     "sirdaryo": {
       "name": "Sirdaryo",
+      "type": "region",
       "keywords": [
         "Сирдарё", "Sirdaryo", "Syrdarya", "сирдарё", "sirdaryo",
         "Сырдарья", "сырдарья", "Guliston", "Gulistonga", "Gulistondan",
         "Гулистон", "Гулистонга", "Гулистондан", "гулистон",
         "Sir", "SIR", "сир", "СИР", "Gul", "GUL",
-        "Gulistan", "gulistan", "Sirdarya", "sirdarya",
-        "Sardoba", "Boyovut", "Mirzaobod",
-        "Сардоба", "Боёвут", "Мирзаобод",
-        "sardoba", "boyovut", "mirzaobod"
-      ],
-      "districts": ["Guliston", "Sirdaryo", "Sardoba", "Boyovut", "Mirzaobod"]
+        "Gulistan", "gulistan", "Sirdarya", "sirdarya", "Сырдария", "сырдария"
+      ]
+    },
+    "guliston": {
+      "name": "Guliston",
+      "type": "district",
+      "parent_region": "sirdaryo",
+      "keywords": [
+        "Guliston", "guliston", "Гулистон", "гулистон", "Gulistan", "gulistan",
+        "Gul", "gul", "Gulistonga", "Gulistondan", "Гулистонга", "Гулистондан",
+        "гулистонга", "гулистондан", "Гулистан", "гулистан", "Gulstan", "gulstan"
+      ]
+    },
+    "sardoba": {
+      "name": "Sardoba",
+      "type": "district",
+      "parent_region": "sirdaryo",
+      "keywords": [
+        "Sardoba", "sardoba", "Сардоба", "сардоба", "Sardobo", "sardobo",
+        "Sar", "sar", "Sardobaga", "Sardobadan", "Сардобага", "Сардобадан",
+        "сардобага", "сардобадан", "Сардоб", "сардоб", "Sardaba", "sardaba"
+      ]
+    },
+    "boyovut": {
+      "name": "Boyovut",
+      "type": "district",
+      "parent_region": "sirdaryo",
+      "keywords": [
+        "Boyovut", "boyovut", "Боёвут", "боёвут", "Bayavut", "bayavut",
+        "Boy", "boy", "Boyovutga", "Boyovutdan", "Боёвутга", "Боёвутдан",
+        "боёвутга", "боёвутдан", "Баявут", "баявут", "Bayovut", "bayovut"
+      ]
+    },
+    "mirzaobod": {
+      "name": "Mirzaobod",
+      "type": "district",
+      "parent_region": "sirdaryo",
+      "keywords": [
+        "Mirzaobod", "mirzaobod", "Мирзаобод", "мирзаобод", "Mirzaabad", "mirzaabad",
+        "Mir", "mir", "Mirzaobodga", "Mirzaoboddan", "Мирзаободга", "Мирзаободдан",
+        "мирзаободга", "мирзаободдан", "Мирзаабад", "мирзаабад", "Mirzobod", "mirzobod"
+      ]
     },
     "jizzax": {
       "name": "Jizzax",
+      "type": "region",
       "keywords": [
         "Жиззах", "Jizzax", "Jizzakh", "жиззах", "jizzax", "jizzakh",
         "Джиззах", "джиззах", "Jizzaxga", "Jizzaxdan",
         "Жиззахга", "Жиззахдан", "жиззахга", "жиззахдан",
         "Jzx", "JZX", "жзх", "ЖЗХ", "Jiz", "JIZ",
-        "Djizzakh", "djizzakh", "Jizax", "jizax",
-        "Do'stlik", "Forish", "Paxtakor", "Zomin", "Baxmal",
-        "Дўстлик", "Фориш", "Пахтакор", "Зомин", "Бахмал",
-        "dostlik", "forish", "paxtakor", "zomin", "baxmal"
-      ],
-      "districts": ["Do'stlik", "Forish", "Paxtakor", "Zomin", "Baxmal"]
+        "Djizzakh", "djizzakh", "Jizax", "jizax", "Джизак", "джизак"
+      ]
+    },
+    "dostlik": {
+      "name": "Do'stlik",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Do'stlik", "dostlik", "Дўстлик", "дўстлик", "Dustlik", "dustlik",
+        "Dos", "dos", "Do'stlikka", "Do'stlikdan", "Дўстликка", "Дўстликдан",
+        "дўстликка", "дўстликдан", "Достлик", "достлик", "Dastlik", "dastlik"
+      ]
+    },
+    "forish": {
+      "name": "Forish",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Forish", "forish", "Фориш", "фориш", "Farish", "farish",
+        "For", "for", "Forishga", "Forishdan", "Форишга", "Форишдан",
+        "форишга", "форишдан", "Фариш", "фариш", "Forisн", "forisн"
+      ]
+    },
+    "paxtakor": {
+      "name": "Paxtakor",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Paxtakor", "paxtakor", "Пахтакор", "пахтакор", "Pakhtakor", "pakhtakor",
+        "Pax", "pax", "Paxtakorga", "Paxtakordan", "Пахтакорга", "Пахтакордан",
+        "пахтакорга", "пахтакордан", "Пахтакар", "пахтакар", "Pakhtakор", "pakhtakор"
+      ]
+    },
+    "zomin": {
+      "name": "Zomin",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Zomin", "zomin", "Зомин", "зомин", "Zamin", "zamin",
+        "Zom", "zom", "Zominga", "Zomindan", "Зоминга", "Зоминдан",
+        "зоминга", "зоминдан", "Замин", "замин", "Zoмin", "zoмin"
+      ]
+    },
+    "baxmal": {
+      "name": "Baxmal",
+      "type": "district",
+      "parent_region": "jizzax",
+      "keywords": [
+        "Baxmal", "baxmal", "Бахмал", "бахмал", "Bakhmal", "bakhmal",
+        "Bax", "bax", "Baxmalga", "Baxmaldan", "Бахмалга", "Бахмалдан",
+        "бахмалга", "бахмалдан", "Бахмаль", "бахмаль", "Baхmal", "baхmal"
+      ]
     },
     "navoiy": {
       "name": "Navoiy",
+      "type": "region",
       "keywords": [
         "Навоий", "Navoiy", "Navoi", "навоий", "navoiy", "navoi",
         "Навои", "навои", "Navoiyga", "Navoiydan",
         "Навоийга", "Навоийдан", "навоийга", "навоийдан",
         "Nvy", "NVY", "нвй", "НВЙ", "Nav", "NAV",
-        "Navoy", "navoy", "Navoyi", "navoyi",
-        "Zarafshon", "Nurota", "Karmana", "Navbahor", "Qiziltepa",
-        "Зарафшон", "Нурота", "Кармана", "Навбаҳор", "Қизилтепа",
-        "zarafshon", "nurota", "karmana", "navbahor", "qiziltepa", "zarafshan"
-      ],
-      "districts": ["Zarafshon", "Nurota", "Karmana", "Navbahor", "Qiziltepa"]
+        "Navoy", "navoy", "Navoyi", "navoyi", "Навоий", "навоий"
+      ]
+    },
+    "zarafshon": {
+      "name": "Zarafshon",
+      "type": "district",
+      "parent_region": "navoiy",
+      "keywords": [
+        "Zarafshon", "zarafshon", "Зарафшон", "зарафшон", "Zarafshan", "zarafshan",
+        "Zar", "zar", "Zarafshonga", "Zarafshondan", "Зарафшонга", "Зарафшондан",
+        "зарафшонга", "зарафшондан", "Зарафшан", "зарафшан", "Zarafшon", "zarafшon"
+      ]
+    },
+    "nurota": {
+      "name": "Nurota",
+      "type": "district",
+      "parent_region": "navoiy",
+      "keywords": [
+        "Nurota", "nurota", "Нурота", "нурота", "Nurata", "nurata",
+        "Nur", "nur", "Nurotaga", "Nurotadan", "Нуротага", "Нуротадан",
+        "нуротага", "нуротадан", "Нурата", "нурата", "Nurotа", "nurotа"
+      ]
+    },
+    "karmana": {
+      "name": "Karmana",
+      "type": "district",
+      "parent_region": "navoiy",
+      "keywords": [
+        "Karmana", "karmana", "Кармана", "кармана", "Karmanа", "karmanа",
+        "Kar", "kar", "Karmanaga", "Karmanadan", "Карманага", "Карманадан",
+        "карманага", "карманадан", "Карман", "карман", "Karmona", "karmona"
+      ]
+    },
+    "navbahor": {
+      "name": "Navbahor",
+      "type": "district",
+      "parent_region": "navoiy",
+      "keywords": [
+        "Navbahor", "navbahor", "Навбаҳор", "навбаҳор", "Navbahar", "navbahar",
+        "Nav", "nav", "Navbahorga", "Navbahordan", "Навбаҳорга", "Навбаҳордан",
+        "навбаҳорга", "навбаҳордан", "Навбахор", "навбахор", "Navbohоr", "navbohоr"
+      ]
+    },
+    "qiziltepa": {
+      "name": "Qiziltepa",
+      "type": "district",
+      "parent_region": "navoiy",
+      "keywords": [
+        "Qiziltepa", "qiziltepa", "Қизилтепа", "қизилтепа", "Kiziltepa", "kiziltepa",
+        "Qiz", "qiz", "Qiziltepaga", "Qiziltepadan", "Қизилтепага", "Қизилтепадан",
+        "қизилтепага", "қизилтепадан", "Кызылтепа", "кызылтепа", "Kziltepa", "kziltepa"
+      ]
     },
     "xorazm": {
       "name": "Xorazm",
+      "type": "region",
       "keywords": [
         "Хоразм", "Xorazm", "Khorezm", "хоразм", "xorazm", "khorezm",
         "Хорезм", "хорезм", "Urganch", "Urganchga", "Urganchdan",
         "Урганч", "Урганчга", "Урганчдан", "урганч", "урганчга",
         "Xrz", "XRZ", "хрз", "ХРЗ", "Urg", "URG",
-        "Urgench", "urgench", "Khorazm", "khorazm",
-        "Xiva", "Xonqa", "Shovot", "Yangiariq",
-        "Хива", "Хонқа", "Шовот", "Янгиариқ", "Khiva",
-        "xiva", "xonqa", "shovot", "yangiariq", "khiva"
-      ],
-      "districts": ["Urganch", "Xiva", "Xonqa", "Shovot", "Yangiariq"]
+        "Urgench", "urgench", "Khorazm", "khorazm", "Хорезм", "хорезм"
+      ]
+    },
+    "urganch": {
+      "name": "Urganch",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Urganch", "urganch", "Урганч", "урганч", "Urgench", "urgench",
+        "Urg", "urg", "Urganchga", "Urganchdan", "Урганчга", "Урганчдан",
+        "урганчга", "урганчдан", "Ургенч", "ургенч", "Urgаnch", "urgаnch"
+      ]
+    },
+    "xiva": {
+      "name": "Xiva",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Xiva", "xiva", "Хива", "хива", "Khiva", "khiva",
+        "Xiv", "xiv", "Xivaga", "Xivadan", "Хивага", "Хивадан",
+        "хивага", "хивадан", "Хыва", "хыва", "Hivа", "hivа"
+      ]
+    },
+    "xonqa": {
+      "name": "Xonqa",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Xonqa", "xonqa", "Хонқа", "хонқа", "Khonka", "khonka",
+        "Xon", "xon", "Xonqaga", "Xonqadan", "Хонқага", "Хонқадан",
+        "хонқага", "хонқадан", "Хонка", "хонка", "Honqa", "honqa"
+      ]
+    },
+    "shovot": {
+      "name": "Shovot",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Shovot", "shovot", "Шовот", "шовот", "Shavat", "shavat",
+        "Sho", "sho", "Shovotga", "Shovotdan", "Шовотга", "Шовотдан",
+        "шовотга", "шовотдан", "Шават", "шават", "Shоvot", "shоvot"
+      ]
+    },
+    "yangiariq": {
+      "name": "Yangiariq",
+      "type": "district",
+      "parent_region": "xorazm",
+      "keywords": [
+        "Yangiariq", "yangiariq", "Янгиариқ", "янгиариқ", "Yangiarik", "yangiarik",
+        "Yan", "yan", "Yangiariqqa", "Yangiariqdan", "Янгиарикка", "Янгиарикдан",
+        "янгиарикка", "янгиарикдан", "Янгиарык", "янгиарык", "Yangiaryk", "yangiaryk"
+      ]
     },
     "qoraqalpogiston": {
       "name": "Qoraqalpog'iston",
+      "type": "region",
       "keywords": [
         "Қорақалпоғистон", "Qoraqalpogiston", "Karakalpakstan", "қорақалпоғистон",
         "Каракалпакстан", "каракалпакстан", "Nukus", "Nukusga", "Nukusdan",
         "Нукус", "Нукусга", "Нукусдан", "нукус", "нукусга",
         "Qqp", "QQP", "ққп", "ҚҚП", "Nuk", "NUK",
-        "Qoraqalpoq", "qoraqalpoq", "QQR", "qqr",
-        "Xo'jayli", "Qo'ng'irot", "Chimboy", "Taxtako'pir",
-        "Хўжайли", "Қўнғирот", "Чимбой", "Тахтакўпир",
-        "xojayli", "qongirot", "chimboy", "taxtakopir"
-      ],
-      "districts": ["Nukus", "Xo'jayli", "Qo'ng'irot", "Chimboy", "Taxtako'pir"]
+        "Qoraqalpoq", "qoraqalpoq", "QQR", "qqr", "Каракалпакия", "каракалпакия"
+      ]
+    },
+    "nukus": {
+      "name": "Nukus",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Nukus", "nukus", "Нукус", "нукус", "Nukusga", "Nukusdan",
+        "Нукусга", "Нукусдан", "нукусга", "нукусдан",
+        "Nuk", "nuk", "НУК", "нук", "Nukуs", "nukуs"
+      ]
+    },
+    "xojayli": {
+      "name": "Xo'jayli",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Xo'jayli", "xojayli", "Хўжайли", "хўжайли", "Khodjeyli", "khodjeyli",
+        "Xoj", "xoj", "Xo'jayliga", "Xo'jaylidan", "Хўжайлига", "Хўжайлидан",
+        "хўжайлига", "хўжайлидан", "Ходжейли", "ходжейли", "Hojayli", "hojayli"
+      ]
+    },
+    "qongirot": {
+      "name": "Qo'ng'irot",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Qo'ng'irot", "qongirot", "Қўнғирот", "қўнғирот", "Kungirot", "kungirot",
+        "Qon", "qon", "Qo'ng'irotga", "Qo'ng'irotdan", "Қўнғиротга", "Қўнғиротдан",
+        "қўнғиротга", "қўнғиротдан", "Кунгират", "кунгират", "Kongirot", "kongirot"
+      ]
+    },
+    "chimboy": {
+      "name": "Chimboy",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Chimboy", "chimboy", "Чимбой", "чимбой", "Chimbay", "chimbay",
+        "Chi", "chi", "Chimboyga", "Chimboydan", "Чимбойга", "Чимбойдан",
+        "чимбойга", "чимбойдан", "Чимбай", "чимбай", "Shimbay", "shimbay"
+      ]
+    },
+    "taxtakopir": {
+      "name": "Taxtako'pir",
+      "type": "district",
+      "parent_region": "qoraqalpogiston",
+      "keywords": [
+        "Taxtako'pir", "taxtakopir", "Тахтакўпир", "тахтакўпир", "Takhtakupir", "takhtakupir",
+        "Tax", "tax", "Taxtako'pirga", "Taxtako'pirdan", "Тахтакўпирга", "Тахтакўпирдан",
+        "тахтакўпирга", "тахтакўпирдан", "Тахтакупыр", "тахтакупыр", "Taхtakupir", "taхtakupir"
+      ]
     }
   }
 }
