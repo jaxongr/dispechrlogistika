@@ -307,8 +307,8 @@ class CargoSearchService {
     message += `⏰ Oxirgi 3 soat ichida\n\n`;
     message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
 
-    // Faqat birinchi 10 ta natijani ko'rsatish
-    const limitedResults = results.slice(0, 10);
+    // Faqat birinchi 30 ta natijani ko'rsatish
+    const limitedResults = results.slice(0, 30);
 
     limitedResults.forEach((result, index) => {
       const routeFrom = this.locations[result.route.from]?.name || result.route.fromText;
@@ -322,10 +322,10 @@ class CargoSearchService {
         message += `🚛 <b>${routeFrom} → ${routeTo}</b>\n`;
       }
 
-      // Xabar matni (maksimal 150 belgi)
+      // Xabar matni (maksimal 100 belgi - qisqartirish)
       let text = result.message_text || '';
-      if (text.length > 150) {
-        text = text.substring(0, 150) + '...';
+      if (text.length > 100) {
+        text = text.substring(0, 100) + '...';
       }
       message += `📝 ${text}\n`;
 
@@ -348,8 +348,8 @@ class CargoSearchService {
       message += `\n`;
     });
 
-    if (results.length > 10) {
-      message += `\n... va yana <b>${results.length - 10} ta</b> e'lon\n`;
+    if (results.length > 30) {
+      message += `\n... va yana <b>${results.length - 30} ta</b> e'lon\n`;
     }
 
     message += `\n💡 <i>E'lon beruvchi bilan bog'lanish uchun telefon raqamdan foydalaning</i>`;
