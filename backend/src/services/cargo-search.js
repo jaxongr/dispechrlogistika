@@ -353,9 +353,16 @@ class CargoSearchService {
         const groupInfo = telegramGroups.find(g => g.group_id.toString() === result.group_id.toString());
 
         let messageLink = '';
-        if (groupInfo && groupInfo.group_username) {
+        let groupUsername = groupInfo?.group_username;
+
+        // YO'LDA target channel uchun hardcode (1761253935714 = -1002496159921 without -100)
+        if (result.group_id.toString() === '1761253935714' || result.group_id === 1761253935714) {
+          groupUsername = 'yoldauz';
+        }
+
+        if (groupUsername) {
           // Public guruh uchun
-          messageLink = `https://t.me/${groupInfo.group_username}/${result.telegram_message_id}`;
+          messageLink = `https://t.me/${groupUsername}/${result.telegram_message_id}`;
         } else {
           // Private guruh uchun
           const chatId = result.group_id.toString().replace(/^-100/, '');
