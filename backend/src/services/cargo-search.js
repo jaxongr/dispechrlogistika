@@ -348,9 +348,20 @@ class CargoSearchService {
 
       // Xabarga o'tish tugmasi (agar group_id va message_id mavjud bo'lsa)
       if (result.telegram_message_id && result.group_id) {
-        // group_id bazada "-100" prefiksisiz saqlanadi, to'g'ridan-to'g'ri ishlatamiz
-        const chatId = result.group_id.toString().replace(/^-100/, '');
-        const messageLink = `https://t.me/c/${chatId}/${result.telegram_message_id}`;
+        // Guruh ma'lumotlarini olish
+        const telegramGroups = db.get('telegram_groups').value() || [];
+        const groupInfo = telegramGroups.find(g => g.group_id.toString() === result.group_id.toString());
+
+        let messageLink = '';
+        if (groupInfo && groupInfo.group_username) {
+          // Public guruh uchun
+          messageLink = `https://t.me/${groupInfo.group_username}/${result.telegram_message_id}`;
+        } else {
+          // Private guruh uchun
+          const chatId = result.group_id.toString().replace(/^-100/, '');
+          messageLink = `https://t.me/c/${chatId}/${result.telegram_message_id}`;
+        }
+
         message += `📨 <a href="${messageLink}">Xabarga o'tish</a>\n`;
       }
 
