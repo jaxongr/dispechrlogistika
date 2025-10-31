@@ -344,7 +344,7 @@ class MultiSessionBroadcastService {
         this.broadcastProgress.failed++;
 
         // Handle FloodWait - add to restricted groups
-        if (error.message.includes('FLOOD_WAIT')) {
+        if (error.message.includes('FLOOD_WAIT') || error.message.includes('A wait of')) {
           const match = error.message.match(/(\d+)/);
           const waitSeconds = match ? parseInt(match[1]) : 300;
           console.log(`⏳ FloodWait ${waitSeconds}s for ${item.groupName} - SKIP & CONTINUE`);
