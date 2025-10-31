@@ -343,6 +343,7 @@ Buyurtmani yaratishni tasdiqlaysizmi?
     try {
       const userId = ctx.from.id.toString();
 
+      // CRITICAL SECTION: Atomic check and update
       const order = db.get('bot_orders')
         .find({ id: orderId })
         .value();
@@ -352,7 +353,7 @@ Buyurtmani yaratishni tasdiqlaysizmi?
         return;
       }
 
-      // Agar allaqachon olingan bo'lsa
+      // DOUBLE-CHECK: Agar allaqachon olingan bo'lsa
       if (order.status === 'taken') {
         await ctx.answerCbQuery('❌ Bu buyurtma allaqachon boshqa user tomonidan olingan', {
           show_alert: true
@@ -360,15 +361,28 @@ Buyurtmani yaratishni tasdiqlaysizmi?
         return;
       }
 
-      // Buyurtmani olingan deb belgilash
-      db.get('bot_orders')
-        .find({ id: orderId })
+      // ATOMIC UPDATE: Faqat status 'pending' bo'lsagina update qil
+      const updateResult = db.get('bot_orders')
+        .find({ id: orderId, status: 'pending' }) // Double-check in query
         .assign({
           status: 'taken',
           taken_by_user_id: userId,
           taken_at: new Date().toISOString()
         })
         .write();
+
+      // Verify update was successful
+      const updatedOrder = db.get('bot_orders')
+        .find({ id: orderId })
+        .value();
+
+      // RACE CONDITION CHECK: Agar boshqa user olgan bo'lsa
+      if (updatedOrder.taken_by_user_id !== userId) {
+        await ctx.answerCbQuery('❌ Bu buyurtma allaqachon boshqa user tomonidan olingan', {
+          show_alert: true
+        });
+        return;
+      }
 
       console.log(`✅ Order ${orderId} taken by user ${userId}`);
 
