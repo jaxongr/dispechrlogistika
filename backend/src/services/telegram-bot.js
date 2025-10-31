@@ -126,13 +126,11 @@ Agar raqamni unutsangiz, "📞 Raqamni olish" tugmasini bosing
 <b>⚠️ Eslatma:</b>
 Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini kutib turing.`;
 
-        // Reply keyboard qo'shish
+        // Reply keyboard qo'shish - 2 ustunda chiroyli tartibda
         const keyboard = {
           keyboard: [
-            [{ text: '📝 Buyurtma yaratish' }],
-            [{ text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Mening statistikam' }],
-            [{ text: '🚛 Haydovchilar' }],
+            [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
+            [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
@@ -279,7 +277,7 @@ Savol bo'lsa, admin bilan bog'laning.`;
 
 
       // Klavyatura tugmalarini qabul qilish - to'g'ridan-to'g'ri funksiya chaqirish
-      this.bot.hears('📊 Mening statistikam', async (ctx) => {
+      this.bot.hears(['📊 Mening statistikam', '📊 Statistika'], async (ctx) => {
         // /stats komandasi bilan bir xil
         try {
           const userId = ctx.from.id;
@@ -374,13 +372,11 @@ Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
 
       // Bosh menyu tugmasi - /start ni ko'rsatish
       this.bot.hears('🔙 Bosh menyu', async (ctx) => {
-        // Reply keyboard qo'shish
+        // Reply keyboard qo'shish - 2 ustunda chiroyli tartibda
         const keyboard = {
           keyboard: [
-            [{ text: '📝 Buyurtma yaratish' }],
-            [{ text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Mening statistikam' }],
-            [{ text: '🚛 Haydovchilar' }],
+            [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
+            [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
@@ -477,10 +473,8 @@ Tanlang:`;
           // Asosiy menyu klavyaturasi
           const keyboard = {
             keyboard: [
-              [{ text: '📝 Buyurtma yaratish' }],
-              [{ text: '🔍 Yuk qidirish' }],
-              [{ text: '📊 Mening statistikam' }],
-              [{ text: '🚛 Haydovchilar' }],
+              [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
+              [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
               [{ text: 'ℹ️ Yordam' }]
             ],
             resize_keyboard: true
@@ -2119,9 +2113,8 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         this.userSearchState.delete(userId);
         const mainKeyboard = {
           keyboard: [
-            [{ text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Mening statistikam' }],
-            [{ text: '🚛 Haydovchilar' }],
+            [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
+            [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
@@ -2269,9 +2262,8 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         // Asosiy menyuga qaytarish
         const mainKeyboard = {
           keyboard: [
-            [{ text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Mening statistikam' }],
-            [{ text: '🚛 Haydovchilar' }],
+            [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
+            [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
             [{ text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
