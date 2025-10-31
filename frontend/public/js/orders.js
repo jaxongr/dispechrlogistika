@@ -73,9 +73,21 @@ async function loadOrders() {
     orders.forEach(order => {
       const createdAt = formatDate(order.created_at);
       const status = getStatusBadge(order.status);
-      const takenBy = order.taken_by_user_id
-        ? `<span class="badge bg-success">${order.taken_by_user_id}</span>`
-        : '-';
+
+      // Display taken_by user info
+      let takenBy = '-';
+      if (order.taken_by_user_id) {
+        if (order.taken_by_phone) {
+          takenBy = `
+            <div><strong>${escapeHtml(order.taken_by_full_name || 'User')}</strong></div>
+            <a href="tel:${order.taken_by_phone}" class="text-success">
+              <i class="bi bi-telephone"></i> ${order.taken_by_phone}
+            </a>
+          `;
+        } else {
+          takenBy = `<span class="badge bg-success">${order.taken_by_user_id}</span>`;
+        }
+      }
 
       html += `
         <tr>

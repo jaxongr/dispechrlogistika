@@ -12,9 +12,26 @@ router.use(authenticate);
 router.get('/', async (req, res) => {
   try {
     const botOrders = db.get('bot_orders').value() || [];
+    const botUsers = db.get('bot_users').value() || [];
+
+    // Enrich orders with taken_by user info
+    const enrichedOrders = botOrders.map(order => {
+      if (order.taken_by_user_id) {
+        const takenByUser = botUsers.find(u => u.telegram_user_id === order.taken_by_user_id);
+        if (takenByUser) {
+          return {
+            ...order,
+            taken_by_phone: takenByUser.phone || null,
+            taken_by_username: takenByUser.username || null,
+            taken_by_full_name: `${takenByUser.first_name || ''} ${takenByUser.last_name || ''}`.trim()
+          };
+        }
+      }
+      return order;
+    });
 
     // Sort by created date (newest first)
-    botOrders.sort((a, b) => {
+    enrichedOrders.sort((a, b) => {
       const dateA = new Date(a.created_at);
       const dateB = new Date(b.created_at);
       return dateB - dateA;
@@ -22,8 +39,8 @@ router.get('/', async (req, res) => {
 
     res.json({
       success: true,
-      orders: botOrders,
-      count: botOrders.length
+      orders: enrichedOrders,
+      count: enrichedOrders.length
     });
 
   } catch (error) {
