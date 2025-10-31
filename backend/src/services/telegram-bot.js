@@ -2565,6 +2565,18 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
   async handleBroadcastStart(ctx) {
     const userId = ctx.from.id.toString();
 
+    // Bu imkoniyat hali ishga tushgani yo'q
+    await ctx.reply(
+      '⚠️ <b>Bu imkoniyat hali ishga tushgani yo\'q!</b>\n\n' +
+      '📢 E\'lon tarqatish funksiyasi hozircha faqat dashboard orqali ishlaydi:\n' +
+      '🌐 http://5.189.141.151:3001/broadcast.html\n\n' +
+      '✅ Tez orada botda ham faol qilinadi!',
+      { parse_mode: 'HTML' }
+    );
+    return;
+
+    // COMMENTED OUT - Keyinchalik faollashtirish uchun
+    /*
     // User ro'yxatdan o'tganmi tekshirish
     const user = db.get('bot_users')
       .find({ telegram_user_id: userId })
@@ -2622,6 +2634,7 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
     this.userBroadcastState.set(userId, {
       step: 'awaiting_message'
     });
+    */
   }
 
   /**
