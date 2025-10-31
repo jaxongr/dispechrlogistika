@@ -150,9 +150,11 @@ class DriverAdvanceBookingService {
 
     await ctx.reply(
       `✅ Yo'nalish qabul qilindi: <b>${text}</b>\n\n` +
-      '<b>3-qadam:</b> Manzilga qachon yetib borasiz?\n' +
-      'Vaqtni kiriting (soat:daqiqa formatida):\n' +
-      'Masalan: <code>14:30</code> yoki <code>18:00</code>',
+      '<b>3-qadam:</b> Manzilga qachon yetib borasiz?\n\n' +
+      'Vaqtni kiriting:\n' +
+      '• Faqat vaqt: <code>14:30</code>\n' +
+      '• Vaqt va sana: <code>14:30 31.10</code>\n\n' +
+      '💡 Sana ko\'rsatmasangiz, bugun yoki ertaga avtomatik belgilanadi.',
       { parse_mode: 'HTML' }
     );
 
@@ -170,25 +172,51 @@ class DriverAdvanceBookingService {
       return { success: false };
     }
 
-    // Vaqt formatini tekshirish (HH:MM)
-    const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
-    if (!timeRegex.match(text.trim())) {
+    // Vaqt va sana formatini tekshirish
+    // Format 1: "14:30 31.10" yoki "14:30 31/10" yoki "14:30 31-10"
+    // Format 2: "14:30" (bugun/ertaga avtomatik)
+    const dateTimeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])(?:\s+(\d{1,2})[.\/-](\d{1,2}))?$/;
+    const match = text.trim().match(dateTimeRegex);
+
+    if (!match) {
       await ctx.reply(
         '❌ Noto\'g\'ri format!\n\n' +
-        'Iltimos, vaqtni <code>soat:daqiqa</code> formatida kiriting.\n' +
-        'Masalan: <code>14:30</code>',
+        'Iltimos, vaqtni kiriting:\n' +
+        '• Faqat vaqt: <code>14:30</code>\n' +
+        '• Vaqt va sana: <code>14:30 31.10</code> yoki <code>14:30 31/10</code>\n\n' +
+        'Sana ko\'rsatmasangiz, bugun/ertaga qo\'yiladi.',
         { parse_mode: 'HTML' }
       );
       return { success: false };
     }
 
-    const [hours, minutes] = text.trim().split(':').map(Number);
-    const today = new Date();
-    const arrivalTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+    const [, hoursStr, minutesStr, dayStr, monthStr] = match;
+    const hours = parseInt(hoursStr);
+    const minutes = parseInt(minutesStr);
 
-    // Agar vaqt o'tmagan bo'lsa, ertaga qo'shish
-    if (arrivalTime < new Date()) {
-      arrivalTime.setDate(arrivalTime.getDate() + 1);
+    let arrivalTime;
+    const now = new Date();
+
+    if (dayStr && monthStr) {
+      // Sana berilgan
+      const day = parseInt(dayStr);
+      const month = parseInt(monthStr) - 1; // JavaScript'da oy 0 dan boshlanadi
+      const year = now.getFullYear();
+
+      arrivalTime = new Date(year, month, day, hours, minutes);
+
+      // Agar sana o'tgan bo'lsa, keyingi yilga o'tkazish
+      if (arrivalTime < now) {
+        arrivalTime.setFullYear(year + 1);
+      }
+    } else {
+      // Sana berilmagan - bugun yoki ertaga
+      arrivalTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+
+      // Agar vaqt o'tmagan bo'lsa, ertaga qo'shish
+      if (arrivalTime < now) {
+        arrivalTime.setDate(arrivalTime.getDate() + 1);
+      }
     }
 
     state.data.arrival_time = arrivalTime.toISOString();
@@ -198,8 +226,15 @@ class DriverAdvanceBookingService {
 
     this.userBookingState.set(userId, state);
 
+    const arrivalDateStr = arrivalTime.toLocaleString('uz-UZ', {
+      day: 'numeric',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
     await ctx.reply(
-      `✅ Yetib borish vaqti: <b>${text}</b>\n` +
+      `✅ Yetib borish vaqti: <b>${arrivalDateStr}</b>\n` +
       `📍 Vaqt oralig'i: ${new Date(state.data.time_window_start).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })} - ${new Date(state.data.time_window_end).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}\n\n` +
       '<b>4-qadam:</b> Keyingi yo\'nalishingiz qayerga?\n' +
       'Masalan: <code>Samarqand - Buxoro</code>',
