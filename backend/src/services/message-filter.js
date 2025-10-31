@@ -10,7 +10,7 @@ class MessageFilter {
     this.recentMessages = new Map(); // message_hash -> timestamp
     this.userGroupCount = new Map(); // user_id -> Set of group_ids
     this.phoneGroupTracker = new Map(); // phone -> { groups: Set, firstSeen: timestamp }
-    this.userMessageHashes = new Map(); // user_id -> Set of message_hashes (dublikat tracking)
+    this.userMessageHashes = new Map(); // user_id -> Map of message_hash -> timestamp (dublikat tracking)
 
     // Load dispatcher keywords
     try {
@@ -368,33 +368,49 @@ class MessageFilter {
     }
 
     // DUBLIKAT TEKSHIRUVI: Bir xil xabarni ko'p guruhlarga spam qilish
+    // YANGILANDI: Faqat so'nggi 1 soat ichidagi dublikatlarni tekshirish
     const messageHash = this.getMessageHash(message_text);
+    const now = Date.now();
+    const ONE_HOUR = 60 * 60 * 1000; // 1 soat millisekundlarda
 
     if (!this.userMessageHashes.has(sender_user_id)) {
-      this.userMessageHashes.set(sender_user_id, new Set());
+      this.userMessageHashes.set(sender_user_id, new Map());
     }
 
     const userHashes = this.userMessageHashes.get(sender_user_id);
 
-    if (userHashes.has(messageHash)) {
-      // Bu user bu xabarni allaqachon yuborgan (boshqa guruhda)
-      return {
-        shouldBlock: true,
-        reason: 'Dublikat xabar (bir xil e\'lon ko\'p guruhlarda)',
-        isDispatcher: true,
-        autoBlock: true
-      };
+    // Eski hash'larni tozalash (1 soatdan eski)
+    for (const [hash, timestamp] of userHashes.entries()) {
+      if (now - timestamp > ONE_HOUR) {
+        userHashes.delete(hash);
+      }
     }
 
-    // Yangi xabar - hash'ni saqlash
-    userHashes.add(messageHash);
+    if (userHashes.has(messageHash)) {
+      const lastSeen = userHashes.get(messageHash);
+      const timeDiff = now - lastSeen;
 
-    // Eski hash'larni tozalash (1000 tadan ko'p bo'lsa)
-    if (userHashes.size > 1000) {
-      const hashesArray = Array.from(userHashes);
+      // Agar 1 soat ichida dublikat bo'lsa - bloklash
+      if (timeDiff < ONE_HOUR) {
+        return {
+          shouldBlock: true,
+          reason: `Dublikat xabar (${Math.round(timeDiff / 60000)} daqiqa oldin yuborilgan)`,
+          isDispatcher: true,
+          autoBlock: true
+        };
+      }
+    }
+
+    // Yangi xabar - hash va timestamp'ni saqlash
+    userHashes.set(messageHash, now);
+
+    // Eski hash'larni tozalash (100 tadan ko'p bo'lsa)
+    if (userHashes.size > 100) {
+      const sortedHashes = Array.from(userHashes.entries())
+        .sort((a, b) => b[1] - a[1]); // Timestamp bo'yicha sort
       userHashes.clear();
-      // Oxirgi 500 tasini saqlab qolish
-      hashesArray.slice(-500).forEach(h => userHashes.add(h));
+      // Oxirgi 50 tasini saqlab qolish
+      sortedHashes.slice(0, 50).forEach(([h, t]) => userHashes.set(h, t));
     }
 
     // 0. Username yoki full name'da kalit so'z bor mi?
