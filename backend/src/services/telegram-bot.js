@@ -2394,13 +2394,8 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
       return false;
     }
 
-    if (state.step === 'awaiting_driver_phone') {
-      await advanceBooking.handleDriverPhone(ctx, text);
-      return true;
-    }
-
-    if (state.step === 'awaiting_current_route') {
-      await advanceBooking.handleCurrentRoute(ctx, text);
+    if (state.step === 'awaiting_next_route') {
+      await advanceBooking.handleNextRoute(ctx, text);
       return true;
     }
 
@@ -2409,8 +2404,8 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
       return true;
     }
 
-    if (state.step === 'awaiting_next_route') {
-      await advanceBooking.handleNextRouteAndSave(this.bot, ctx, text);
+    if (state.step === 'awaiting_driver_phone') {
+      await advanceBooking.handleDriverPhoneAndSave(this.bot, ctx, text);
       return true;
     }
 

@@ -60,18 +60,18 @@ class DriverAdvanceBookingService {
       '📅 <b>Oldindan Yuk Bron Qilish</b>\n\n' +
       'Bu funksiya orqali siz keyingi yo\'nalishingiz bo\'yicha oldindan yuk bron qilishingiz mumkin.\n\n' +
       '<b>Qanday ishlaydi:</b>\n' +
-      '1️⃣ Haydovchi uchun telefon raqam kiriting\n' +
-      '2️⃣ Hozirgi joydan keyingi manzilga borish vaqtini kiriting\n' +
-      '3️⃣ Keyingi yo\'nalishni kiriting\n' +
+      '1️⃣ Qayerdan qayerga (yo\'nalish)\n' +
+      '2️⃣ Qachon kerak (vaqt)\n' +
+      '3️⃣ Haydovchi telefon raqami\n' +
       '4️⃣ O\'sha yo\'nalish bo\'yicha yuk tushsa, avtomatik yuboriladi\n\n' +
-      '<b>1-qadam:</b> Qaysi haydovchi uchun yuk qidiryapsiz?\n' +
-      'Haydovchining telefon raqamini kiriting:\n' +
-      'Masalan: <code>998901234567</code> yoki <code>+998 90 123 45 67</code>',
+      '<b>1-qadam:</b> Qayerdan qayerga yuk kerak?\n' +
+      'Yo\'nalishni kiriting:\n' +
+      'Masalan: <code>Toshkent - Samarqand</code>',
       { parse_mode: 'HTML' }
     );
 
     this.userBookingState.set(userId, {
-      step: 'awaiting_driver_phone',
+      step: 'awaiting_next_route',
       data: {
         user_id: userId,
         username: ctx.from.username || '',
@@ -80,13 +80,13 @@ class DriverAdvanceBookingService {
       }
     });
 
-    return { state: 'awaiting_driver_phone' };
+    return { state: 'awaiting_next_route' };
   }
 
   /**
-   * Haydovchi telefon raqamini qabul qilish
+   * Haydovchi telefon raqamini qabul qilish va bronni saqlash (oxirgi qadam)
    */
-  async handleDriverPhone(ctx, text) {
+  async handleDriverPhoneAndSave(bot, ctx, text) {
     const userId = ctx.from.id.toString();
     const state = this.userBookingState.get(userId);
 
@@ -118,51 +118,58 @@ class DriverAdvanceBookingService {
     }
 
     state.data.driver_phone = phone;
-    state.step = 'awaiting_current_route';
 
-    this.userBookingState.set(userId, state);
+    // Bronni saqlash
+    const bookingId = uuidv4();
+    const booking = {
+      id: bookingId,
+      booker_user_id: state.data.user_id, // Bron qilgan user (dispetcher)
+      booker_username: state.data.username,
+      booker_full_name: state.data.full_name,
+      booker_phone: state.data.phone,
+      driver_phone: state.data.driver_phone, // Haydovchi telefon raqami
+      current_route: state.data.next_route, // Endi bu yo'nalish
+      arrival_time: state.data.arrival_time,
+      time_window_start: state.data.time_window_start,
+      time_window_end: state.data.time_window_end,
+      next_route: state.data.next_route, // Yo'nalish
+      status: 'active', // active, fulfilled, cancelled, expired
+      matched_cargo_count: 0,
+      created_at: new Date().toISOString(),
+      expires_at: state.data.time_window_end // Vaqt tugagach o'chadi
+    };
+
+    db.get('driver_advance_bookings')
+      .push(booking)
+      .write();
+
+    console.log(`📅 Advance booking created: ${bookingId} by ${state.data.full_name}`);
+
+    // State'ni tozalash
+    this.userBookingState.delete(userId);
+
+    const arrivalTimeStr = new Date(booking.arrival_time).toLocaleString('uz-UZ', {
+      day: 'numeric',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
 
     await ctx.reply(
-      `✅ Haydovchi telefoni qabul qilindi: <code>${phone}</code>\n\n` +
-      '<b>2-qadam:</b> Qayerdan qayerga ketyapsiz?\n' +
-      'Masalan: <code>Toshkent - Samarqand</code>',
+      '✅ <b>Bron muvaffaqiyatli yaratildi!</b>\n\n' +
+      `🚛 <b>Yo'nalish:</b> ${booking.next_route}\n` +
+      `⏰ <b>Kerak bo'lgan vaqt:</b> ${arrivalTimeStr}\n` +
+      `👤 <b>Haydovchi:</b> <code>${booking.driver_phone}</code>\n\n` +
+      `💡 Bu yo'nalish bo'yicha yuk tushsa, sizga avtomatik yuboriladi!\n` +
+      `⏱ Vaqt oralig'i: ±1 soat`,
       { parse_mode: 'HTML' }
     );
 
-    return { success: true };
+    return { success: true, bookingId };
   }
 
   /**
-   * Hozirgi yo'nalishni qabul qilish
-   */
-  async handleCurrentRoute(ctx, text) {
-    const userId = ctx.from.id.toString();
-    const state = this.userBookingState.get(userId);
-
-    if (!state || state.step !== 'awaiting_current_route') {
-      return { success: false };
-    }
-
-    state.data.current_route = text.trim();
-    state.step = 'awaiting_arrival_time';
-
-    this.userBookingState.set(userId, state);
-
-    await ctx.reply(
-      `✅ Yo'nalish qabul qilindi: <b>${text}</b>\n\n` +
-      '<b>3-qadam:</b> Manzilga qachon yetib borasiz?\n\n' +
-      'Vaqtni kiriting:\n' +
-      '• Faqat vaqt: <code>14:30</code>\n' +
-      '• Vaqt va sana: <code>14:30 31.10</code>\n\n' +
-      '💡 Sana ko\'rsatmasangiz, bugun yoki ertaga avtomatik belgilanadi.',
-      { parse_mode: 'HTML' }
-    );
-
-    return { success: true };
-  }
-
-  /**
-   * Yetib borish vaqtini qabul qilish
+   * Vaqtni qabul qilish (2-qadam)
    */
   async handleArrivalTime(ctx, text) {
     const userId = ctx.from.id.toString();
@@ -222,7 +229,7 @@ class DriverAdvanceBookingService {
     state.data.arrival_time = arrivalTime.toISOString();
     state.data.time_window_start = new Date(arrivalTime.getTime() - 60 * 60 * 1000).toISOString(); // -1 soat
     state.data.time_window_end = new Date(arrivalTime.getTime() + 60 * 60 * 1000).toISOString(); // +1 soat
-    state.step = 'awaiting_next_route';
+    state.step = 'awaiting_driver_phone';
 
     this.userBookingState.set(userId, state);
 
@@ -234,10 +241,11 @@ class DriverAdvanceBookingService {
     });
 
     await ctx.reply(
-      `✅ Yetib borish vaqti: <b>${arrivalDateStr}</b>\n` +
+      `✅ Vaqt qabul qilindi: <b>${arrivalDateStr}</b>\n` +
       `📍 Vaqt oralig'i: ${new Date(state.data.time_window_start).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })} - ${new Date(state.data.time_window_end).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}\n\n` +
-      '<b>4-qadam:</b> Keyingi yo\'nalishingiz qayerga?\n' +
-      'Masalan: <code>Samarqand - Buxoro</code>',
+      '<b>3-qadam:</b> Qaysi haydovchi uchun yuk qidiryapsiz?\n' +
+      'Haydovchining telefon raqamini kiriting:\n' +
+      'Masalan: <code>998901234567</code> yoki <code>+998 90 123 45 67</code>',
       { parse_mode: 'HTML' }
     );
 
@@ -245,9 +253,9 @@ class DriverAdvanceBookingService {
   }
 
   /**
-   * Keyingi yo'nalishni qabul qilish va bronni saqlash
+   * Yo'nalishni qabul qilish (1-qadam)
    */
-  async handleNextRouteAndSave(bot, ctx, text) {
+  async handleNextRoute(ctx, text) {
     const userId = ctx.from.id.toString();
     const state = this.userBookingState.get(userId);
 
@@ -256,55 +264,21 @@ class DriverAdvanceBookingService {
     }
 
     state.data.next_route = text.trim();
+    state.step = 'awaiting_arrival_time';
 
-    // Bronni saqlash
-    const bookingId = uuidv4();
-    const booking = {
-      id: bookingId,
-      booker_user_id: state.data.user_id, // Bron qilgan user (dispetcher)
-      booker_username: state.data.username,
-      booker_full_name: state.data.full_name,
-      booker_phone: state.data.phone,
-      driver_phone: state.data.driver_phone, // Haydovchi telefon raqami
-      current_route: state.data.current_route,
-      arrival_time: state.data.arrival_time,
-      time_window_start: state.data.time_window_start,
-      time_window_end: state.data.time_window_end,
-      next_route: state.data.next_route,
-      status: 'active', // active, fulfilled, cancelled, expired
-      matched_cargo_count: 0,
-      created_at: new Date().toISOString(),
-      expires_at: state.data.time_window_end // Vaqt tugagach o'chadi
-    };
-
-    db.get('driver_advance_bookings')
-      .push(booking)
-      .write();
-
-    console.log(`📅 Advance booking created: ${bookingId} by ${state.data.full_name}`);
-
-    // State'ni tozalash
-    this.userBookingState.delete(userId);
-
-    const arrivalTimeStr = new Date(booking.arrival_time).toLocaleString('uz-UZ', {
-      day: 'numeric',
-      month: 'long',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    this.userBookingState.set(userId, state);
 
     await ctx.reply(
-      '✅ <b>Bron muvaffaqiyatli yaratildi!</b>\n\n' +
-      `👤 <b>Haydovchi:</b> <code>${booking.driver_phone}</code>\n` +
-      `📍 <b>Hozirgi yo'nalish:</b> ${booking.current_route}\n` +
-      `⏰ <b>Yetib borish:</b> ${arrivalTimeStr}\n` +
-      `🚛 <b>Keyingi yo'nalish:</b> ${booking.next_route}\n\n` +
-      `💡 Bu yo'nalish bo'yicha yuk tushsa, sizga avtomatik yuboriladi!\n` +
-      `⏱ Vaqt oralig'i: ±1 soat`,
+      `✅ Yo'nalish qabul qilindi: <b>${text}</b>\n\n` +
+      '<b>2-qadam:</b> Qachon kerak?\n\n' +
+      'Vaqtni kiriting:\n' +
+      '• Faqat vaqt: <code>14:30</code>\n' +
+      '• Vaqt va sana: <code>14:30 31.10</code>\n\n' +
+      '💡 Sana ko\'rsatmasangiz, bugun yoki ertaga avtomatik belgilanadi.',
       { parse_mode: 'HTML' }
     );
 
-    return { success: true, bookingId };
+    return { success: true };
   }
 
   /**
