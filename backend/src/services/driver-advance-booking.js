@@ -513,26 +513,7 @@ class DriverAdvanceBookingService {
         })
         .write();
 
-      // Guruhga yuborish - asl yukning ustiga reply qilish
-      const targetGroupId = process.env.TARGET_GROUP_ID || process.env.TARGET_CHANNEL_ID;
-      if (targetGroupId && cargoInfo.message_id) {
-        // Database'dan asl xabarning group_message_id sini topish
-        const message = db.get('messages')
-          .find({ id: cargoInfo.message_id })
-          .value();
-
-        if (message && message.group_message_id) {
-          // Asl yukning ustiga reply qilamiz
-          const replyMessage = `🎯 <b>BRONLANGAN YUK!</b>\n\n` +
-            `👤 Haydovchi: <a href="tg://user?id=${booking.booker_user_id}">${booking.booker_full_name}</a>\n` +
-            `⏰ Bron vaqti ichida topildi!`;
-
-          await bot.telegram.sendMessage(targetGroupId, replyMessage, {
-            parse_mode: 'HTML',
-            reply_to_message_id: message.group_message_id
-          });
-        }
-      }
+      // GURUHGA YUBORISH O'CHIRILDI - Faqat haydovchiga private xabar yuboriladi
 
     } catch (error) {
       console.error('Notify driver about match error:', error);
