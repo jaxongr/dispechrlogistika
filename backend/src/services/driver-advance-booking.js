@@ -319,12 +319,28 @@ class DriverAdvanceBookingService {
 
         // Vaqt oralig'i ichidami?
         if (now >= windowStart && now <= windowEnd) {
-          // Yo'nalish mos keladimi?
-          const cargoRoute = cargoInfo.route.toLowerCase();
-          const bookingRoute = booking.next_route.toLowerCase();
+          // Yo'nalishni parchalash va to'g'ri solishtirish
+          const cargoRoute = (cargoInfo.route || '').toLowerCase().trim();
+          const bookingRoute = (booking.next_route || '').toLowerCase().trim();
 
-          if (cargoRoute.includes(bookingRoute) || bookingRoute.includes(cargoRoute)) {
-            matchedBookings.push(booking);
+          // Ikkala yo'nalishni ham parchalash
+          const cargoParts = cargoRoute.split('-').map(p => p.trim());
+          const bookingParts = bookingRoute.split('-').map(p => p.trim());
+
+          const cargoFrom = cargoParts[0] || '';
+          const cargoTo = cargoParts[1] || '';
+          const bookingFrom = bookingParts[0] || '';
+          const bookingTo = bookingParts[1] || '';
+
+          // Faqat ikkala yo'nalish ham to'liq bo'lsa tekshirish
+          if (cargoFrom && cargoTo && bookingFrom && bookingTo) {
+            const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
+            const toMatch = cargoTo.includes(bookingTo) || bookingTo.includes(cargoTo);
+
+            if (fromMatch && toMatch) {
+              console.log(`✅ Yuk mos keldi: ${cargoRoute} <-> ${bookingRoute}`);
+              matchedBookings.push(booking);
+            }
           }
         } else if (now > windowEnd) {
           // Vaqt o'tgan bronlarni expired qilish
@@ -368,22 +384,38 @@ class DriverAdvanceBookingService {
         .filter(m =>
           m.is_sent_to_channel === true &&
           m.route_from &&
-          m.route_to
+          m.route_to &&
+          m.route_from.trim() !== '' &&
+          m.route_to.trim() !== ''
         )
         .value() || [];
 
-      console.log(`🔍 ${messages.length} ta guruhda mavjud yuk tekshirilmoqda...`);
+      console.log(`🔍 ${messages.length} ta yo'nalishi to'liq yuk tekshirilmoqda...`);
 
       const matchedCargos = [];
-      const bookingRoute = booking.next_route.toLowerCase();
+      const bookingRoute = booking.next_route.toLowerCase().trim();
+
+      // Bron yo'nalishini parchalash (masalan: "Toshkent - Samarqand")
+      const bookingParts = bookingRoute.split('-').map(p => p.trim());
+      const bookingFrom = bookingParts[0] || '';
+      const bookingTo = bookingParts[1] || '';
+
+      if (!bookingFrom || !bookingTo) {
+        console.log('⚠️ Bron yo\'nalishi noto\'g\'ri formatda:', booking.next_route);
+        return [];
+      }
 
       for (const message of messages) {
         // Yo'nalishni tayyorlash
-        const cargoRoute = `${message.route_from} - ${message.route_to}`.toLowerCase();
+        const cargoFrom = (message.route_from || '').toLowerCase().trim();
+        const cargoTo = (message.route_to || '').toLowerCase().trim();
 
-        // Yo'nalish mos keladimi?
-        if (cargoRoute.includes(bookingRoute) || bookingRoute.includes(cargoRoute)) {
-          console.log(`✅ Mos yuk topildi: ${cargoRoute}`);
+        // Yo'nalish mos keladimi? (Qattiqroq tekshirish)
+        const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
+        const toMatch = cargoTo.includes(bookingTo) || bookingTo.includes(cargoTo);
+
+        if (fromMatch && toMatch) {
+          console.log(`✅ Mos yuk topildi: ${cargoFrom} - ${cargoTo}`);
 
           const cargoInfo = {
             message_id: message.id,
