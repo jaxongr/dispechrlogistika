@@ -525,6 +525,8 @@ class DriverAdvanceBookingService {
 
     let message = '📋 <b>Sizning aktiv bronlaringiz:</b>\n\n';
 
+    const buttons = [];
+
     myBookings.forEach((booking, index) => {
       const arrivalTime = new Date(booking.arrival_time).toLocaleString('uz-UZ', {
         day: 'numeric',
@@ -536,11 +538,142 @@ class DriverAdvanceBookingService {
       message += `${index + 1}. 🚛 <b>${booking.next_route}</b>\n`;
       message += `   👤 Haydovchi: <code>${booking.driver_phone}</code>\n`;
       message += `   ⏰ ${arrivalTime}\n`;
-      message += `   📊 Topilgan yuklar: ${booking.matched_cargo_count || 0}\n`;
-      message += `   🆔 <code>${booking.id}</code>\n\n`;
+      message += `   📊 Topilgan yuklar: ${booking.matched_cargo_count || 0}\n\n`;
+
+      // Har bir bron uchun yakunlash tugmasi
+      buttons.push([
+        {
+          text: `✅ Yakunlash #${index + 1}`,
+          callback_data: `complete_booking:${booking.id}`
+        }
+      ]);
     });
 
-    await ctx.reply(message, { parse_mode: 'HTML' });
+    await ctx.reply(message, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: buttons
+      }
+    });
+  }
+
+  /**
+   * Bron yakunlash - yuk topildi/topilmadi so'rash
+   */
+  async askCompleteBooking(ctx, bookingId) {
+    const userId = ctx.from.id.toString();
+
+    const booking = db.get('driver_advance_bookings')
+      .find({ id: bookingId, booker_user_id: userId })
+      .value();
+
+    if (!booking) {
+      await ctx.answerCbQuery('❌ Bron topilmadi');
+      return;
+    }
+
+    const arrivalTime = new Date(booking.arrival_time).toLocaleString('uz-UZ', {
+      day: 'numeric',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    await ctx.answerCbQuery();
+    await ctx.reply(
+      `🔚 <b>Bronni yakunlash</b>\n\n` +
+      `🚛 <b>Yo'nalish:</b> ${booking.next_route}\n` +
+      `👤 <b>Haydovchi:</b> <code>${booking.driver_phone}</code>\n` +
+      `⏰ <b>Vaqt:</b> ${arrivalTime}\n` +
+      `📊 <b>Topilgan yuklar:</b> ${booking.matched_cargo_count || 0}\n\n` +
+      `<b>Yuk topildimi?</b>`,
+      {
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '✅ Yuk topildi', callback_data: `complete_found:${bookingId}` },
+              { text: '❌ Topilmadi', callback_data: `complete_not_found:${bookingId}` }
+            ],
+            [
+              { text: '🔙 Bekor qilish', callback_data: 'cancel_complete' }
+            ]
+          ]
+        }
+      }
+    );
+  }
+
+  /**
+   * Bronni yakunlash - yuk topildi
+   */
+  async completeBookingFound(ctx, bookingId) {
+    const userId = ctx.from.id.toString();
+
+    const booking = db.get('driver_advance_bookings')
+      .find({ id: bookingId, booker_user_id: userId })
+      .value();
+
+    if (!booking) {
+      await ctx.answerCbQuery('❌ Bron topilmadi');
+      return;
+    }
+
+    db.get('driver_advance_bookings')
+      .find({ id: bookingId })
+      .assign({
+        status: 'fulfilled',
+        completed_at: new Date().toISOString(),
+        completion_result: 'found'
+      })
+      .write();
+
+    await ctx.answerCbQuery('✅ Yuk topildi deb belgilandi');
+    await ctx.editMessageText(
+      `✅ <b>Bron muvaffaqiyatli yakunlandi!</b>\n\n` +
+      `🚛 <b>Yo'nalish:</b> ${booking.next_route}\n` +
+      `👤 <b>Haydovchi:</b> <code>${booking.driver_phone}</code>\n` +
+      `📊 <b>Topilgan yuklar:</b> ${booking.matched_cargo_count || 0}\n\n` +
+      `✅ <b>Natija:</b> Yuk topildi\n` +
+      `🎉 Tabriklaymiz!`,
+      { parse_mode: 'HTML' }
+    );
+  }
+
+  /**
+   * Bronni yakunlash - yuk topilmadi
+   */
+  async completeBookingNotFound(ctx, bookingId) {
+    const userId = ctx.from.id.toString();
+
+    const booking = db.get('driver_advance_bookings')
+      .find({ id: bookingId, booker_user_id: userId })
+      .value();
+
+    if (!booking) {
+      await ctx.answerCbQuery('❌ Bron topilmadi');
+      return;
+    }
+
+    db.get('driver_advance_bookings')
+      .find({ id: bookingId })
+      .assign({
+        status: 'not_fulfilled',
+        completed_at: new Date().toISOString(),
+        completion_result: 'not_found'
+      })
+      .write();
+
+    await ctx.answerCbQuery('Yuk topilmadi deb belgilandi');
+    await ctx.editMessageText(
+      `📋 <b>Bron yakunlandi</b>\n\n` +
+      `🚛 <b>Yo'nalish:</b> ${booking.next_route}\n` +
+      `👤 <b>Haydovchi:</b> <code>${booking.driver_phone}</code>\n` +
+      `📊 <b>Topilgan yuklar:</b> ${booking.matched_cargo_count || 0}\n\n` +
+      `❌ <b>Natija:</b> Yuk topilmadi\n` +
+      `💡 Keyingi safar omadingiz kelsin!`,
+      { parse_mode: 'HTML' }
+    );
   }
 
   /**

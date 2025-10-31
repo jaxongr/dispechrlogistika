@@ -458,6 +458,30 @@ Tanlang:`;
         await ctx.answerCbQuery();
       });
 
+      // Bron yakunlash - savol
+      this.bot.action(/^complete_booking:(.+)$/, async (ctx) => {
+        const bookingId = ctx.match[1];
+        await advanceBooking.askCompleteBooking(ctx, bookingId);
+      });
+
+      // Bron yakunlash - yuk topildi
+      this.bot.action(/^complete_found:(.+)$/, async (ctx) => {
+        const bookingId = ctx.match[1];
+        await advanceBooking.completeBookingFound(ctx, bookingId);
+      });
+
+      // Bron yakunlash - topilmadi
+      this.bot.action(/^complete_not_found:(.+)$/, async (ctx) => {
+        const bookingId = ctx.match[1];
+        await advanceBooking.completeBookingNotFound(ctx, bookingId);
+      });
+
+      // Yakunlashni bekor qilish
+      this.bot.action('cancel_complete', async (ctx) => {
+        await ctx.answerCbQuery('Bekor qilindi');
+        await ctx.deleteMessage();
+      });
+
       // Contact (telefon raqam) yuborilganda
       this.bot.on('contact', async (ctx) => {
         try {
