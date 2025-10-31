@@ -265,14 +265,14 @@
                         </label>
                     </div>
                     <div class="alert alert-info mt-2" style="font-size: 0.85rem;">
-                        <i class="bi bi-info-circle"></i> Ko'p session rejimida barcha faol sessionlar navbat bilan xabar yuboradi (Birinchi akkaunt → Ikkinchi akkaunt → ...)
+                        <i class="bi bi-info-circle"></i> Ko'p session rejimida barcha faol sessionlar navbat bilan xabar yuboradi (Birinchi akkaunt → Ikkinchi akkaunt → ...). <strong>Interval: 10 soniya</strong> (Telegram flood limitini oldini olish uchun)
                     </div>
                 </div>
 
                 <div class="mt-3">
                     <h6>Yuborish Tezligi:</h6>
                     <div class="alert alert-info mb-3">
-                        <small><i class="bi bi-info-circle"></i> <strong>Ko'p session:</strong> 3 soniya har xabar orasida | <strong>Bitta session:</strong> Tanlangan tezlikda</small>
+                        <small><i class="bi bi-info-circle"></i> <strong>Ko'p session:</strong> 10 soniya har xabar orasida (fixed) | <strong>Bitta session:</strong> Tanlangan tezlikda</small>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="speed" id="speedSafe" value="safe" checked>
@@ -623,76 +623,99 @@
                     }
                 });
 
+                if (!response.ok) {
+                    console.warn('Status API unavailable, skipping...');
+                    return true; // Continue anyway
+                }
+
                 const data = await response.json();
 
-                // Update session status UI
-                updateSessionStatus(data);
+                // Update session status UI (if data is valid)
+                if (data && typeof data === 'object') {
+                    updateSessionStatus(data);
 
-                // YAXSHILANDI: Formni faqat warning ko'rsatamiz, yashirmaymiz
-                // Sabab: Ko'p session rejimida bitta session ulanmagan bo'lsa ham ishlatish mumkin
-                if (!data.isConnected) {
-                    document.getElementById('statusCheck').style.display = 'block';
-                    // Form yashirilmaydi - foydalanuvchi ko'p session rejimini tanlashi mumkin
-                    // document.getElementById('broadcastForm').style.display = 'none';
-                    // return false;
+                    // YAXSHILANDI: Formni faqat warning ko'rsatamiz, yashirmaymiz
+                    // Sabab: Ko'p session rejimida bitta session ulanmagan bo'lsa ham ishlatish mumkin
+                    if (!data.isConnected) {
+                        const statusCheck = document.getElementById('statusCheck');
+                        if (statusCheck) {
+                            statusCheck.style.display = 'block';
+                        }
+                        // Form yashirilmaydi - foydalanuvchi ko'p session rejimini tanlashi mumkin
+                    }
+
+                    // Check if broadcast is already in progress
+                    if (data.broadcastInProgress) {
+                        showProgress();
+                        startProgressPolling();
+                    }
+
+                    // Load statistics
+                    loadStatistics();
                 }
-
-                // Check if broadcast is already in progress
-                if (data.broadcastInProgress) {
-                    showProgress();
-                    startProgressPolling();
-                }
-
-                // Load statistics
-                loadStatistics();
 
                 return true;
 
             } catch (error) {
                 console.error('Status check error:', error);
-                alert('Status tekshirishda xatolik: ' + error.message);
-                return false;
+                // Don't alert - just log and continue
+                return true; // Continue anyway
             }
         }
 
         // Update session status display
         function updateSessionStatus(data) {
-            const statusIcon = document.getElementById('sessionStatusIcon');
-            const statusText = document.getElementById('sessionStatusText');
-            const phoneNumber = document.getElementById('sessionPhoneNumber');
-            const sessionInfo = document.getElementById('sessionInfo');
-            const connectedActions = document.getElementById('sessionConnectedActions');
-            const disconnectedActions = document.getElementById('sessionDisconnectedActions');
+            try {
+                const statusIcon = document.getElementById('sessionStatusIcon');
+                const statusText = document.getElementById('sessionStatusText');
+                const phoneNumber = document.getElementById('sessionPhoneNumber');
+                const sessionInfo = document.getElementById('sessionInfo');
+                const connectedActions = document.getElementById('sessionConnectedActions');
+                const disconnectedActions = document.getElementById('sessionDisconnectedActions');
 
-            if (data.isConnected) {
-                // Connected state
-                statusIcon.innerHTML = '<i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>';
-                statusIcon.style.backgroundColor = '#d4edda';
-                statusText.textContent = 'Ulangan';
-                statusText.className = 'mb-0 text-success';
-                phoneNumber.textContent = data.phoneNumber || '';
+                // Check if elements exist
+                if (!statusIcon || !statusText) {
+                    console.warn('Session status elements not found');
+                    return;
+                }
 
-                connectedActions.style.display = 'block';
-                disconnectedActions.style.display = 'none';
-                sessionInfo.style.display = 'block';
+                if (data.isConnected) {
+                    // Connected state
+                    statusIcon.innerHTML = '<i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>';
+                    statusIcon.style.backgroundColor = '#d4edda';
+                    statusText.textContent = 'Ulangan';
+                    statusText.className = 'mb-0 text-success';
+                    if (phoneNumber) phoneNumber.textContent = data.phoneNumber || '';
 
-                // Update session info
-                document.getElementById('sessionStartTime').textContent = data.sessionStart || '-';
-                document.getElementById('autoReplyStatus').textContent = data.autoReplyEnabled ? '✅ Yoqilgan' : '❌ O\'chirilgan';
-                document.getElementById('queueSize').textContent = data.queueSize || '0';
-                document.getElementById('recentErrors').textContent = data.recentErrors || '0';
+                    if (connectedActions) connectedActions.style.display = 'block';
+                    if (disconnectedActions) disconnectedActions.style.display = 'none';
+                    if (sessionInfo) sessionInfo.style.display = 'block';
 
-            } else {
-                // Disconnected state
-                statusIcon.innerHTML = '<i class="bi bi-x-circle-fill text-danger" style="font-size: 2rem;"></i>';
-                statusIcon.style.backgroundColor = '#f8d7da';
-                statusText.textContent = 'Ulanmagan';
-                statusText.className = 'mb-0 text-danger';
-                phoneNumber.textContent = '';
+                    // Update session info (with null checks)
+                    const sessionStartTime = document.getElementById('sessionStartTime');
+                    const autoReplyStatus = document.getElementById('autoReplyStatus');
+                    const queueSize = document.getElementById('queueSize');
+                    const recentErrors = document.getElementById('recentErrors');
 
-                connectedActions.style.display = 'none';
-                disconnectedActions.style.display = 'block';
-                sessionInfo.style.display = 'none';
+                    if (sessionStartTime) sessionStartTime.textContent = data.sessionStart || '-';
+                    if (autoReplyStatus) autoReplyStatus.textContent = data.autoReplyEnabled ? '✅ Yoqilgan' : '❌ O\'chirilgan';
+                    if (queueSize) queueSize.textContent = data.queueSize || '0';
+                    if (recentErrors) recentErrors.textContent = data.recentErrors || '0';
+
+                } else {
+                    // Disconnected state
+                    statusIcon.innerHTML = '<i class="bi bi-x-circle-fill text-danger" style="font-size: 2rem;"></i>';
+                    statusIcon.style.backgroundColor = '#f8d7da';
+                    statusText.textContent = 'Ulanmagan';
+                    statusText.className = 'mb-0 text-danger';
+                    if (phoneNumber) phoneNumber.textContent = '';
+
+                    if (connectedActions) connectedActions.style.display = 'none';
+                    if (disconnectedActions) disconnectedActions.style.display = 'block';
+                    if (sessionInfo) sessionInfo.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('updateSessionStatus error:', error);
             }
         }
 
