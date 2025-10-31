@@ -131,8 +131,9 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
         const keyboard = {
           keyboard: [
             [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
-            [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
+            [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
+            [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
+            [{ text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
         };
@@ -346,6 +347,11 @@ Savol bo'lsa, admin bilan bog'laning.`;
         await this.handleAdvanceBookingStart(ctx);
       });
 
+      // Mening bronlarim tugmasi
+      this.bot.hears('📋 Mening bronlarim', async (ctx) => {
+        await advanceBooking.showMyBookings(ctx);
+      });
+
       this.bot.hears('ℹ️ Yordam', async (ctx) => {
         // /help komandasi bilan bir xil
         const helpMessage = `ℹ️ <b>YORDAM</b>
@@ -382,8 +388,9 @@ Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
         const keyboard = {
           keyboard: [
             [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
-            [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
+            [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
+            [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
+            [{ text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
         };
@@ -2178,8 +2185,9 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         const mainKeyboard = {
           keyboard: [
             [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
-            [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
+            [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
+            [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
+            [{ text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
         };
@@ -2327,8 +2335,9 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         const mainKeyboard = {
           keyboard: [
             [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
-            [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
+            [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
+            [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
+            [{ text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
         };
