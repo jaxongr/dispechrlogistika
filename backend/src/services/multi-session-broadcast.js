@@ -28,7 +28,7 @@ class MultiSessionBroadcastService {
     // Settings
     this.broadcastLoopEnabled = false;
     this.broadcastMessage = null;
-    this.intervalMs = 4000; // 4 soniya
+    this.intervalMs = 8000; // 8 soniya (FLOOD_WAIT dan qochish uchun)
     this.cyclePauseMs = 5 * 60 * 1000; // 5 daqiqa
 
     // Restricted groups tracking
