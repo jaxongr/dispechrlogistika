@@ -343,15 +343,21 @@ class MultiSessionBroadcastService {
         console.log(`❌ Send error (${item.sessionName} -> ${item.groupName}): ${error.message}`);
         this.broadcastProgress.failed++;
 
-        // Handle FloodWait
+        // Handle FloodWait - add to restricted groups
         if (error.message.includes('FLOOD_WAIT')) {
           const match = error.message.match(/(\d+)/);
           const waitSeconds = match ? parseInt(match[1]) : 300;
-          console.log(`⏳ FloodWait ${waitSeconds}s for ${item.groupName} - SKIP`);
+          console.log(`⏳ FloodWait ${waitSeconds}s for ${item.groupName} - SKIP & CONTINUE`);
 
           this.restrictedGroups.set(item.chatId, {
             until: Date.now() + (waitSeconds * 1000)
           });
+        } else if (error.message.includes('CHAT_WRITE_FORBIDDEN') ||
+                   error.message.includes('CHAT_RESTRICTED') ||
+                   error.message.includes('USER_BANNED_IN_CHANNEL')) {
+          console.log(`🚫 Restricted group: ${item.groupName} - SKIP & CONTINUE`);
+        } else {
+          console.log(`⚠️  Unknown error: ${item.groupName} - SKIP & CONTINUE`);
         }
 
         // Update session stats
@@ -361,6 +367,9 @@ class MultiSessionBroadcastService {
             total_failed: (session.stats.total_failed || 0) + 1
           });
         }
+
+        // Wait a bit before next message even on error
+        await this.sleep(1000); // 1 second wait on error
       }
 
     } catch (error) {
