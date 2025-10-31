@@ -386,6 +386,9 @@ Buyurtmani yaratishni tasdiqlaysizmi?
 
       console.log(`✅ Order ${orderId} taken by user ${userId}`);
 
+      // DARHOL JAVOB BERISH - Foydalanuvchi kutmasin!
+      await ctx.answerCbQuery('✅ Buyurtma sizga biriktirildi!');
+
       // Timer'ni bekor qilish
       const timerId = this.orderTimers.get(orderId);
       if (timerId) {
@@ -394,19 +397,8 @@ Buyurtmani yaratishni tasdiqlaysizmi?
         console.log(`⏱ Timer cancelled for order ${orderId}`);
       }
 
-      // Barcha boshqa userlardagi xabarni o'chirish
-      for (const msgInfo of order.message_ids) {
-        if (msgInfo.user_id !== userId) {
-          try {
-            await bot.telegram.deleteMessage(msgInfo.user_id, msgInfo.message_id);
-          } catch (error) {
-            console.error(`Failed to delete message ${msgInfo.message_id} from user ${msgInfo.user_id}:`, error.message);
-          }
-        }
-      }
-
-      // Olgan userga tasdiqlash
-      await ctx.answerCbQuery('✅ Buyurtma sizga biriktirildi!');
+      // FONDA ISHLASH: Barcha boshqa userlardagi xabarni o'chirish (await qilmasdan)
+      this.deleteOrderMessagesFromOthers(bot, order.message_ids, userId);
 
       // Xabarni yangilash (faqat olgan user uchun)
       const updatedText = `
@@ -527,6 +519,24 @@ Buyurtmani yaratishni tasdiqlaysizmi?
     } catch (error) {
       console.error('❌ Guruhga bildirishnoma yuborishda xatolik:', error.message);
     }
+  }
+
+  /**
+   * Boshqa userlardagi xabarlarni o'chirish (fonda)
+   */
+  async deleteOrderMessagesFromOthers(bot, messageIds, exceptUserId) {
+    // Fonda ishlaydi - await qilinmaydi
+    for (const msgInfo of messageIds) {
+      if (msgInfo.user_id !== exceptUserId) {
+        try {
+          await bot.telegram.deleteMessage(msgInfo.user_id, msgInfo.message_id);
+        } catch (error) {
+          // Xatoliklarni ignore qilamiz - muhim emas
+          console.error(`Failed to delete message ${msgInfo.message_id} from user ${msgInfo.user_id}:`, error.message);
+        }
+      }
+    }
+    console.log(`🗑️ Deleted order messages from other users`);
   }
 }
 
