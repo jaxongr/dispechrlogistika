@@ -477,6 +477,8 @@ Tanlang:`;
           // Asosiy menyu klavyaturasi
           const keyboard = {
             keyboard: [
+              [{ text: '📝 Buyurtma yaratish' }],
+              [{ text: '🔍 Yuk qidirish' }],
               [{ text: '📊 Mening statistikam' }],
               [{ text: '🚛 Haydovchilar' }],
               [{ text: 'ℹ️ Yordam' }]
