@@ -487,21 +487,16 @@ Buyurtmani yaratishni tasdiqlaysizmi?
       }
 
       const notificationText = `
-🔔 <b>YANGI BUYURTMA TUSHDI!</b>
+🔔 <b>YANGI BUYURTMA!</b>
 
 ━━━━━━━━━━━━━━━━━━━━
 🚛 <b>Yo'nalish:</b> ${order.route}
 📦 <b>Yuk:</b> ${order.cargo_info}
-💰 <b>Narx:</b> ${order.price}
-
-👤 <b>Buyurtmachi:</b> ${order.creator_full_name}
-📞 <b>Telefon:</b> <code>${order.creator_phone}</code>
+💰 <b>Summa:</b> ${order.price}
 ━━━━━━━━━━━━━━━━━━━━
 
-⚡️ <b>Buyurtmani qabul qilish uchun botga kiring!</b>
+📲 <b>Yukni olish uchun botga kiring!</b>
 👉 @yukchiborbot
-
-⏰ <i>3 daqiqa ichida qabul qilinmasa, bu guruhga yuboriladi.</i>
 `.trim();
 
       await bot.telegram.sendMessage(
