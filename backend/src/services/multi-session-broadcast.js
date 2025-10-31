@@ -116,8 +116,17 @@ class MultiSessionBroadcastService {
       // Get groups from this session
       console.log(`📥 Loading groups from ${session.name}...`);
       const dialogs = await client.getDialogs({ limit: 500 });
+
+      console.log(`   Total dialogs: ${dialogs.length}`);
+
       const groups = dialogs
-        .filter(d => d.isGroup || d.isChannel)
+        .filter(d => {
+          const isValid = d.isGroup || d.isChannel;
+          if (!isValid) {
+            console.log(`   ⏭️ Skipping: ${d.title} (not group/channel)`);
+          }
+          return isValid;
+        })
         .map(d => ({
           chatId: d.id?.toString(),
           name: d.title,
@@ -125,7 +134,7 @@ class MultiSessionBroadcastService {
         }))
         .filter(g => g.chatId);
 
-      console.log(`   Found ${groups.length} groups in ${session.name}`);
+      console.log(`   ✅ Found ${groups.length} groups/channels in ${session.name}`);
 
       // Cache client and groups
       const clientData = {

@@ -711,11 +711,15 @@ router.post('/sessions/:id/connect', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Disconnect first (to force reload groups)
+    await multiSessionBroadcast.disconnectSession(id);
+
+    // Connect and load groups
     await multiSessionBroadcast.connectSession(id);
 
     res.json({
       success: true,
-      message: 'Session ulandi'
+      message: 'Session ulandi va guruhlar yangilandi'
     });
 
   } catch (error) {

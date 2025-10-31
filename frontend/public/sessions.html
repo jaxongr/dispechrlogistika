@@ -364,6 +364,9 @@
                             <div class="ms-3">
                                 ${session.is_active ? `
                                     ${session.is_connected ? `
+                                        <button class="btn btn-sm btn-info btn-action" onclick="reconnectSession('${session.id}')" title="Guruhlarni yangilash">
+                                            <i class="fas fa-sync"></i> Yangilash
+                                        </button>
                                         <button class="btn btn-sm btn-warning btn-action" onclick="disconnectSession('${session.id}')">
                                             <i class="fas fa-plug"></i> Uzish
                                         </button>
@@ -517,6 +520,7 @@
 
                 const data = await response.json();
                 if (data.success) {
+                    alert('Session ulandi va guruhlar yuklandi!');
                     loadSessions();
                 } else {
                     throw new Error(data.error);
@@ -524,6 +528,32 @@
             } catch (error) {
                 console.error('Connect error:', error);
                 alert('Ulanishda xatolik: ' + error.message);
+            }
+        }
+
+        // Reconnect session (force reload groups)
+        async function reconnectSession(id) {
+            if (!confirm('Session qayta ulanib, guruhlar yangilanadi. Davom ettirilsinmi?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/${id}/connect`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Guruhlar muvaffaqiyatli yangilandi!');
+                    loadSessions();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Reconnect error:', error);
+                alert('Yangilashda xatolik: ' + error.message);
             }
         }
 
