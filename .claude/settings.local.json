@@ -27,7 +27,8 @@
       "Read(//c//**)",
       "Bash(journalctl:*)",
       "Read(//c/**)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

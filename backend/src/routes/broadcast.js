@@ -7,6 +7,8 @@ const express = require('express');
 const router = express.Router();
 const { authenticate } = require('../middlewares/auth');
 const autoReplySession = require('../services/autoReplySession');
+const multiSessionBroadcast = require('../services/multi-session-broadcast');
+const BroadcastSession = require('../models/BroadcastSession');
 
 /**
  * POST /api/broadcast/send
@@ -548,6 +550,362 @@ router.post('/session/restart', authenticate, async (req, res) => {
 
   } catch (error) {
     console.error('Session restart error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * ============================================
+ * MULTI-SESSION MANAGEMENT ROUTES
+ * ============================================
+ */
+
+/**
+ * GET /api/broadcast/sessions/list
+ * Get all broadcast sessions
+ */
+router.get('/sessions/list', authenticate, async (req, res) => {
+  try {
+    const sessions = multiSessionBroadcast.getAllSessionsStatus();
+
+    res.json({
+      success: true,
+      sessions,
+      total: sessions.length,
+      active: sessions.filter(s => s.is_active).length,
+      connected: sessions.filter(s => s.is_connected).length
+    });
+
+  } catch (error) {
+    console.error('Sessions list error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/sessions/create-step1
+ * Create new broadcast session - Step 1: Send code
+ */
+router.post('/sessions/create-step1', authenticate, async (req, res) => {
+  try {
+    const { phoneNumber, name } = req.body;
+
+    if (!phoneNumber || phoneNumber.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Telefon raqam kiritilmagan'
+      });
+    }
+
+    if (!name || name.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Session nomi kiritilmagan'
+      });
+    }
+
+    // Check session limit (max 10)
+    const sessionCount = BroadcastSession.count();
+    if (sessionCount >= 10) {
+      return res.status(400).json({
+        success: false,
+        error: 'Maksimal 10 ta session yaratish mumkin'
+      });
+    }
+
+    // Validate phone number format
+    if (!phoneNumber.startsWith('+')) {
+      return res.status(400).json({
+        success: false,
+        error: 'Telefon raqam + belgisi bilan boshlanishi kerak (masalan: +998901234567)'
+      });
+    }
+
+    // Use autoReplySession for code sending (reuse existing logic)
+    const result = await autoReplySession.createSessionStep1(phoneNumber);
+
+    // Store name temporarily for step 2
+    result.tempName = name;
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Multi-session creation step 1 error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/sessions/create-step2
+ * Create new broadcast session - Step 2: Verify code and save to DB
+ */
+router.post('/sessions/create-step2', authenticate, async (req, res) => {
+  try {
+    const { code, password, name } = req.body;
+
+    if (!code || code.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'SMS kod kiritilmagan'
+      });
+    }
+
+    if (!name || name.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Session nomi kiritilmagan'
+      });
+    }
+
+    // Verify code and get session string
+    const result = await autoReplySession.createSessionStep2(code, password || '');
+
+    if (!result.success) {
+      throw new Error(result.error || 'Kod tasdiqlashda xatolik');
+    }
+
+    // Save to database
+    const session = BroadcastSession.create({
+      name: name,
+      phone_number: result.userInfo.phone,
+      session_string: result.sessionString
+    });
+
+    // Try to connect immediately
+    try {
+      await multiSessionBroadcast.connectSession(session.id);
+    } catch (error) {
+      console.error('Auto-connect error:', error.message);
+      // Not critical - user can manually connect later
+    }
+
+    res.json({
+      success: true,
+      session: session,
+      message: 'Session muvaffaqiyatli yaratildi va saqlandi'
+    });
+
+  } catch (error) {
+    console.error('Multi-session creation step 2 error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/sessions/:id/connect
+ * Connect specific session
+ */
+router.post('/sessions/:id/connect', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await multiSessionBroadcast.connectSession(id);
+
+    res.json({
+      success: true,
+      message: 'Session ulandi'
+    });
+
+  } catch (error) {
+    console.error('Session connect error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/sessions/:id/disconnect
+ * Disconnect specific session
+ */
+router.post('/sessions/:id/disconnect', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await multiSessionBroadcast.disconnectSession(id);
+
+    res.json({
+      success: true,
+      message: 'Session uzildi'
+    });
+
+  } catch (error) {
+    console.error('Session disconnect error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * DELETE /api/broadcast/sessions/:id
+ * Delete session
+ */
+router.delete('/sessions/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Disconnect first
+    await multiSessionBroadcast.disconnectSession(id);
+
+    // Delete from DB
+    BroadcastSession.delete(id);
+
+    res.json({
+      success: true,
+      message: 'Session o\'chirildi'
+    });
+
+  } catch (error) {
+    console.error('Session delete error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/broadcast/sessions/:id/name
+ * Update session name
+ */
+router.put('/sessions/:id/name', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    if (!name || name.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Nom kiritilmagan'
+      });
+    }
+
+    BroadcastSession.updateName(id, name);
+
+    res.json({
+      success: true,
+      message: 'Nom yangilandi'
+    });
+
+  } catch (error) {
+    console.error('Session name update error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/sessions/:id/toggle
+ * Toggle session active status
+ */
+router.post('/sessions/:id/toggle', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const session = BroadcastSession.toggleActive(id);
+
+    // If deactivated, disconnect
+    if (!session.is_active) {
+      await multiSessionBroadcast.disconnectSession(id);
+    }
+
+    res.json({
+      success: true,
+      session: session
+    });
+
+  } catch (error) {
+    console.error('Session toggle error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/multi-send
+ * Start multi-session broadcast
+ */
+router.post('/multi-send', authenticate, async (req, res) => {
+  try {
+    const { message, loop } = req.body;
+
+    if (!message || message.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Xabar matni kiritilmagan'
+      });
+    }
+
+    // Start multi-session broadcast
+    const result = await multiSessionBroadcast.startBroadcast(message, { loop });
+
+    res.json({
+      success: true,
+      ...result
+    });
+
+  } catch (error) {
+    console.error('Multi-session broadcast error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/broadcast/multi-stop
+ * Stop multi-session broadcast
+ */
+router.post('/multi-stop', authenticate, async (req, res) => {
+  try {
+    const result = multiSessionBroadcast.stopBroadcast();
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Multi-session stop error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/broadcast/multi-progress
+ * Get multi-session broadcast progress
+ */
+router.get('/multi-progress', authenticate, async (req, res) => {
+  try {
+    const progress = multiSessionBroadcast.getBroadcastProgress();
+
+    res.json({
+      success: true,
+      ...progress
+    });
+
+  } catch (error) {
+    console.error('Multi-session progress error:', error);
     res.status(500).json({
       success: false,
       error: error.message

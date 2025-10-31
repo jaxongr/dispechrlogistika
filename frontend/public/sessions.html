@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Boshqaruv - Dispatcher Logistika</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+
+        .session-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .session-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .session-card.connected {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .session-card.disconnected {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .session-card.inactive {
+            opacity: 0.6;
+            background: #f5f5f5;
+        }
+
+        .status-badge {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .btn-action {
+            margin: 2px;
+            font-size: 0.85rem;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-item .label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="fas fa-truck"></i> Dispatcher Logistika
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="dashboard.html"><i class="fas fa-home"></i> Bosh sahifa</a>
+                <a class="nav-link" href="broadcast.html"><i class="fas fa-broadcast-tower"></i> Broadcast</a>
+                <a class="nav-link active" href="sessions.html"><i class="fas fa-users"></i> Sessionlar</a>
+                <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Chiqish</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Summary Card -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-users"></i> Session Boshqaruv</h4>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="value" id="totalSessions">0</div>
+                            <div class="label">Jami Sessionlar</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="value text-success" id="connectedSessions">0</div>
+                            <div class="label">Ulangan</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="value text-warning" id="activeSessions">0</div>
+                            <div class="label">Faol</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="value text-info" id="totalGroups">0</div>
+                            <div class="label">Jami Guruhlar</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-primary" onclick="showAddSessionModal()">
+                        <i class="fas fa-plus"></i> Yangi Session Qo'shish
+                    </button>
+                    <button class="btn btn-success" onclick="loadSessions()">
+                        <i class="fas fa-sync"></i> Yangilash
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions List -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Barcha Sessionlar</h5>
+            </div>
+            <div class="card-body" id="sessionsList">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Yuklanmoqda...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Session Modal -->
+    <div class="modal fade" id="addSessionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yangi Session Qo'shish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="addSessionBody">
+                    <!-- Step 1: Phone Number -->
+                    <div id="step1">
+                        <div class="mb-3">
+                            <label class="form-label">Session Nomi</label>
+                            <input type="text" class="form-control" id="sessionName" placeholder="Masalan: Asosiy Session">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telefon Raqam</label>
+                            <input type="text" class="form-control" id="phoneNumber" placeholder="+998901234567">
+                            <small class="text-muted">+ belgisi bilan kiriting</small>
+                        </div>
+                        <button class="btn btn-primary w-100" onclick="sendCode()">
+                            <i class="fas fa-paper-plane"></i> SMS Kod Yuborish
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Verify Code -->
+                    <div id="step2" style="display: none;">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> SMS kod yuborildi. Iltimos, kodni kiriting.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SMS Kod</label>
+                            <input type="text" class="form-control" id="smsCode" placeholder="12345">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">2FA Parol (agar yoqilgan bo'lsa)</label>
+                            <input type="password" class="form-control" id="password" placeholder="Parol">
+                        </div>
+                        <button class="btn btn-primary w-100" onclick="verifyCode()">
+                            <i class="fas fa-check"></i> Tasdiqlash va Saqlash
+                        </button>
+                        <button class="btn btn-secondary w-100 mt-2" onclick="backToStep1()">
+                            <i class="fas fa-arrow-left"></i> Orqaga
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        let currentSessionName = '';
+
+        // Load sessions on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSessions();
+            setInterval(loadSessions, 5000); // Auto-refresh every 5 seconds
+        });
+
+        // Load all sessions
+        async function loadSessions() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/list`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load sessions');
+
+                const data = await response.json();
+
+                // Update summary
+                document.getElementById('totalSessions').textContent = data.total;
+                document.getElementById('connectedSessions').textContent = data.connected;
+                document.getElementById('activeSessions').textContent = data.active;
+
+                const totalGroups = data.sessions.reduce((sum, s) => sum + (s.groups_count || 0), 0);
+                document.getElementById('totalGroups').textContent = totalGroups;
+
+                // Render sessions
+                renderSessions(data.sessions);
+
+            } catch (error) {
+                console.error('Load sessions error:', error);
+                showError('Sessionlarni yuklashda xatolik: ' + error.message);
+            }
+        }
+
+        // Render sessions list
+        function renderSessions(sessions) {
+            const container = document.getElementById('sessionsList');
+
+            if (sessions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users-slash"></i>
+                        <p>Hech qanday session mavjud emas</p>
+                        <button class="btn btn-primary" onclick="showAddSessionModal()">
+                            <i class="fas fa-plus"></i> Birinchi Sessionni Qo'shish
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            sessions.forEach(session => {
+                const statusClass = !session.is_active ? 'inactive' :
+                                   session.is_connected ? 'connected' : 'disconnected';
+
+                const statusText = !session.is_active ? 'O\'chirilgan' :
+                                  session.is_connected ? 'Ulangan' : 'Uzilgan';
+
+                const statusColor = !session.is_active ? 'secondary' :
+                                   session.is_connected ? 'success' : 'danger';
+
+                html += `
+                    <div class="session-card ${statusClass}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1">
+                                    <i class="fas fa-user-circle"></i> ${session.name}
+                                    <span class="badge bg-${statusColor} status-badge ms-2">${statusText}</span>
+                                </h5>
+                                <p class="mb-1 text-muted">
+                                    <i class="fas fa-phone"></i> ${session.phone_number}
+                                </p>
+                                <div class="stats-row">
+                                    <div class="stat-item">
+                                        <div class="value text-info">${session.groups_count || 0}</div>
+                                        <div class="label">Guruhlar</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="value text-success">${session.stats.total_sent || 0}</div>
+                                        <div class="label">Yuborilgan</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="value text-danger">${session.stats.total_failed || 0}</div>
+                                        <div class="label">Xato</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                ${session.is_active ? `
+                                    ${session.is_connected ? `
+                                        <button class="btn btn-sm btn-warning btn-action" onclick="disconnectSession('${session.id}')">
+                                            <i class="fas fa-plug"></i> Uzish
+                                        </button>
+                                    ` : `
+                                        <button class="btn btn-sm btn-success btn-action" onclick="connectSession('${session.id}')">
+                                            <i class="fas fa-plug"></i> Ulash
+                                        </button>
+                                    `}
+                                    <button class="btn btn-sm btn-secondary btn-action" onclick="toggleSession('${session.id}')">
+                                        <i class="fas fa-power-off"></i> O'chirish
+                                    </button>
+                                ` : `
+                                    <button class="btn btn-sm btn-success btn-action" onclick="toggleSession('${session.id}')">
+                                        <i class="fas fa-power-off"></i> Yoqish
+                                    </button>
+                                `}
+                                <button class="btn btn-sm btn-primary btn-action" onclick="editSessionName('${session.id}', '${session.name}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger btn-action" onclick="deleteSession('${session.id}', '${session.name}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Show add session modal
+        function showAddSessionModal() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('sessionName').value = '';
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('smsCode').value = '';
+            document.getElementById('password').value = '';
+
+            const modal = new bootstrap.Modal(document.getElementById('addSessionModal'));
+            modal.show();
+        }
+
+        // Send code (Step 1)
+        async function sendCode() {
+            const name = document.getElementById('sessionName').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+
+            if (!name) {
+                alert('Session nomini kiriting');
+                return;
+            }
+
+            if (!phoneNumber) {
+                alert('Telefon raqamni kiriting');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/create-step1`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ phoneNumber, name })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+
+                currentSessionName = name;
+
+                // Go to step 2
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+
+            } catch (error) {
+                console.error('Send code error:', error);
+                alert('Xatolik: ' + error.message);
+            }
+        }
+
+        // Verify code (Step 2)
+        async function verifyCode() {
+            const code = document.getElementById('smsCode').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!code) {
+                alert('SMS kodni kiriting');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/create-step2`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ code, password, name: currentSessionName })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+
+                alert('Session muvaffaqiyatli qo\'shildi!');
+
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addSessionModal'));
+                modal.hide();
+
+                // Reload sessions
+                loadSessions();
+
+            } catch (error) {
+                console.error('Verify code error:', error);
+                alert('Xatolik: ' + error.message);
+            }
+        }
+
+        // Back to step 1
+        function backToStep1() {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+        }
+
+        // Connect session
+        async function connectSession(id) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/${id}/connect`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    loadSessions();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Connect error:', error);
+                alert('Ulanishda xatolik: ' + error.message);
+            }
+        }
+
+        // Disconnect session
+        async function disconnectSession(id) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/${id}/disconnect`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    loadSessions();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Disconnect error:', error);
+                alert('Uzishda xatolik: ' + error.message);
+            }
+        }
+
+        // Toggle session active
+        async function toggleSession(id) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/${id}/toggle`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    loadSessions();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Toggle error:', error);
+                alert('Xatolik: ' + error.message);
+            }
+        }
+
+        // Edit session name
+        async function editSessionName(id, currentName) {
+            const newName = prompt('Yangi nom kiriting:', currentName);
+            if (!newName || newName === currentName) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/${id}/name`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    loadSessions();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Edit name error:', error);
+                alert('Xatolik: ' + error.message);
+            }
+        }
+
+        // Delete session
+        async function deleteSession(id, name) {
+            if (!confirm(`"${name}" sessionni o'chirishni xohlaysizmi?`)) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/broadcast/sessions/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    loadSessions();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('O\'chirishda xatolik: ' + error.message);
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // Show error
+        function showError(message) {
+            const container = document.getElementById('sessionsList');
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> ${message}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
