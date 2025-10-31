@@ -397,17 +397,12 @@ class DriverAdvanceBookingService {
       }
 
       // Database'dan guruhga yuborilgan yuklarni olish
+      // HOZIRCHA: route_from/route_to null bo'lgani uchun barcha yuklarni olamiz
       const messages = db.get('messages')
-        .filter(m =>
-          m.is_sent_to_channel === true &&
-          m.route_from &&
-          m.route_to &&
-          m.route_from.trim() !== '' &&
-          m.route_to.trim() !== ''
-        )
+        .filter(m => m.is_sent_to_channel === true && m.message_text)
         .value() || [];
 
-      console.log(`🔍 ${messages.length} ta yo'nalishi to'liq yuk tekshirilmoqda...`);
+      console.log(`🔍 ${messages.length} ta guruhga yuborilgan yuk tekshirilmoqda...`);
 
       const matchedCargos = [];
       const bookingRoute = booking.next_route.toLowerCase().trim();
@@ -431,27 +426,25 @@ class DriverAdvanceBookingService {
       }
 
       for (const message of messages) {
-        // Yo'nalishni tayyorlash
-        const cargoFrom = (message.route_from || '').toLowerCase().trim();
-        const cargoTo = (message.route_to || '').toLowerCase().trim();
+        // HOZIRCHA: route_from/route_to null bo'lgani uchun message_text dan qidiramiz
+        const messageText = (message.message_text || '').toLowerCase();
 
         let isMatch = false;
 
         if (isSingleLocation) {
-          // Faqat bitta joy - "qayerdan" mos kelishi kerak
-          const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
-          if (fromMatch) {
+          // Faqat bitta joy - matnda bor-yo'qligini tekshiramiz
+          if (messageText.includes(bookingFrom)) {
             isMatch = true;
-            console.log(`✅ Mos yuk topildi: ${cargoFrom} → ${cargoTo}`);
+            console.log(`✅ Mos yuk topildi (text): ${message.message_text.substring(0, 50)}...`);
           }
         } else {
-          // To'liq yo'nalish - ikkalasi ham mos kelishi kerak
-          const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
-          const toMatch = cargoTo.includes(bookingTo) || bookingTo.includes(cargoTo);
+          // To'liq yo'nalish - ikkalasi ham bo'lishi kerak
+          const fromMatch = messageText.includes(bookingFrom);
+          const toMatch = messageText.includes(bookingTo);
 
           if (fromMatch && toMatch) {
             isMatch = true;
-            console.log(`✅ Mos yuk topildi: ${cargoFrom} → ${cargoTo}`);
+            console.log(`✅ Mos yuk topildi (text): ${message.message_text.substring(0, 50)}...`);
           }
         }
 
@@ -459,7 +452,9 @@ class DriverAdvanceBookingService {
 
           const cargoInfo = {
             message_id: message.id,
-            route: `${message.route_from} - ${message.route_to}`,
+            route: message.route_from && message.route_to
+              ? `${message.route_from} - ${message.route_to}`
+              : booking.next_route,
             cargo: message.message_text || '',
             price: message.price || 'Kelishiladi',
             phone: message.contact_phone || '',
