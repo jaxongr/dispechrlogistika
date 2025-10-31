@@ -478,25 +478,25 @@ class DriverAdvanceBookingService {
         })
         .write();
 
-      // Guruhga yuborish (agar kerak bo'lsa)
+      // Guruhga yuborish - asl yukning ustiga reply qilish
       const targetGroupId = process.env.TARGET_GROUP_ID || process.env.TARGET_CHANNEL_ID;
-      if (targetGroupId) {
-        const groupMessage = `
-🎯 <b>BRONLANGAN YUK!</b>
+      if (targetGroupId && cargoInfo.message_id) {
+        // Database'dan asl xabarning group_message_id sini topish
+        const message = db.get('messages')
+          .find({ id: cargoInfo.message_id })
+          .value();
 
-🚛 <b>Yo'nalish:</b> ${cargoInfo.route}
-📦 <b>Yuk:</b> ${cargoInfo.cargo || 'Ma\'lumot yo\'q'}
-💰 <b>Narx:</b> ${cargoInfo.price || 'Kelishiladi'}
+        if (message && message.group_message_id) {
+          // Asl yukning ustiga reply qilamiz
+          const replyMessage = `🎯 <b>BRONLANGAN YUK!</b>\n\n` +
+            `👤 Haydovchi: <a href="tg://user?id=${booking.booker_user_id}">${booking.booker_full_name}</a>\n` +
+            `⏰ Bron vaqti ichida topildi!`;
 
-👤 <b>Haydovchi:</b> <code>${booking.driver_phone}</code>
-📱 <b>Bron qilgan:</b> <a href="tg://user?id=${booking.booker_user_id}">${booking.booker_full_name}</a> (<code>${booking.booker_phone}</code>)
-
-⏰ Bron vaqti ichida topildi!
-`.trim();
-
-        await bot.telegram.sendMessage(targetGroupId, groupMessage, {
-          parse_mode: 'HTML'
-        });
+          await bot.telegram.sendMessage(targetGroupId, replyMessage, {
+            parse_mode: 'HTML',
+            reply_to_message_id: message.group_message_id
+          });
+        }
       }
 
     } catch (error) {
