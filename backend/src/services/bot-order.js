@@ -18,6 +18,8 @@ class BotOrderService {
   constructor() {
     // Timer'lar uchun Map (orderId => setTimeout ID)
     this.orderTimers = new Map();
+    // Rate limiting - oxirgi buyurtma yaratish vaqti (userId => timestamp)
+    this.lastOrderTime = new Map();
   }
 
   /**
@@ -39,6 +41,30 @@ class BotOrderService {
       );
       return { state: null };
     }
+
+    // RATE LIMITING: 30 daqiqada 1 marta
+    const now = Date.now();
+    const THIRTY_MINUTES = 30 * 60 * 1000; // 30 daqiqa millisecondlarda
+
+    if (this.lastOrderTime.has(userId)) {
+      const lastTime = this.lastOrderTime.get(userId);
+      const timePassed = now - lastTime;
+
+      if (timePassed < THIRTY_MINUTES) {
+        const remainingMinutes = Math.ceil((THIRTY_MINUTES - timePassed) / 60000);
+        await ctx.reply(
+          `⏰ <b>Buyurtma yaratish cheklangan!</b>\n\n` +
+          `Siz ${Math.floor(timePassed / 60000)} daqiqa oldin buyurtma yaratgansiz.\n` +
+          `Keyingi buyurtmani <b>${remainingMinutes} daqiqadan</b> keyin yaratishingiz mumkin.\n\n` +
+          `❗️ Bu cheklov spam oldini olish uchun qo'yilgan.`,
+          { parse_mode: 'HTML' }
+        );
+        return { state: null };
+      }
+    }
+
+    // Buyurtma yaratishga ruxsat berish va vaqtni yangilash
+    this.lastOrderTime.set(userId, now);
 
     await ctx.reply(
       '📝 <b>Buyurtma yaratish</b>\n\n' +
