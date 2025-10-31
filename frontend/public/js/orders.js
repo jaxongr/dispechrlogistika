@@ -34,7 +34,7 @@ async function loadOrders() {
   const container = document.getElementById('ordersContainer');
 
   try {
-    const response = await apiRequest('/api/bot-orders');
+    const response = await apiRequest('/bot-orders');
 
     if (!response.success) {
       throw new Error(response.error || 'Xatolik yuz berdi');
@@ -119,7 +119,7 @@ async function loadOrders() {
  */
 async function loadStatistics() {
   try {
-    const response = await apiRequest('/api/bot-orders/statistics');
+    const response = await apiRequest('/bot-orders/statistics');
 
     if (response.success && response.statistics) {
       const stats = response.statistics;
@@ -198,7 +198,7 @@ function escapeHtml(text) {
  */
 async function loadDailyArchive() {
   try {
-    const response = await apiRequest('/api/bot-orders/daily-stats?limit=30');
+    const response = await apiRequest('/bot-orders/daily-stats?limit=30');
 
     if (!response.success) {
       throw new Error(response.error || 'Xatolik yuz berdi');
