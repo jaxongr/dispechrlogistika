@@ -616,6 +616,52 @@ Tanlang:`;
         }
       });
 
+      // Global error handler - catch ALL unhandled errors
+      this.bot.catch((err, ctx) => {
+        const errorMsg = err?.message || 'Unknown error';
+        console.error('❌ Global bot error handler:', errorMsg);
+
+        // Don't crash on these expected errors
+        const ignoredErrors = [
+          'bot was blocked by the user',
+          'user is deactivated',
+          'query is too old',
+          'message is not modified',
+          'message to edit not found',
+          'message can\'t be deleted',
+          'chat not found',
+          'PARTICIPANT_ID_INVALID'
+        ];
+
+        const shouldIgnore = ignoredErrors.some(pattern =>
+          errorMsg.toLowerCase().includes(pattern.toLowerCase())
+        );
+
+        if (shouldIgnore) {
+          console.log(`⏭️ Ignored expected error: ${errorMsg}`);
+          return;
+        }
+
+        // For other errors, log full details
+        console.error('❌ Unhandled error details:', {
+          error: errorMsg,
+          update_id: ctx?.update?.update_id,
+          user_id: ctx?.from?.id,
+          chat_id: ctx?.chat?.id
+        });
+
+        // Try to inform user
+        try {
+          if (ctx?.reply) {
+            ctx.reply('❌ Xatolik yuz berdi. Iltimos qaytadan urinib ko\'ring.').catch(() => {});
+          } else if (ctx?.answerCbQuery) {
+            ctx.answerCbQuery('❌ Xatolik yuz berdi').catch(() => {});
+          }
+        } catch (e) {
+          // Ignore reply errors
+        }
+      });
+
       // Launch bot with auto-restart on error
       this.isRunning = true; // Set before launch to avoid race condition
 
