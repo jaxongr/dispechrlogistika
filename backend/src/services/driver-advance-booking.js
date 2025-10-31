@@ -155,17 +155,35 @@ class DriverAdvanceBookingService {
       minute: '2-digit'
     });
 
-    await ctx.reply(
-      '✅ <b>Bron muvaffaqiyatli yaratildi!</b>\n\n' +
+    // Mavjud yuklar bilan solishtirish
+    let matchedCargos = [];
+    try {
+      matchedCargos = await this.checkExistingCargos(bot, booking);
+
+      if (matchedCargos.length > 0) {
+        console.log(`✅ ${matchedCargos.length} mavjud yuk(lar) topildi bronlash paytida`);
+      }
+    } catch (error) {
+      console.error('Mavjud yuklarni tekshirishda xatolik:', error);
+    }
+
+    let replyMessage = '✅ <b>Bron muvaffaqiyatli yaratildi!</b>\n\n' +
       `🚛 <b>Yo'nalish:</b> ${booking.next_route}\n` +
       `⏰ <b>Kerak bo'lgan vaqt:</b> ${arrivalTimeStr}\n` +
-      `👤 <b>Haydovchi:</b> <code>${booking.driver_phone}</code>\n\n` +
-      `💡 Bu yo'nalish bo'yicha yuk tushsa, sizga avtomatik yuboriladi!\n` +
-      `⏱ Vaqt oralig'i: ±1 soat`,
-      { parse_mode: 'HTML' }
-    );
+      `👤 <b>Haydovchi:</b> <code>${booking.driver_phone}</code>\n\n`;
 
-    return { success: true, bookingId };
+    if (matchedCargos.length > 0) {
+      replyMessage += `🎯 <b>Darhol topildi: ${matchedCargos.length} ta mos yuk!</b>\n` +
+        `Yuklar sizga yuborildi, pastda ko'ring! ⬇️\n\n`;
+    } else {
+      replyMessage += `💡 Bu yo'nalish bo'yicha yuk tushsa, sizga avtomatik yuboriladi!\n`;
+    }
+
+    replyMessage += `⏱ Vaqt oralig'i: ±1 soat`;
+
+    await ctx.reply(replyMessage, { parse_mode: 'HTML' });
+
+    return { success: true, bookingId, matchedCount: matchedCargos.length };
   }
 
   /**
@@ -326,6 +344,66 @@ class DriverAdvanceBookingService {
 
     } catch (error) {
       console.error('Match cargo with bookings error:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Bron yaratilganda mavjud yuklar bilan solishtirish
+   */
+  async checkExistingCargos(bot, booking) {
+    try {
+      const now = new Date();
+      const windowStart = new Date(booking.time_window_start);
+      const windowEnd = new Date(booking.time_window_end);
+
+      // Vaqt oralig'i ichidami?
+      if (now < windowStart || now > windowEnd) {
+        console.log('⏰ Bron vaqt oralig\'i hali boshlanmagan yoki tugagan');
+        return [];
+      }
+
+      // Database'dan guruhga yuborilgan yuklarni olish
+      const messages = db.get('messages')
+        .filter(m =>
+          m.is_sent_to_channel === true &&
+          m.route_from &&
+          m.route_to
+        )
+        .value() || [];
+
+      console.log(`🔍 ${messages.length} ta guruhda mavjud yuk tekshirilmoqda...`);
+
+      const matchedCargos = [];
+      const bookingRoute = booking.next_route.toLowerCase();
+
+      for (const message of messages) {
+        // Yo'nalishni tayyorlash
+        const cargoRoute = `${message.route_from} - ${message.route_to}`.toLowerCase();
+
+        // Yo'nalish mos keladimi?
+        if (cargoRoute.includes(bookingRoute) || bookingRoute.includes(cargoRoute)) {
+          console.log(`✅ Mos yuk topildi: ${cargoRoute}`);
+
+          const cargoInfo = {
+            message_id: message.id,
+            route: `${message.route_from} - ${message.route_to}`,
+            cargo: message.message_text || '',
+            price: message.price || 'Kelishiladi',
+            phone: message.contact_phone || '',
+            cargo_type: message.cargo_type || ''
+          };
+
+          // Dispetcherga yuborish
+          await this.notifyDriverAboutMatch(bot, booking, cargoInfo);
+          matchedCargos.push(cargoInfo);
+        }
+      }
+
+      return matchedCargos;
+
+    } catch (error) {
+      console.error('Check existing cargos error:', error);
       return [];
     }
   }
