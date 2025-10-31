@@ -34,6 +34,9 @@ class MultiSessionBroadcastService {
     // Restricted groups tracking
     this.restrictedGroups = new Map(); // chatId -> {until: timestamp}
 
+    // Track sent groups (to avoid sending to same group twice across different sessions)
+    this.sentGroups = new Set(); // chatId
+
     // Process broadcast queue
     setInterval(() => this.processBroadcastQueue(), 1000);
 
@@ -222,7 +225,9 @@ class MultiSessionBroadcastService {
 
     // Build queue: session-by-session (birinchi session barcha guruhlari, keyin ikkinchisi...)
     this.broadcastQueue = [];
+    this.sentGroups.clear(); // Clear sent groups tracking
     let totalGroups = 0;
+    let skippedDuplicates = 0;
 
     for (const sessionData of connectedSessions) {
       // Filter out restricted groups
@@ -234,6 +239,13 @@ class MultiSessionBroadcastService {
       console.log(`   ${sessionData.sessionName}: ${availableGroups.length} groups`);
 
       for (const group of availableGroups) {
+        // Skip if already added from another session
+        if (this.sentGroups.has(group.chatId)) {
+          skippedDuplicates++;
+          continue;
+        }
+
+        this.sentGroups.add(group.chatId);
         this.broadcastQueue.push({
           sessionId: sessionData.sessionId,
           sessionName: sessionData.sessionName,
@@ -245,7 +257,10 @@ class MultiSessionBroadcastService {
       }
     }
 
-    console.log(`\n📊 Total groups to send: ${totalGroups}`);
+    console.log(`\n📊 Total unique groups to send: ${totalGroups}`);
+    if (skippedDuplicates > 0) {
+      console.log(`⏭️  Skipped ${skippedDuplicates} duplicate groups (exist in multiple sessions)`);
+    }
 
     // Initialize progress
     this.broadcastProgress = {
@@ -376,7 +391,9 @@ class MultiSessionBroadcastService {
       .filter(c => c.isConnected);
 
     this.broadcastQueue = [];
+    this.sentGroups.clear(); // Clear sent groups for new cycle
     let totalGroups = 0;
+    let skippedDuplicates = 0;
 
     for (const sessionData of connectedSessions) {
       const availableGroups = sessionData.groups.filter(g => {
@@ -385,6 +402,13 @@ class MultiSessionBroadcastService {
       });
 
       for (const group of availableGroups) {
+        // Skip if already added from another session
+        if (this.sentGroups.has(group.chatId)) {
+          skippedDuplicates++;
+          continue;
+        }
+
+        this.sentGroups.add(group.chatId);
         this.broadcastQueue.push({
           sessionId: sessionData.sessionId,
           sessionName: sessionData.sessionName,
@@ -394,6 +418,11 @@ class MultiSessionBroadcastService {
         });
         totalGroups++;
       }
+    }
+
+    console.log(`🔄 Rebuilt queue: ${totalGroups} unique groups`);
+    if (skippedDuplicates > 0) {
+      console.log(`⏭️  Skipped ${skippedDuplicates} duplicate groups`);
     }
 
     // Reset progress
@@ -415,6 +444,7 @@ class MultiSessionBroadcastService {
     const remaining = this.broadcastQueue.length;
 
     this.broadcastQueue = [];
+    this.sentGroups.clear(); // Clear sent groups tracking
     this.broadcastInProgress = false;
     this.broadcastLoopEnabled = false;
     this.broadcastMessage = null;
