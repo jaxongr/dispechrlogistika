@@ -910,6 +910,33 @@ Tanlang:`;
         console.error('Ad scheduler notification error:', error.message);
       }
 
+      // Match cargo with advance bookings
+      try {
+        const advanceBooking = require('./driver-advance-booking');
+
+        const cargoInfo = {
+          message_id: messageId,
+          route: `${message.route_from || ''} - ${message.route_to || ''}`.trim(),
+          cargo: message.message_text || '',
+          price: message.price || 'Kelishiladi',
+          phone: message.contact_phone || '',
+          cargo_type: message.cargo_type || ''
+        };
+
+        console.log('🔍 Checking advance bookings for cargo:', cargoInfo.route);
+
+        const matchedBookings = await advanceBooking.matchCargoWithBookings(this.bot, cargoInfo);
+
+        if (matchedBookings.length > 0) {
+          console.log(`✅ ${matchedBookings.length} advance booking(s) matched for cargo ${messageId}`);
+        } else {
+          console.log(`ℹ️ No advance bookings matched for cargo ${messageId}`);
+        }
+      } catch (error) {
+        console.error('Advance booking matching error:', error);
+        // Don't fail the whole operation if matching fails
+      }
+
       return {
         success: true,
         groupMessageId: sentMessage.message_id
