@@ -3,6 +3,11 @@
  * Bot orqali yaratilgan buyurtmalarni boshqarish
  */
 
+// Check authentication on page load
+if (!requireAuth()) {
+  // Will redirect to login if not authenticated
+}
+
 // Load orders on page load
 document.addEventListener('DOMContentLoaded', () => {
   loadOrders();
