@@ -616,17 +616,39 @@ Tanlang:`;
         }
       });
 
-      // Launch bot in background (non-blocking)
-      this.bot.launch().catch(err => {
-        console.error('❌ Bot launch xatolik:', err.message);
-        this.isRunning = false;
-      });
+      // Launch bot with auto-restart on error
+      this.isRunning = true; // Set before launch to avoid race condition
 
-      this.isRunning = true;
+      this.bot.launch()
+        .then(() => {
+          console.log('✅ Bot successfully launched!');
+        })
+        .catch(err => {
+          console.error('❌ Bot launch xatolik:', err.message);
+          this.isRunning = false;
+
+          // Auto-restart after 5 seconds
+          console.log('🔄 Restarting bot in 5 seconds...');
+          setTimeout(() => {
+            console.log('🔄 Attempting bot restart...');
+            this.start();
+          }, 5000);
+        });
+
+      // Handle graceful shutdown
+      process.once('SIGINT', () => this.bot.stop('SIGINT'));
+      process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
 
     } catch (error) {
       console.error('❌ TELEGRAM BOT XATOLIK:', error.message);
       this.isRunning = false;
+
+      // Auto-restart after 5 seconds
+      console.log('🔄 Restarting bot in 5 seconds...');
+      setTimeout(() => {
+        console.log('🔄 Attempting bot restart...');
+        this.start();
+      }, 5000);
     }
   }
 
