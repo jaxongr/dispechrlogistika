@@ -2394,6 +2394,11 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
       return false;
     }
 
+    if (state.step === 'awaiting_driver_phone') {
+      await advanceBooking.handleDriverPhone(ctx, text);
+      return true;
+    }
+
     if (state.step === 'awaiting_current_route') {
       await advanceBooking.handleCurrentRoute(ctx, text);
       return true;
