@@ -628,10 +628,13 @@
                 // Update session status UI
                 updateSessionStatus(data);
 
+                // YAXSHILANDI: Formni faqat warning ko'rsatamiz, yashirmaymiz
+                // Sabab: Ko'p session rejimida bitta session ulanmagan bo'lsa ham ishlatish mumkin
                 if (!data.isConnected) {
                     document.getElementById('statusCheck').style.display = 'block';
-                    document.getElementById('broadcastForm').style.display = 'none';
-                    return false;
+                    // Form yashirilmaydi - foydalanuvchi ko'p session rejimini tanlashi mumkin
+                    // document.getElementById('broadcastForm').style.display = 'none';
+                    // return false;
                 }
 
                 // Check if broadcast is already in progress
