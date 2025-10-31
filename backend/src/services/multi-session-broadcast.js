@@ -20,6 +20,7 @@ class MultiSessionBroadcastService {
       total: 0,
       sent: 0,
       failed: 0,
+      skipped: 0, // FloodWait and restricted groups
       currentSession: null,
       startedAt: null,
       loopCount: 0
@@ -228,15 +229,20 @@ class MultiSessionBroadcastService {
     this.sentGroups.clear(); // Clear sent groups tracking
     let totalGroups = 0;
     let skippedDuplicates = 0;
+    let totalRestricted = 0;
 
     for (const sessionData of connectedSessions) {
       // Filter out restricted groups
       const availableGroups = sessionData.groups.filter(g => {
         const restriction = this.restrictedGroups.get(g.chatId);
-        return !restriction || restriction.until <= Date.now();
+        if (restriction && restriction.until > Date.now()) {
+          totalRestricted++;
+          return false;
+        }
+        return true;
       });
 
-      console.log(`   ${sessionData.sessionName}: ${availableGroups.length} groups`);
+      console.log(`   ${sessionData.sessionName}: ${availableGroups.length} available, ${sessionData.groups.length - availableGroups.length} restricted`);
 
       for (const group of availableGroups) {
         // Skip if already added from another session
@@ -261,12 +267,22 @@ class MultiSessionBroadcastService {
     if (skippedDuplicates > 0) {
       console.log(`⏭️  Skipped ${skippedDuplicates} duplicate groups (exist in multiple sessions)`);
     }
+    if (totalRestricted > 0) {
+      console.log(`🚫 Skipped ${totalRestricted} restricted groups (FloodWait)`);
+    }
+
+    // Check if no groups available
+    if (totalGroups === 0) {
+      console.log('\n⚠️  WARNING: No groups available to send! All groups are restricted or duplicate.');
+      console.log('💡 Wait for restrictions to clear, or try again later.\n');
+    }
 
     // Initialize progress
     this.broadcastProgress = {
       total: totalGroups,
       sent: 0,
       failed: 0,
+      skipped: 0,
       currentSession: null,
       startedAt: new Date().toISOString(),
       loopCount: 0
@@ -296,8 +312,9 @@ class MultiSessionBroadcastService {
         console.log('\n✅ ========================================');
         console.log('   BROADCAST COMPLETED');
         console.log(`   Total: ${this.broadcastProgress.total}`);
-        console.log(`   Sent: ${this.broadcastProgress.sent}`);
-        console.log(`   Failed: ${this.broadcastProgress.failed}`);
+        console.log(`   ✅ Sent: ${this.broadcastProgress.sent}`);
+        console.log(`   ⏭️  Skipped: ${this.broadcastProgress.skipped} (FloodWait/Restricted)`);
+        console.log(`   ❌ Failed: ${this.broadcastProgress.failed}`);
         console.log('========================================\n');
       }
       return;
@@ -340,24 +357,25 @@ class MultiSessionBroadcastService {
         await this.sleep(this.intervalMs);
 
       } catch (error) {
-        console.log(`❌ Send error (${item.sessionName} -> ${item.groupName}): ${error.message}`);
-        this.broadcastProgress.failed++;
-
         // Handle FloodWait - add to restricted groups
         if (error.message.includes('FLOOD_WAIT') || error.message.includes('A wait of')) {
           const match = error.message.match(/(\d+)/);
           const waitSeconds = match ? parseInt(match[1]) : 300;
-          console.log(`⏳ FloodWait ${waitSeconds}s for ${item.groupName} - SKIP & CONTINUE`);
+          console.log(`⏳ FloodWait ${waitSeconds}s for ${item.groupName} - SKIP`);
 
           this.restrictedGroups.set(item.chatId, {
             until: Date.now() + (waitSeconds * 1000)
           });
+
+          this.broadcastProgress.skipped++; // Don't count as failed
         } else if (error.message.includes('CHAT_WRITE_FORBIDDEN') ||
                    error.message.includes('CHAT_RESTRICTED') ||
                    error.message.includes('USER_BANNED_IN_CHANNEL')) {
-          console.log(`🚫 Restricted group: ${item.groupName} - SKIP & CONTINUE`);
+          console.log(`🚫 Restricted: ${item.groupName} - SKIP`);
+          this.broadcastProgress.skipped++; // Don't count as failed
         } else {
-          console.log(`⚠️  Unknown error: ${item.groupName} - SKIP & CONTINUE`);
+          console.log(`❌ Error (${item.sessionName} -> ${item.groupName}): ${error.message}`);
+          this.broadcastProgress.failed++; // Real error
         }
 
         // Update session stats
@@ -386,7 +404,9 @@ class MultiSessionBroadcastService {
     console.log('\n🔁 ========================================');
     console.log('   LOOP MODE: CYCLE COMPLETE');
     console.log(`   Loop Count: ${this.broadcastProgress.loopCount}`);
-    console.log(`   Sent: ${this.broadcastProgress.sent}, Failed: ${this.broadcastProgress.failed}`);
+    console.log(`   ✅ Sent: ${this.broadcastProgress.sent}`);
+    console.log(`   ⏭️  Skipped: ${this.broadcastProgress.skipped}`);
+    console.log(`   ❌ Failed: ${this.broadcastProgress.failed}`);
     console.log('   ⏸️  5 DAQIQA DAM OLINMOQDA...');
     console.log('========================================\n');
 
@@ -437,6 +457,7 @@ class MultiSessionBroadcastService {
     // Reset progress
     this.broadcastProgress.sent = 0;
     this.broadcastProgress.failed = 0;
+    this.broadcastProgress.skipped = 0;
     this.broadcastProgress.total = totalGroups;
 
     console.log(`🔄 Broadcast restarted: ${totalGroups} groups\n`);
