@@ -9,6 +9,7 @@ const semySMS = require('./semysms');
 const autoReply = require('./autoReply');
 const driverBotHandler = require('./driver-bot-handler');
 const cargoSearch = require('./cargo-search');
+const botOrder = require('./bot-order');
 
 class TelegramBotService {
   constructor() {
@@ -19,6 +20,8 @@ class TelegramBotService {
     this.userAnnouncementCache = new Map();
     // User state for cargo search (yuk qidirish)
     this.userSearchState = new Map();
+    // User state for order creation (buyurtma yaratish)
+    this.userOrderState = new Map();
   }
 
   async start() {
@@ -126,6 +129,7 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
         // Reply keyboard qo'shish
         const keyboard = {
           keyboard: [
+            [{ text: '📝 Buyurtma yaratish' }],
             [{ text: '🔍 Yuk qidirish' }],
             [{ text: '📊 Mening statistikam' }],
             [{ text: '🚛 Haydovchilar' }],
@@ -333,6 +337,11 @@ Savol bo'lsa, admin bilan bog'laning.`;
         await this.handleCargoSearchStart(ctx);
       });
 
+      // Buyurtma yaratish tugmasi
+      this.bot.hears('📝 Buyurtma yaratish', async (ctx) => {
+        await this.handleOrderCreationStart(ctx);
+      });
+
       this.bot.hears('ℹ️ Yordam', async (ctx) => {
         // /help komandasi bilan bir xil
         const helpMessage = `ℹ️ <b>YORDAM</b>
@@ -368,6 +377,7 @@ Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
         // Reply keyboard qo'shish
         const keyboard = {
           keyboard: [
+            [{ text: '📝 Buyurtma yaratish' }],
             [{ text: '🔍 Yuk qidirish' }],
             [{ text: '📊 Mening statistikam' }],
             [{ text: '🚛 Haydovchilar' }],
@@ -509,11 +519,18 @@ Tanlang:`;
       this.bot.on('text', async (ctx) => {
         try {
           const userId = ctx.from.id.toString();
-          const userState = this.userSearchState.get(userId);
+          const userSearchState = this.userSearchState.get(userId);
+          const userOrderState = this.userOrderState.get(userId);
 
           // Agar user cargo search mode'da bo'lsa
-          if (userState) {
-            await this.handleCargoSearchInput(ctx, userState);
+          if (userSearchState) {
+            await this.handleCargoSearchInput(ctx, userSearchState);
+            return;
+          }
+
+          // Agar user order creation mode'da bo'lsa
+          if (userOrderState) {
+            await this.handleOrderInput(ctx, userOrderState);
             return;
           }
 
@@ -528,6 +545,26 @@ Tanlang:`;
       // Setup callback query handler for "Bu dispetcher ekan" button
       // This runs AFTER driver handlers
       this.bot.on('callback_query', async (ctx) => {
+        const callbackData = ctx.callbackQuery.data;
+
+        // Order-related callbacks
+        if (callbackData === 'order_confirm') {
+          await this.handleOrderConfirmation(ctx);
+          return;
+        }
+
+        if (callbackData === 'order_cancel') {
+          await this.handleOrderCancellation(ctx);
+          return;
+        }
+
+        if (callbackData && callbackData.startsWith('order_take:')) {
+          const orderId = callbackData.split(':')[1];
+          await botOrder.handleOrderTaken(this.bot, ctx, orderId);
+          return;
+        }
+
+        // Dispatcher report callback
         await this.handleDispatcherReport(ctx);
       });
 
@@ -2245,6 +2282,87 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
       await ctx.reply('❌ Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
       this.userSearchState.delete(ctx.from.id.toString());
     }
+  }
+
+  /**
+   * Buyurtma yaratishni boshlash
+   */
+  async handleOrderCreationStart(ctx) {
+    const userId = ctx.from.id.toString();
+    const result = await botOrder.startOrderCreation(ctx);
+
+    if (result.state) {
+      this.userOrderState.set(userId, result);
+    }
+  }
+
+  /**
+   * Buyurtma yaratish inputlarini qayta ishlash
+   */
+  async handleOrderInput(ctx, userState) {
+    try {
+      const userId = ctx.from.id.toString();
+      const text = ctx.message.text;
+
+      let result;
+
+      if (userState.state === 'awaiting_route') {
+        result = await botOrder.handleRoute(ctx, userState.data);
+      } else if (userState.state === 'awaiting_cargo_info') {
+        result = await botOrder.handleCargoInfo(ctx, userState.data);
+      } else if (userState.state === 'awaiting_price') {
+        result = await botOrder.handlePrice(ctx, userState.data);
+      }
+
+      if (result) {
+        this.userOrderState.set(userId, result);
+      }
+    } catch (error) {
+      console.error('Order input error:', error);
+      await ctx.reply('❌ Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+      this.userOrderState.delete(ctx.from.id.toString());
+    }
+  }
+
+  /**
+   * Buyurtmani tasdiqlash
+   */
+  async handleOrderConfirmation(ctx) {
+    const userId = ctx.from.id.toString();
+    const userState = this.userOrderState.get(userId);
+
+    if (!userState || userState.state !== 'awaiting_confirmation') {
+      await ctx.answerCbQuery('❌ Buyurtma topilmadi');
+      return;
+    }
+
+    // Buyurtmani yaratish va userlarga yuborish
+    const result = await botOrder.createAndSendOrder(this.bot, userState.data);
+
+    if (result.success) {
+      await ctx.answerCbQuery('✅ Buyurtma yaratildi!');
+      await ctx.editMessageText(
+        `✅ <b>Buyurtma muvaffaqiyatli yaratildi!</b>\n\n` +
+        `📤 ${result.sentCount} ta userga yuborildi\n\n` +
+        `⏱ 3 daqiqa ichida kimdir qabul qilmasa, avtomatik guruhga chiqadi.`,
+        { parse_mode: 'HTML' }
+      );
+
+      // State'ni tozalash
+      this.userOrderState.delete(userId);
+    } else {
+      await ctx.answerCbQuery('❌ Xatolik: ' + result.error);
+    }
+  }
+
+  /**
+   * Buyurtmani bekor qilish
+   */
+  async handleOrderCancellation(ctx) {
+    const userId = ctx.from.id.toString();
+    this.userOrderState.delete(userId);
+    await botOrder.cancelOrder(ctx);
+    await ctx.editMessageText('❌ Buyurtma bekor qilindi');
   }
 
   stop() {
