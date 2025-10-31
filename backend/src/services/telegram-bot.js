@@ -516,21 +516,11 @@ Tanlang:`;
 
           console.log(`✅ User registered with phone: ${phone}`);
 
-          // Asosiy menyu klavyaturasi
-          const keyboard = {
-            keyboard: [
-              [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-              [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
-              [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
-            ],
-            resize_keyboard: true
-          };
-
           await ctx.reply(
             `✅ Tabriklaymiz! Ro'yxatdan o'tdingiz!\n\n` +
             `📱 Telefon: ${phone}\n\n` +
             `Endi botning barcha imkoniyatlaridan foydalanishingiz mumkin!`,
-            { reply_markup: keyboard }
+            { reply_markup: this.getMainKeyboard() }
           );
 
           // Welcome xabarini ko'rsatish
