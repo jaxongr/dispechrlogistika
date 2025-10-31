@@ -212,6 +212,7 @@ function startAutoRefresh() {
     // Refresh every 30 seconds for statistics
     setInterval(() => {
         loadStatistics();
+        loadBotOrderStatistics();
         loadRegisteredUsers();
         checkSystemHealth();
     }, 30000);
@@ -255,6 +256,54 @@ async function loadDriverStatistics() {
         document.getElementById('totalDebt').textContent = '0';
         document.getElementById('whitelistCount').textContent = '0';
         document.getElementById('recentDrivers').textContent = '0';
+    }
+}
+
+// Load bot order statistics
+async function loadBotOrderStatistics() {
+    try {
+        const response = await fetch('/api/bot-orders/statistics', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Bot buyurtma statistika yuklashda xatolik');
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.statistics) {
+            const stats = data.statistics;
+
+            // Update bot order statistics
+            const pendingElement = document.getElementById('pendingOrders');
+            const groupElement = document.getElementById('groupOrders');
+
+            if (pendingElement) {
+                pendingElement.textContent = stats.pending || 0;
+            }
+
+            if (groupElement) {
+                groupElement.textContent = stats.posted_to_group || 0;
+            }
+        }
+
+    } catch (error) {
+        console.error('Bot buyurtma statistika yuklashda xatolik:', error);
+        // Set defaults on error
+        const pendingElement = document.getElementById('pendingOrders');
+        const groupElement = document.getElementById('groupOrders');
+
+        if (pendingElement) {
+            pendingElement.textContent = '0';
+        }
+        if (groupElement) {
+            groupElement.textContent = '0';
+        }
     }
 }
 
@@ -657,6 +706,7 @@ function showAlert(type, message) {
 // Initialize
 async function initialize() {
     await loadStatistics();
+    await loadBotOrderStatistics(); // Load bot order statistics
     await loadRegisteredUsers();
     await loadRecentMessages();
     await checkSystemHealth();
