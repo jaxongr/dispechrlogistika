@@ -10,6 +10,7 @@ const autoReply = require('./autoReply');
 const driverBotHandler = require('./driver-bot-handler');
 const cargoSearch = require('./cargo-search');
 const botOrder = require('./bot-order');
+const advanceBooking = require('./driver-advance-booking');
 
 class TelegramBotService {
   constructor() {
@@ -130,8 +131,8 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
         const keyboard = {
           keyboard: [
             [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
-            [{ text: 'ℹ️ Yordam' }]
+            [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
+            [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
         };
@@ -340,6 +341,11 @@ Savol bo'lsa, admin bilan bog'laning.`;
         await this.handleOrderCreationStart(ctx);
       });
 
+      // Oldindan bron qilish tugmasi
+      this.bot.hears('📅 Oldindan bron qilish', async (ctx) => {
+        await this.handleAdvanceBookingStart(ctx);
+      });
+
       this.bot.hears('ℹ️ Yordam', async (ctx) => {
         // /help komandasi bilan bir xil
         const helpMessage = `ℹ️ <b>YORDAM</b>
@@ -376,8 +382,8 @@ Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
         const keyboard = {
           keyboard: [
             [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
-            [{ text: 'ℹ️ Yordam' }]
+            [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
+            [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
         };
@@ -474,8 +480,8 @@ Tanlang:`;
           const keyboard = {
             keyboard: [
               [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-              [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
-              [{ text: 'ℹ️ Yordam' }]
+              [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
+              [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
             ],
             resize_keyboard: true
           };
@@ -515,6 +521,7 @@ Tanlang:`;
       this.bot.on('text', async (ctx) => {
         try {
           const userId = ctx.from.id.toString();
+          const text = ctx.message.text;
           const userSearchState = this.userSearchState.get(userId);
           const userOrderState = this.userOrderState.get(userId);
 
@@ -527,6 +534,12 @@ Tanlang:`;
           // Agar user order creation mode'da bo'lsa
           if (userOrderState) {
             await this.handleOrderInput(ctx, userOrderState);
+            return;
+          }
+
+          // Agar user advance booking mode'da bo'lsa
+          const advanceBookingHandled = await this.handleAdvanceBookingText(ctx, text);
+          if (advanceBookingHandled) {
             return;
           }
 
@@ -2114,8 +2127,8 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         const mainKeyboard = {
           keyboard: [
             [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
-            [{ text: 'ℹ️ Yordam' }]
+            [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
+            [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
         };
@@ -2263,8 +2276,8 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         const mainKeyboard = {
           keyboard: [
             [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📊 Statistika' }, { text: '🚛 Haydovchilar' }],
-            [{ text: 'ℹ️ Yordam' }]
+            [{ text: '📅 Oldindan bron qilish' }, { text: '🚛 Haydovchilar' }],
+            [{ text: '📊 Statistika' }, { text: 'ℹ️ Yordam' }]
           ],
           resize_keyboard: true
         };
@@ -2357,6 +2370,46 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
     this.userOrderState.delete(userId);
     await botOrder.cancelOrder(ctx);
     await ctx.editMessageText('❌ Buyurtma bekor qilindi');
+  }
+
+  /**
+   * ADVANCE BOOKING HANDLERS
+   */
+
+  /**
+   * Oldindan bron qilish jarayonini boshlash
+   */
+  async handleAdvanceBookingStart(ctx) {
+    await advanceBooking.startBookingCreation(ctx);
+  }
+
+  /**
+   * Bron jarayonida matn qabul qilish
+   */
+  async handleAdvanceBookingText(ctx, text) {
+    const userId = ctx.from.id.toString();
+    const state = advanceBooking.userBookingState.get(userId);
+
+    if (!state) {
+      return false;
+    }
+
+    if (state.step === 'awaiting_current_route') {
+      await advanceBooking.handleCurrentRoute(ctx, text);
+      return true;
+    }
+
+    if (state.step === 'awaiting_arrival_time') {
+      await advanceBooking.handleArrivalTime(ctx, text);
+      return true;
+    }
+
+    if (state.step === 'awaiting_next_route') {
+      await advanceBooking.handleNextRouteAndSave(this.bot, ctx, text);
+      return true;
+    }
+
+    return false;
   }
 
   stop() {
