@@ -252,9 +252,28 @@
                 <textarea class="form-control message-textarea" id="messageText" placeholder="Xabar matni..."></textarea>
 
                 <div class="mt-3">
+                    <h6>Broadcast Usuli:</h6>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="broadcastMode" id="modeSingle" value="single" checked onchange="updateBroadcastMode()">
+                        <label class="form-check-label" for="modeSingle">
+                            <strong>📱 Bitta Session</strong> - .env dagi asosiy session
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="broadcastMode" id="modeMulti" value="multi" onchange="updateBroadcastMode()">
+                        <label class="form-check-label" for="modeMulti">
+                            <strong>🚀 Ko'p Session</strong> - Barcha faol sessionlar navbat bilan (<span id="sessionCount">0</span> ta session)
+                        </label>
+                    </div>
+                    <div class="alert alert-info mt-2" style="font-size: 0.85rem;">
+                        <i class="bi bi-info-circle"></i> Ko'p session rejimida barcha faol sessionlar navbat bilan xabar yuboradi (Birinchi akkaunt → Ikkinchi akkaunt → ...)
+                    </div>
+                </div>
+
+                <div class="mt-3">
                     <h6>Yuborish Tezligi:</h6>
                     <div class="alert alert-info mb-3">
-                        <small><i class="bi bi-info-circle"></i> <strong>200 guruhga:</strong> Xavfsiz=10min | O'rtacha=7min | Tez=5min (xavfli!)</small>
+                        <small><i class="bi bi-info-circle"></i> <strong>Ko'p session:</strong> 3 soniya har xabar orasida | <strong>Bitta session:</strong> Tanlangan tezlikda</small>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="speed" id="speedSafe" value="safe" checked>
@@ -549,6 +568,47 @@
     <script>
         let progressInterval = null;
 
+        // Load session count on page load
+        async function loadSessionCount() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/broadcast/sessions/list', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('sessionCount').textContent = data.active || 0;
+                }
+            } catch (error) {
+                console.error('Load session count error:', error);
+            }
+        }
+
+        // Update broadcast mode (disable speed for multi-session)
+        function updateBroadcastMode() {
+            const mode = document.querySelector('input[name="broadcastMode"]:checked').value;
+            const speedRadios = document.querySelectorAll('input[name="speed"]');
+
+            if (mode === 'multi') {
+                // Disable speed selection for multi-session (fixed 3s)
+                speedRadios.forEach(radio => {
+                    radio.disabled = true;
+                    radio.parentElement.style.opacity = '0.5';
+                });
+            } else {
+                // Enable speed selection for single session
+                speedRadios.forEach(radio => {
+                    radio.disabled = false;
+                    radio.parentElement.style.opacity = '1';
+                });
+            }
+        }
+
+        // Load session count on page load
+        loadSessionCount();
+        setInterval(loadSessionCount, 10000); // Refresh every 10 seconds
+
         // Check status on load
         window.addEventListener('DOMContentLoaded', async () => {
             await checkStatus();
@@ -675,8 +735,10 @@
             const speed = document.querySelector('input[name="speed"]:checked').value;
             const loopCheckbox = document.getElementById('loopMode');
             const loop = loopCheckbox ? loopCheckbox.checked : false;
+            const mode = document.querySelector('input[name="broadcastMode"]:checked').value;
 
             console.log('🔍 START BROADCAST DEBUG:');
+            console.log('   Mode:', mode);
             console.log('   Loop checkbox element:', loopCheckbox);
             console.log('   Loop checkbox.checked:', loop);
             console.log('   Message:', message.substring(0, 50));
@@ -687,7 +749,7 @@
                 return;
             }
 
-            let confirmMsg = `Haqiqatan ham ${message.length} belgili xabarni barcha guruhlarga yubormoqchimisiz?`;
+            let confirmMsg = `Haqiqatan ham ${message.length} belgili xabarni ${mode === 'multi' ? 'barcha sessionlardagi' : ''} barcha guruhlarga yubormoqchimisiz?`;
             if (loop) {
                 confirmMsg += '\n\n🔁 TSIKLIK REJIM YOQILGAN - Xabar to\'xtatmaguncha davom etadi!';
             }
@@ -698,10 +760,17 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const payload = { message, speed, loop };
-                console.log('📤 Sending payload:', payload);
 
-                const response = await fetch('/api/broadcast/send', {
+                // Choose endpoint based on mode
+                const endpoint = mode === 'multi' ? '/api/broadcast/multi-send' : '/api/broadcast/send';
+                const payload = mode === 'multi'
+                    ? { message, loop }  // Multi-session uses fixed 3s interval
+                    : { message, speed, loop };  // Single session uses speed setting
+
+                console.log('📤 Sending to:', endpoint);
+                console.log('📤 Payload:', payload);
+
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -716,14 +785,19 @@
                     throw new Error(data.error);
                 }
 
-                let alertMsg = `✅ Broadcast boshlandi!\nJami: ${data.total} guruh\nCheklangan: ${data.restricted} guruh`;
+                let alertMsg = `✅ Broadcast boshlandi!\nJami: ${data.total} guruh`;
+                if (mode === 'multi') {
+                    alertMsg += `\nSessionlar: ${data.sessions} ta`;
+                } else if (data.restricted) {
+                    alertMsg += `\nCheklangan: ${data.restricted} guruh`;
+                }
                 if (loop) {
                     alertMsg += '\n\n🔁 Tsiklik rejim aktiv - guruhlar tugagach qayta boshlaydi';
                 }
                 alert(alertMsg);
 
                 showProgress();
-                startProgressPolling();
+                startProgressPolling(mode);
 
             } catch (error) {
                 console.error('Broadcast error:', error);
@@ -738,7 +812,10 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('/api/broadcast/stop', {
+                const mode = document.querySelector('input[name="broadcastMode"]:checked').value;
+                const endpoint = mode === 'multi' ? '/api/broadcast/multi-stop' : '/api/broadcast/stop';
+
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -761,13 +838,13 @@
             }
         }
 
-        function startProgressPolling() {
+        function startProgressPolling(mode = 'single') {
             if (progressInterval) {
                 clearInterval(progressInterval);
             }
 
             progressInterval = setInterval(async () => {
-                await updateProgress();
+                await updateProgress(mode);
             }, 1000);
         }
 
@@ -778,10 +855,12 @@
             }
         }
 
-        async function updateProgress() {
+        async function updateProgress(mode = 'single') {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('/api/broadcast/progress', {
+                const endpoint = mode === 'multi' ? '/api/broadcast/multi-progress' : '/api/broadcast/progress';
+
+                const response = await fetch(endpoint, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
