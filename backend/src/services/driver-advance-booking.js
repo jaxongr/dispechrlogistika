@@ -332,15 +332,32 @@ class DriverAdvanceBookingService {
           const bookingFrom = bookingParts[0] || '';
           const bookingTo = bookingParts[1] || '';
 
-          // Faqat ikkala yo'nalish ham to'liq bo'lsa tekshirish
-          if (cargoFrom && cargoTo && bookingFrom && bookingTo) {
+          // Bron bitta joy yoki to'liq yo'nalishmi?
+          const hasDash = bookingRoute.includes('-');
+          const isSingleLocation = !hasDash || !bookingTo;
+
+          let isMatch = false;
+
+          if (isSingleLocation && cargoFrom && bookingFrom) {
+            // Faqat bitta joy - "qayerdan" mos kelishi kerak
+            const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
+            if (fromMatch) {
+              isMatch = true;
+              console.log(`✅ Yuk mos keldi (bitta joy): ${cargoRoute} <-> ${bookingRoute}`);
+            }
+          } else if (cargoFrom && cargoTo && bookingFrom && bookingTo) {
+            // To'liq yo'nalish - ikkalasi ham mos kelishi kerak
             const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
             const toMatch = cargoTo.includes(bookingTo) || bookingTo.includes(cargoTo);
 
             if (fromMatch && toMatch) {
-              console.log(`✅ Yuk mos keldi: ${cargoRoute} <-> ${bookingRoute}`);
-              matchedBookings.push(booking);
+              isMatch = true;
+              console.log(`✅ Yuk mos keldi (to'liq): ${cargoRoute} <-> ${bookingRoute}`);
             }
+          }
+
+          if (isMatch) {
+            matchedBookings.push(booking);
           }
         } else if (now > windowEnd) {
           // Vaqt o'tgan bronlarni expired qilish
@@ -395,14 +412,22 @@ class DriverAdvanceBookingService {
       const matchedCargos = [];
       const bookingRoute = booking.next_route.toLowerCase().trim();
 
-      // Bron yo'nalishini parchalash (masalan: "Toshkent - Samarqand")
+      // Bron yo'nalishini parchalash (masalan: "Toshkent - Samarqand" yoki "Toshkent")
+      const hasDash = bookingRoute.includes('-');
       const bookingParts = bookingRoute.split('-').map(p => p.trim());
       const bookingFrom = bookingParts[0] || '';
       const bookingTo = bookingParts[1] || '';
 
-      if (!bookingFrom || !bookingTo) {
-        console.log('⚠️ Bron yo\'nalishi noto\'g\'ri formatda:', booking.next_route);
+      if (!bookingFrom) {
+        console.log('⚠️ Bron yo\'nalishi bo\'sh:', booking.next_route);
         return [];
+      }
+
+      // Agar faqat bitta joy ko'rsatilgan bo'lsa (masalan: "Toshkent")
+      const isSingleLocation = !hasDash || !bookingTo;
+
+      if (isSingleLocation) {
+        console.log(`🔍 Bitta joydan qidirilmoqda: ${bookingFrom} dan istalgan yo'nalishga`);
       }
 
       for (const message of messages) {
@@ -410,12 +435,27 @@ class DriverAdvanceBookingService {
         const cargoFrom = (message.route_from || '').toLowerCase().trim();
         const cargoTo = (message.route_to || '').toLowerCase().trim();
 
-        // Yo'nalish mos keladimi? (Qattiqroq tekshirish)
-        const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
-        const toMatch = cargoTo.includes(bookingTo) || bookingTo.includes(cargoTo);
+        let isMatch = false;
 
-        if (fromMatch && toMatch) {
-          console.log(`✅ Mos yuk topildi: ${cargoFrom} - ${cargoTo}`);
+        if (isSingleLocation) {
+          // Faqat bitta joy - "qayerdan" mos kelishi kerak
+          const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
+          if (fromMatch) {
+            isMatch = true;
+            console.log(`✅ Mos yuk topildi: ${cargoFrom} → ${cargoTo}`);
+          }
+        } else {
+          // To'liq yo'nalish - ikkalasi ham mos kelishi kerak
+          const fromMatch = cargoFrom.includes(bookingFrom) || bookingFrom.includes(cargoFrom);
+          const toMatch = cargoTo.includes(bookingTo) || bookingTo.includes(cargoTo);
+
+          if (fromMatch && toMatch) {
+            isMatch = true;
+            console.log(`✅ Mos yuk topildi: ${cargoFrom} → ${cargoTo}`);
+          }
+        }
+
+        if (isMatch) {
 
           const cargoInfo = {
             message_id: message.id,
