@@ -30,9 +30,25 @@ class TelegramSessionService {
     this.messageHandler = null;
     this.messageQueue = [];
     this.processingQueue = false;
+    this.workers = [];
 
-    // Process queue every 2 seconds in batch
-    setInterval(() => this.processMessageQueue(), 1000); // 1s interval - maksimal tezlik
+    // PARALLEL PROCESSING: 10 workers - BARCHA xabarlarni parallel ishleydi
+    // Har bir worker har qanday guruhdan xabar olishi mumkin
+    // Bu eng tez va samarali yondashuv - hech qanday xabar o'tkazib yuborilmaydi
+    for (let i = 0; i < 10; i++) {
+      this.workers.push({
+        id: i,
+        processing: false
+      });
+
+      // Har bir worker turli vaqtda ishga tushadi (50ms farq)
+      setTimeout(() => {
+        setInterval(() => this.processMessageQueue(i), 500);
+      }, i * 50);
+    }
+
+    console.log('🚀 Parallel worker system initialized:');
+    console.log('   10 workers processing ALL messages in parallel');
   }
 
   /**
@@ -206,20 +222,34 @@ class TelegramSessionService {
   }
 
   /**
-   * Process message queue in batches
+   * Process message queue in batches with parallel workers
+   * BARCHA WORKERLAR parallel ishlaydi - har qanday guruhdan xabar oladi
    */
-  async processMessageQueue() {
-    if (this.processingQueue || this.messageQueue.length === 0) {
+  async processMessageQueue(workerId = 0) {
+    // Check if this worker is already processing
+    if (this.workers[workerId] && this.workers[workerId].processing) {
       return;
     }
 
-    this.processingQueue = true;
+    // Check if there are messages to process
+    if (this.messageQueue.length === 0) {
+      return;
+    }
+
+    // Mark worker as processing
+    if (this.workers[workerId]) {
+      this.workers[workerId].processing = true;
+    }
+
     const startTime = Date.now();
     let batch = [];
 
     try {
-      batch = this.messageQueue.splice(0, 30); // Process max 30 at a time - MAKSIMAL TEZLIK
-      console.log(`📦 Processing ${batch.length} messages from queue...`);
+      // PARALLEL PROCESSING: Har bir worker barcha xabarlardan oladi
+      batch = this.messageQueue.splice(0, 50); // Process max 50 at a time
+      if (batch.length > 0) {
+        console.log(`📦 Worker ${workerId}: Processing ${batch.length} messages...`);
+      }
 
       for (const item of batch) {
         try {
@@ -522,9 +552,12 @@ class TelegramSessionService {
     } finally {
       const duration = Date.now() - startTime;
       if (batch.length > 0) {
-        console.log(`⏱️  Batch processed in ${duration}ms (${batch.length} messages = ${(duration / batch.length).toFixed(0)}ms/msg)`);
+        console.log(`⏱️  Worker ${workerId}: Batch processed in ${duration}ms (${batch.length} messages = ${(duration / batch.length).toFixed(0)}ms/msg)`);
       }
-      this.processingQueue = false;
+      // Mark worker as free
+      if (this.workers[workerId]) {
+        this.workers[workerId].processing = false;
+      }
     }
   }
 

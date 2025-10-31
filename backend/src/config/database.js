@@ -51,7 +51,8 @@ db.defaults({
   broadcasts: [],               // Ommaviy xabar yuborish
   broadcast_announcements: [],   // Broadcast uchun alohida e'lonlar
   drivers: [],                  // Yuk mashinasi haydovchilari (qora/oq ro'yxat)
-  bot_orders: []                // Botda yaratilgan buyurtmalar
+  bot_orders: [],               // Botda yaratilgan buyurtmalar
+  bot_order_daily_stats: []     // Bot buyurtmalar kunlik statistikasi
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);

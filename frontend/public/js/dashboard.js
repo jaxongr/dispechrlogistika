@@ -703,6 +703,89 @@ function showAlert(type, message) {
     }, 5000);
 }
 
+// Load bot orders daily archive
+async function loadBotOrdersDailyArchive() {
+    try {
+        const response = await fetch('/api/bot-orders/daily-stats?limit=30', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Bot buyurtma kunlik arxiv yuklashda xatolik');
+        }
+
+        const data = await response.json();
+        const stats = data.statistics || [];
+
+        const container = document.getElementById('botOrdersDailyArchive');
+
+        if (!container) {
+            return; // Container mavjud bo'lmasa, chiqamiz
+        }
+
+        if (stats.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-archive" style="font-size: 3rem;"></i>
+                    <p class="mt-2">Hali kunlik arxiv yo'q</p>
+                    <small>Har kecha 00:00 da avtomatik saqlanadi</small>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="table-responsive"><table class="table table-striped table-hover">';
+        html += `
+            <thead>
+                <tr>
+                    <th>📅 Sana</th>
+                    <th>📦 Jami buyurtma</th>
+                    <th>✅ Qabul qilindi</th>
+                    <th>📤 Guruhga chiqdi</th>
+                    <th>⏳ Kutilmoqda</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        stats.forEach(stat => {
+            const date = new Date(stat.date).toLocaleDateString('uz-UZ', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            html += `
+                <tr>
+                    <td><strong>${date}</strong></td>
+                    <td><span class="badge bg-primary">${stat.total_orders || 0}</span></td>
+                    <td><span class="badge bg-success">${stat.taken_orders || 0}</span></td>
+                    <td><span class="badge bg-info">${stat.posted_to_group || 0}</span></td>
+                    <td><span class="badge bg-warning">${stat.pending_orders || 0}</span></td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error('Bot buyurtma kunlik arxiv yuklashda xatolik:', error);
+        const container = document.getElementById('botOrdersDailyArchive');
+        if (container) {
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    Arxiv yuklashda xatolik yuz berdi
+                </div>
+            `;
+        }
+    }
+}
+
 // Initialize
 async function initialize() {
     await loadStatistics();
@@ -711,6 +794,7 @@ async function initialize() {
     await loadRecentMessages();
     await checkSystemHealth();
     await loadDailyArchive();
+    await loadBotOrdersDailyArchive(); // Load bot orders daily archive
     await loadAdSchedulerSettings(); // Load ad scheduler settings
     startAutoRefresh();
 }

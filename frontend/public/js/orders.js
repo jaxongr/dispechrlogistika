@@ -7,11 +7,13 @@
 document.addEventListener('DOMContentLoaded', () => {
   loadOrders();
   loadStatistics();
+  loadDailyArchive();
 
   // Auto-refresh every 30 seconds
   setInterval(() => {
     loadOrders();
     loadStatistics();
+    loadDailyArchive();
   }, 30000);
 });
 
@@ -184,4 +186,75 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+/**
+ * Load daily archive
+ */
+async function loadDailyArchive() {
+  try {
+    const response = await apiRequest('/api/bot-orders/daily-stats?limit=30');
+
+    if (!response.success) {
+      throw new Error(response.error || 'Xatolik yuz berdi');
+    }
+
+    const stats = response.statistics || [];
+    const container = document.getElementById('dailyArchiveContainer');
+
+    if (stats.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-archive" style="font-size: 3rem;"></i>
+          <p class="mt-2">Hali kunlik arxiv yo'q</p>
+          <small>Har kecha 00:00 da avtomatik saqlanadi</small>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '<div class="table-responsive"><table class="table table-striped table-hover">';
+    html += `
+      <thead>
+        <tr>
+          <th>📅 Sana</th>
+          <th>📦 Jami buyurtma</th>
+          <th>✅ Qabul qilindi</th>
+          <th>📤 Guruhga chiqdi</th>
+          <th>⏳ Kutilmoqda</th>
+        </tr>
+      </thead>
+      <tbody>
+    `;
+
+    stats.forEach(stat => {
+      const date = new Date(stat.date).toLocaleDateString('uz-UZ', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      html += `
+        <tr>
+          <td><strong>${date}</strong></td>
+          <td><span class="badge bg-primary">${stat.total_orders || 0}</span></td>
+          <td><span class="badge bg-success">${stat.taken_orders || 0}</span></td>
+          <td><span class="badge bg-info">${stat.posted_to_group || 0}</span></td>
+          <td><span class="badge bg-warning">${stat.pending_orders || 0}</span></td>
+        </tr>
+      `;
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+
+  } catch (error) {
+    console.error('Load daily archive error:', error);
+    const container = document.getElementById('dailyArchiveContainer');
+    container.innerHTML = `
+      <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i> Xatolik: ${error.message}
+      </div>
+    `;
+  }
 }

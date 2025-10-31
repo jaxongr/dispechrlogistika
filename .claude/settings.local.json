@@ -21,7 +21,13 @@
       "Read(//c/Users/Pro/Downloads/**)",
       "Bash(python:*)",
       "Bash(bash:*)",
-      "Bash(scp:*)"
+      "Bash(scp:*)",
+      "Bash(lsblk:*)",
+      "Bash(mount:*)",
+      "Read(//c//**)",
+      "Bash(journalctl:*)",
+      "Read(//c/**)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
