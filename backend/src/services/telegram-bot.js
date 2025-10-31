@@ -584,27 +584,36 @@ Tanlang:`;
       // Setup callback query handler for "Bu dispetcher ekan" button
       // This runs AFTER driver handlers
       this.bot.on('callback_query', async (ctx) => {
-        const callbackData = ctx.callbackQuery.data;
+        try {
+          const callbackData = ctx.callbackQuery.data;
 
-        // Order-related callbacks
-        if (callbackData === 'order_confirm') {
-          await this.handleOrderConfirmation(ctx);
-          return;
+          // Order-related callbacks
+          if (callbackData === 'order_confirm') {
+            await this.handleOrderConfirmation(ctx);
+            return;
+          }
+
+          if (callbackData === 'order_cancel') {
+            await this.handleOrderCancellation(ctx);
+            return;
+          }
+
+          if (callbackData && callbackData.startsWith('order_take:')) {
+            const orderId = callbackData.split(':')[1];
+            await botOrder.handleOrderTaken(this.bot, ctx, orderId);
+            return;
+          }
+
+          // Dispatcher report callback
+          await this.handleDispatcherReport(ctx);
+        } catch (error) {
+          console.error('❌ Callback query handler error:', error);
+          try {
+            await ctx.answerCbQuery('❌ Xatolik yuz berdi. Qayta urinib ko\'ring.');
+          } catch (e) {
+            console.error('❌ Error answering callback query:', e.message);
+          }
         }
-
-        if (callbackData === 'order_cancel') {
-          await this.handleOrderCancellation(ctx);
-          return;
-        }
-
-        if (callbackData && callbackData.startsWith('order_take:')) {
-          const orderId = callbackData.split(':')[1];
-          await botOrder.handleOrderTaken(this.bot, ctx, orderId);
-          return;
-        }
-
-        // Dispatcher report callback
-        await this.handleDispatcherReport(ctx);
       });
 
       // Launch bot in background (non-blocking)
