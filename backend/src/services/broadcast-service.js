@@ -8,9 +8,9 @@ const telegramBot = require('./telegram-bot');
  * Ommaviy xabar yuborish - Rate limiting bilan
  *
  * Rate Limits:
- * - 4 soniya har bir guruh orasida
+ * - 3 soniya har bir guruh orasida (YANGILANDI)
  * - 20 ta guruhga yuborib → 30 soniya dam
- * - Tsikl tugagach → 5 daqiqa dam
+ * - Tsikl tugagach → 5 daqiqa dam (TSIKLLI - qayta boshlaydi)
  */
 class BroadcastService {
   constructor() {
@@ -169,29 +169,26 @@ class BroadcastService {
       }
     }
 
-    // Tsikl tugadi - 5 daqiqa dam olib yana davom etish
-    console.log(`✅ Broadcast tugadi! Sent: ${sentCount}, Failed: ${failedCount}`);
-    console.log(`⏸️ ${cycle_pause_minutes} daqiqa dam olinmoqda...`);
+    // Tsikl tugadi - 5 daqiqa dam olib TSIKLLI qayta boshlash
+    console.log(`✅ Tsikl tugadi! Sent: ${sentCount}, Failed: ${failedCount}`);
+    console.log(`⏸️ ${cycle_pause_minutes} daqiqa dam olinmoqda, keyin qayta boshlanadi...`);
+
+    // Progress'ni reset qilish (tsiklli ishlash uchun)
+    Broadcast.updateProgress(broadcastId, 0, 0, null);
 
     await this._sleep(cycle_pause_minutes * 60 * 1000);
 
-    // Yana davom etish yoki tugatish
-    if (sentCount >= target_groups.length) {
-      Broadcast.updateStatus(broadcastId, 'completed', {
-        completed_at: new Date().toISOString()
-      });
-      console.log(`✅ Broadcast ${broadcastId} tugadi`);
+    // TSIKLLI: Pauza yoki to'xtatish bo'lmasa, doim qayta boshlanadi
+    const currentBroadcast = Broadcast.findById(broadcastId);
+    if (this.stopRequested || currentBroadcast.status !== 'running') {
+      console.log(`⏹️ Broadcast to'xtatildi`);
       this.isRunning = false;
-    } else {
-      // Yana qayta boshlash (paused bo'lmasa)
-      const currentBroadcast = Broadcast.findById(broadcastId);
-      if (currentBroadcast.status === 'running') {
-        console.log(`🔄 Broadcast yana davom etmoqda...`);
-        await this._processBroadcast(broadcastId);
-      } else {
-        this.isRunning = false;
-      }
+      return;
     }
+
+    // Qayta boshlash
+    console.log(`🔄 Broadcast tsikli qayta boshlanmoqda...`);
+    await this._processBroadcast(broadcastId);
   }
 
   /**

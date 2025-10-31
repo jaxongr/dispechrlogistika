@@ -23,6 +23,10 @@ class TelegramBotService {
     this.userSearchState = new Map();
     // User state for order creation (buyurtma yaratish)
     this.userOrderState = new Map();
+    // User state for broadcast (e'lon tarqatish)
+    this.userBroadcastState = new Map();
+    // Rate limiting for broadcasts (userId => timestamp)
+    this.lastBroadcastTime = new Map();
   }
 
   /**
@@ -33,8 +37,8 @@ class TelegramBotService {
       keyboard: [
         [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
         [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
-        [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
-        [{ text: 'ℹ️ Yordam' }]
+        [{ text: '📢 E\'lon tarqatish' }, { text: '📊 Statistika' }],
+        [{ text: '🚛 Haydovchilar' }, { text: 'ℹ️ Yordam' }]
       ],
       resize_keyboard: true
     };
@@ -369,6 +373,11 @@ Savol bo'lsa, admin bilan bog'laning.`;
         await advanceBooking.showMyBookings(ctx);
       });
 
+      // E'lon tarqatish tugmasi
+      this.bot.hears('📢 E\'lon tarqatish', async (ctx) => {
+        await this.handleBroadcastStart(ctx);
+      });
+
       this.bot.hears('ℹ️ Yordam', async (ctx) => {
         // /help komandasi bilan bir xil
         const helpMessage = `ℹ️ <b>YORDAM</b>
@@ -554,6 +563,7 @@ Tanlang:`;
           const text = ctx.message.text;
           const userSearchState = this.userSearchState.get(userId);
           const userOrderState = this.userOrderState.get(userId);
+          const userBroadcastState = this.userBroadcastState.get(userId);
 
           // Agar user cargo search mode'da bo'lsa
           if (userSearchState) {
@@ -564,6 +574,12 @@ Tanlang:`;
           // Agar user order creation mode'da bo'lsa
           if (userOrderState) {
             await this.handleOrderInput(ctx, userOrderState);
+            return;
+          }
+
+          // Agar user broadcast mode'da bo'lsa
+          if (userBroadcastState) {
+            await this.handleBroadcastInput(ctx, userBroadcastState);
             return;
           }
 
@@ -601,6 +617,17 @@ Tanlang:`;
           if (callbackData && callbackData.startsWith('order_take:')) {
             const orderId = callbackData.split(':')[1];
             await botOrder.handleOrderTaken(this.bot, ctx, orderId);
+            return;
+          }
+
+          // Broadcast-related callbacks
+          if (callbackData === 'broadcast_confirm') {
+            await this.handleBroadcastConfirmation(ctx);
+            return;
+          }
+
+          if (callbackData === 'broadcast_cancel') {
+            await this.handleBroadcastCancellation(ctx);
             return;
           }
 
@@ -2530,6 +2557,178 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
     }
 
     return false;
+  }
+
+  /**
+   * E'lon tarqatish jarayonini boshlash
+   */
+  async handleBroadcastStart(ctx) {
+    const userId = ctx.from.id.toString();
+
+    // User ro'yxatdan o'tganmi tekshirish
+    const user = db.get('bot_users')
+      .find({ telegram_user_id: userId })
+      .value();
+
+    if (!user || !user.is_registered) {
+      await ctx.reply(
+        '❌ E\'lon tarqatish uchun avval ro\'yxatdan o\'ting!\n\n' +
+        '📱 Telefon raqamingizni yuboring yoki /start ni bosing.',
+        { parse_mode: 'HTML' }
+      );
+      return;
+    }
+
+    // RATE LIMITING: Kuniga 10 marta
+    const now = Date.now();
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+
+    if (this.lastBroadcastTime.has(userId)) {
+      const lastTime = this.lastBroadcastTime.get(userId);
+      const broadcasts = db.get('broadcasts')
+        .filter(b =>
+          b.created_by === userId &&
+          Date.now() - new Date(b.created_at).getTime() < ONE_DAY
+        )
+        .value();
+
+      if (broadcasts.length >= 10) {
+        const oldestBroadcast = broadcasts.sort((a, b) =>
+          new Date(a.created_at) - new Date(b.created_at)
+        )[0];
+        const resetTime = new Date(new Date(oldestBroadcast.created_at).getTime() + ONE_DAY);
+        const hoursLeft = Math.ceil((resetTime - now) / (60 * 60 * 1000));
+
+        await ctx.reply(
+          `⏰ <b>Kunlik limit!</b>\n\n` +
+          `Siz bugun ${broadcasts.length} marta e'lon tarqatgansiz.\n` +
+          `Keyingi e'lonni <b>${hoursLeft} soatdan</b> keyin tarqatishingiz mumkin.\n\n` +
+          `❗️ Kunlik limit: 10 marta`,
+          { parse_mode: 'HTML' }
+        );
+        return;
+      }
+    }
+
+    // E'lon matnini so'rash
+    await ctx.reply(
+      '📢 <b>E\'LON TARQATISH</b>\n\n' +
+      'E\'loningiz matnini yuboring:\n\n' +
+      '<i>Bu e\'lon barcha guruhlarga 3 sekund oraliqda yuboriladi.</i>\n' +
+      '<i>Tsikl tugagach 5 daqiqa dam olib qayta boshlanadi.</i>',
+      { parse_mode: 'HTML' }
+    );
+
+    this.userBroadcastState.set(userId, {
+      step: 'awaiting_message'
+    });
+  }
+
+  /**
+   * Broadcast input'larini qayta ishlash
+   */
+  async handleBroadcastInput(ctx, userState) {
+    try {
+      const userId = ctx.from.id.toString();
+      const messageText = ctx.message.text;
+
+      if (userState.step === 'awaiting_message') {
+        // E'lon matnini saqlash va tasdiqlash
+        await ctx.reply(
+          '📢 <b>E\'LON TASDIQLASH</b>\n\n' +
+          `<b>Sizning e\'loningiz:</b>\n${messageText}\n\n` +
+          '❓ Barcha guruhlarga yuborilsinmi?',
+          {
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: '✅ Ha, yuborsin', callback_data: 'broadcast_confirm' },
+                  { text: '❌ Bekor qilish', callback_data: 'broadcast_cancel' }
+                ]
+              ]
+            }
+          }
+        );
+
+        this.userBroadcastState.set(userId, {
+          step: 'awaiting_confirmation',
+          message: messageText
+        });
+      }
+    } catch (error) {
+      console.error('Broadcast input error:', error);
+      await ctx.reply('❌ Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+      this.userBroadcastState.delete(userId);
+    }
+  }
+
+  /**
+   * Broadcast tasdiqlanishi
+   */
+  async handleBroadcastConfirmation(ctx) {
+    try {
+      const userId = ctx.from.id.toString();
+      const userState = this.userBroadcastState.get(userId);
+
+      if (!userState || userState.step !== 'awaiting_confirmation') {
+        await ctx.answerCbQuery('❌ Sessiya yaroqsiz');
+        return;
+      }
+
+      const Broadcast = require('../models/Broadcast');
+      const TelegramGroup = require('../models/TelegramGroup');
+
+      // Barcha guruhlarni olish
+      const allGroups = TelegramGroup.getAll();
+      const groupIds = allGroups.map(g => g.id);
+
+      // Broadcast yaratish
+      const broadcast = Broadcast.create({
+        created_by: userId,
+        message_text: userState.message,
+        target_groups: groupIds,
+        total_groups: groupIds.length,
+        interval_seconds: 3,              // 3 SEKUND
+        batch_size: 20,
+        batch_pause_seconds: 30,
+        cycle_pause_minutes: 5            // 5 DAQIQA dam
+      });
+
+      // Broadcast'ni boshlash
+      const broadcastService = require('./broadcast-service');
+      await broadcastService.start(broadcast.id);
+
+      await ctx.answerCbQuery('✅ E\'lon tarqatish boshlandi!');
+      await ctx.editMessageText(
+        `✅ <b>E\'LON TARQATISH BOSHLANDI!</b>\n\n` +
+        `📊 <b>Statistika:</b>\n` +
+        `• Jami guruhlar: ${groupIds.length}\n` +
+        `• Interval: 3 sekund\n` +
+        `• Tsikl tugagach: 5 daqiqa dam\n\n` +
+        `🔄 E\'lon tsiklli tarqaladi (to\'xtatilmaguncha)`,
+        { parse_mode: 'HTML' }
+      );
+
+      // Vaqtni saqlash
+      this.lastBroadcastTime.set(userId, Date.now());
+      this.userBroadcastState.delete(userId);
+
+    } catch (error) {
+      console.error('Broadcast confirmation error:', error);
+      await ctx.answerCbQuery('❌ Xatolik yuz berdi');
+    }
+  }
+
+  /**
+   * Broadcast bekor qilish
+   */
+  async handleBroadcastCancellation(ctx) {
+    const userId = ctx.from.id.toString();
+    this.userBroadcastState.delete(userId);
+
+    await ctx.answerCbQuery('❌ Bekor qilindi');
+    await ctx.editMessageText('❌ E\'lon tarqatish bekor qilindi.');
   }
 
   stop() {
