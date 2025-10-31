@@ -25,6 +25,21 @@ class TelegramBotService {
     this.userOrderState = new Map();
   }
 
+  /**
+   * Asosiy menyu klaviaturasini qaytaradi
+   */
+  getMainKeyboard() {
+    return {
+      keyboard: [
+        [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
+        [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
+        [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
+        [{ text: 'ℹ️ Yordam' }]
+      ],
+      resize_keyboard: true
+    };
+  }
+
   async start() {
     try {
       const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -128,20 +143,21 @@ Agar raqamni unutsangiz, "📞 Raqamni olish" tugmasini bosing
 Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini kutib turing.`;
 
         // Reply keyboard qo'shish - 2 ustunda chiroyli tartibda
-        const keyboard = {
-          keyboard: [
-            [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
-            [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
-            [{ text: 'ℹ️ Yordam' }]
-          ],
-          resize_keyboard: true
-        };
-
         await ctx.reply(welcomeMessage, {
           parse_mode: 'HTML',
-          reply_markup: keyboard
+          reply_markup: this.getMainKeyboard()
         });
+      });
+
+      // Setup /menu command - menyu'ni yangilash
+      this.bot.command('menu', async (ctx) => {
+        await ctx.reply(
+          '📱 Menyu yangilandi!',
+          {
+            parse_mode: 'HTML',
+            reply_markup: this.getMainKeyboard()
+          }
+        );
       });
 
       // Setup /help command
@@ -150,6 +166,7 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 
 <b>Bot komandalar:</b>
 /start - Bot haqida
+/menu - Menyu'ni yangilash
 /help - Bu yordam
 /stats - Mening statistikam
 /haydovchilar - Haydovchilarni boshqarish
@@ -385,15 +402,7 @@ Qo'shimcha yordam kerakmi? Admin bilan bog'laning.`;
       // Bosh menyu tugmasi - /start ni ko'rsatish
       this.bot.hears('🔙 Bosh menyu', async (ctx) => {
         // Reply keyboard qo'shish - 2 ustunda chiroyli tartibda
-        const keyboard = {
-          keyboard: [
-            [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
-            [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
-            [{ text: 'ℹ️ Yordam' }]
-          ],
-          resize_keyboard: true
-        };
+        const keyboard = this.getMainKeyboard();
 
         const welcomeMessage = `🤖 <b>YO'LDA | Yuk Markazi Bot</b>
 
@@ -2182,15 +2191,7 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
       // Orqaga
       if (text === '🔙 Orqaga') {
         this.userSearchState.delete(userId);
-        const mainKeyboard = {
-          keyboard: [
-            [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
-            [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
-            [{ text: 'ℹ️ Yordam' }]
-          ],
-          resize_keyboard: true
-        };
+        const mainKeyboard = this.getMainKeyboard();
         await ctx.reply('Asosiy menyuga qaytdingiz', { reply_markup: mainKeyboard });
         return;
       }
@@ -2332,15 +2333,7 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
         this.userSearchState.delete(userId);
 
         // Asosiy menyuga qaytarish
-        const mainKeyboard = {
-          keyboard: [
-            [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
-            [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
-            [{ text: '🚛 Haydovchilar' }, { text: '📊 Statistika' }],
-            [{ text: 'ℹ️ Yordam' }]
-          ],
-          resize_keyboard: true
-        };
+        const mainKeyboard = this.getMainKeyboard();
         await ctx.reply('Boshqa yo\'nalish bo\'yicha qidirish uchun "🔍 Yuk qidirish" ni bosing', { reply_markup: mainKeyboard });
       }
 
