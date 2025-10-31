@@ -461,11 +461,11 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
           console.log('\n🔁 ========================================');
           console.log('   LOOP MODE: RESTARTING BROADCAST');
           console.log(`   Loop Count: ${this.broadcastProgress.loopCount}`);
-          console.log('   ⏸️  2 DAQIQA DAM OLINMOQDA...');
+          console.log('   ⏸️  5 DAQIQA DAM OLINMOQDA...');
           console.log('========================================\n');
 
-          // 2 DAQIQA DAM OLISH - Telegram limitlarini oldini olish uchun
-          await this.sleep(120000); // 2 daqiqa = 120,000ms
+          // 5 DAQIQA DAM OLISH - Telegram limitlarini oldini olish uchun
+          await this.sleep(300000); // 5 daqiqa = 300,000ms
 
           console.log('✅ Dam olish tugadi, qayta boshlanyapti...\n');
 
@@ -531,14 +531,11 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
             console.log(`📊 Progress: ${this.broadcastProgress.sent}/${this.broadcastProgress.total} sent`);
           }
 
-          // YANGILANGAN TEZLIKLAR - Xavfsizroq
-          // safe: 12 guruh/min (5s delay) = 15 daqiqa (100 guruh) - ENG XAVFSIZ
-          // fast: 15 guruh/min (4s delay) = 12 daqiqa (100 guruh)
-          // turbo: 20 guruh/min (3s delay) = 10 daqiqa (100 guruh)
-          const delayMs = this.broadcastSpeed === 'safe' ? 5000 :    // 5 soniya - xavfsiz
-                         this.broadcastSpeed === 'fast' ? 4000 :     // 4 soniya
-                         this.broadcastSpeed === 'turbo' ? 3000 :    // 3 soniya
-                         5000; // default to safe
+          // YANGILANGAN TEZLIKLAR - 3 soniya barcha rejimlar uchun
+          // safe: 20 guruh/min (3s delay) = 10 daqiqa (200 guruh)
+          // fast: 20 guruh/min (3s delay) = 10 daqiqa (200 guruh)
+          // turbo: 20 guruh/min (3s delay) = 10 daqiqa (200 guruh)
+          const delayMs = 3000; // 3 soniya - barcha rejimlar uchun bir xil
 
           await this.sleep(delayMs);
 
