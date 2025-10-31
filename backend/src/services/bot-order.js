@@ -244,6 +244,9 @@ Buyurtmani yaratishni tasdiqlaysizmi?
 
       console.log(`✅ Buyurtma ${sentCount} ta userga yuborildi`);
 
+      // Guruhga bildirishnoma yuborish
+      await this.sendOrderNotificationToGroup(bot, order);
+
       // 3 daqiqalik timer o'rnatish
       this.startOrderTimer(bot, orderId);
 
@@ -469,6 +472,52 @@ Buyurtmani yaratishni tasdiqlaysizmi?
     }
 
     await ctx.answerCbQuery('✅ Buyurtma bekor qilindi');
+  }
+
+  /**
+   * Guruhga yangi buyurtma haqida bildirishnoma yuborish
+   */
+  async sendOrderNotificationToGroup(bot, order) {
+    try {
+      const targetGroupId = process.env.TARGET_GROUP_ID || process.env.TARGET_CHANNEL_ID;
+
+      if (!targetGroupId) {
+        console.error('❌ TARGET_GROUP_ID not configured');
+        return;
+      }
+
+      const notificationText = `
+🔔 <b>YANGI BUYURTMA TUSHDI!</b>
+
+━━━━━━━━━━━━━━━━━━━━
+🚛 <b>Yo'nalish:</b> ${order.route}
+📦 <b>Yuk:</b> ${order.cargo_info}
+💰 <b>Narx:</b> ${order.price}
+
+👤 <b>Buyurtmachi:</b> ${order.creator_full_name}
+📞 <b>Telefon:</b> <code>${order.creator_phone}</code>
+━━━━━━━━━━━━━━━━━━━━
+
+⚡️ <b>Buyurtmani qabul qilish uchun botga kiring!</b>
+👉 @yukchiborbot
+
+⏰ <i>3 daqiqa ichida qabul qilinmasa, bu guruhga yuboriladi.</i>
+`.trim();
+
+      await bot.telegram.sendMessage(
+        targetGroupId,
+        notificationText,
+        {
+          parse_mode: 'HTML',
+          disable_web_page_preview: true
+        }
+      );
+
+      console.log(`📢 Guruhga bildirishnoma yuborildi: ${order.id}`);
+
+    } catch (error) {
+      console.error('❌ Guruhga bildirishnoma yuborishda xatolik:', error.message);
+    }
   }
 }
 
