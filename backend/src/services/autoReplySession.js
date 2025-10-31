@@ -853,27 +853,40 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
 
         // Read current .env
         let envContent = fs.readFileSync(envPath, 'utf8');
+        const lines = envContent.split('\n');
+        let found = false;
+        let newLines = [];
 
-        // Check if AUTOREPLY_SESSION_STRING exists
-        if (envContent.includes('AUTOREPLY_SESSION_STRING=')) {
-          // Replace existing (including commented lines)
-          envContent = envContent.replace(
-            /# ?AUTOREPLY_SESSION_STRING=.*/,
-            `AUTOREPLY_SESSION_STRING=${sessionString}`
-          );
-          // Also replace uncommented lines
-          envContent = envContent.replace(
-            /^AUTOREPLY_SESSION_STRING=.*/m,
-            `AUTOREPLY_SESSION_STRING=${sessionString}`
-          );
-        } else {
-          // Add new
-          envContent += `\n\n# Auto-Reply Session (Dashboard'dan qo'shildi)\nAUTOREPLY_SESSION_STRING=${sessionString}\n`;
+        // Process each line
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+
+          // Check if this line contains AUTOREPLY_SESSION_STRING (commented or not)
+          if (line.includes('AUTOREPLY_SESSION_STRING=')) {
+            if (!found) {
+              // Replace first occurrence
+              newLines.push(`AUTOREPLY_SESSION_STRING=${sessionString}`);
+              found = true;
+              console.log(`   Mavjud session qatori almashtirildi (line ${i + 1})`);
+            }
+            // Skip duplicate lines
+          } else {
+            newLines.push(line);
+          }
+        }
+
+        // If not found, add new
+        if (!found) {
+          newLines.push('');
+          newLines.push('# Auto-Reply Session (Dashboard\'dan qo\'shildi - ' + new Date().toLocaleString('uz-UZ') + ')');
+          newLines.push(`AUTOREPLY_SESSION_STRING=${sessionString}`);
+          console.log(`   Yangi session qatori qo'shildi`);
         }
 
         // Write back
-        fs.writeFileSync(envPath, envContent, 'utf8');
-        console.log(`✅ Session ${envPath} ga saqlandi`);
+        const newContent = newLines.join('\n');
+        fs.writeFileSync(envPath, newContent, 'utf8');
+        console.log(`✅ Session ${envPath} ga saqlandi (${sessionString.length} belgi)`);
       };
 
       // Update both .env files
