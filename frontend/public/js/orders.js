@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Logout handler
 document.getElementById('logoutBtn').addEventListener('click', () => {
-  logout();
+  AuthAPI.logout();
 });
 
 /**
