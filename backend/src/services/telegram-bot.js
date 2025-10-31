@@ -1518,7 +1518,7 @@ Tanlang:`;
         {
           parse_mode: 'HTML',
           disable_web_page_preview: true,
-          ...keyboard
+          reply_markup: keyboard.reply_markup
         }
       );
 
