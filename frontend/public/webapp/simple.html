@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jonli Yuklar - Simple</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .route {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .info {
+            color: #666;
+            margin: 5px 0;
+        }
+        .phone {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 Jonli E'lonlar</h1>
+        <div id="count">Yuklanmoqda...</div>
+    </div>
+
+    <div id="announcements" class="loading">
+        ⏳ Yuklanmoqda...
+    </div>
+
+    <script>
+        // Initialize Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        // Load announcements
+        async function loadAnnouncements() {
+            try {
+                const response = await fetch('/api/webapp/announcements?limit=10');
+                const data = await response.json();
+
+                if (data.success) {
+                    const container = document.getElementById('announcements');
+                    container.innerHTML = '';
+
+                    document.getElementById('count').textContent =
+                        data.pagination.total + ' ta yuk mavjud';
+
+                    data.announcements.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                            <div class="route">📍 ${item.route}</div>
+                            ${item.weight ? `<div class="info">⚖️ ${item.weight}</div>` : ''}
+                            ${item.price ? `<div class="info">💰 ${item.price}</div>` : ''}
+                            ${item.cargo_type ? `<div class="info">📦 ${item.cargo_type}</div>` : ''}
+                            <div class="info">🕐 ${formatTime(item.posted_at)}</div>
+                            ${item.phone ? `<div class="phone" onclick="call('${item.phone}')">📞 ${item.phone}</div>` : ''}
+                        `;
+                        container.appendChild(card);
+                    });
+                } else {
+                    document.getElementById('announcements').innerHTML =
+                        '<p style="text-align:center;color:red;">Xato: ' + data.error + '</p>';
+                }
+            } catch (error) {
+                document.getElementById('announcements').innerHTML =
+                    '<p style="text-align:center;color:red;">Yuklanmadi: ' + error.message + '</p>';
+            }
+        }
+
+        function formatTime(timestamp) {
+            const diff = Date.now() - new Date(timestamp).getTime();
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            if (hours < 1) return 'Hozir';
+            if (hours < 24) return hours + ' soat oldin';
+            return Math.floor(hours / 24) + ' kun oldin';
+        }
+
+        function call(phone) {
+            tg.openLink('tel:' + phone);
+        }
+
+        // Load on start
+        loadAnnouncements();
+    </script>
+</body>
+</html>
