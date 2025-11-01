@@ -466,6 +466,36 @@ router.post('/report', authenticateTWA, async (req, res) => {
 
     console.log(`🗑️ Deleted ${deletedCount} messages from phone ${phone}`);
 
+    // 4. Delete from Telegram group via bot
+    try {
+      const telegramBot = require('../services/telegram-bot');
+
+      // Get message from database to find telegram_message_id
+      const dbMessage = db.get('messages')
+        .find({ id: message_id })
+        .value();
+
+      if (dbMessage && dbMessage.telegram_message_id) {
+        const deleteResult = await telegramBot.deleteMessageFromGroup(dbMessage.telegram_message_id);
+        if (deleteResult.success) {
+          console.log(`🗑️ Message deleted from Telegram group: ${dbMessage.telegram_message_id}`);
+        } else {
+          console.log(`⚠️ Could not delete from Telegram: ${deleteResult.error}`);
+        }
+      }
+    } catch (telegramError) {
+      console.error('Telegram delete error:', telegramError);
+      // Continue anyway - database already updated
+    }
+
+    // 5. Broadcast deletion to WebSocket clients
+    try {
+      const websocketServer = require('../services/websocket-server');
+      websocketServer.broadcastAnnouncementDeleted(message_id);
+    } catch (wsError) {
+      console.error('WebSocket broadcast error:', wsError);
+    }
+
     res.json({
       success: true,
       message: 'Raqam bloklandi va barcha e\'lonlar o\'chirildi',

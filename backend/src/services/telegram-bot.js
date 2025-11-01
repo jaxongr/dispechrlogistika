@@ -892,6 +892,37 @@ Tanlang:`;
   }
 
   /**
+   * Delete message from target group
+   */
+  async deleteMessageFromGroup(messageId) {
+    try {
+      const { db } = require('../config/database');
+      const message = db.get('messages').find({ id: messageId }).value();
+
+      if (!message) {
+        return { success: false, error: 'Message not found in database' };
+      }
+
+      if (!message.group_message_id) {
+        return { success: false, error: 'Message not sent to group yet' };
+      }
+
+      // Delete from Telegram group
+      await this.bot.telegram.deleteMessage(
+        this.targetGroupId,
+        message.group_message_id
+      );
+
+      console.log(`🗑️ Deleted message ${message.group_message_id} from Telegram group`);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Delete from group error:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Send approved message to target group with "Bu dispetcher ekan" button
    */
   async sendToChannel(messageId) {
