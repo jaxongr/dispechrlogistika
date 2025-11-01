@@ -348,6 +348,147 @@
                 </div>
             </div>
         </div>
+
+        <!-- Payment Settings -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-credit-card"></i> To'lov Tizimi Sozlamalari</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Muhim!</strong> Bu sozlamalar .env faylida saqlanadi va server restart talab qiladi.
+                        </div>
+
+                        <!-- Subscription Prices -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="mb-3"><i class="bi bi-currency-dollar"></i> Obuna Narxlari</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>📅 Haftalik Obuna</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label">Narx (so'm)</label>
+                                            <input type="number" class="form-control" id="weeklyPrice" value="30000" step="1000">
+                                            <small class="text-muted">Muddat: 7 kun</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>📆 Oylik Obuna</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label">Narx (so'm)</label>
+                                            <input type="number" class="form-control" id="monthlyPrice" value="70000" step="1000">
+                                            <small class="text-muted">Muddat: 30 kun</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Click.uz Settings -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="mb-3"><i class="bi bi-wallet2"></i> Click.uz Sozlamalari</h6>
+                                <p class="text-muted">Click.uz merchant panelidan olinadi: <a href="https://my.click.uz/services" target="_blank">https://my.click.uz/services</a></p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Service ID</label>
+                                    <input type="text" class="form-control" id="clickServiceId" placeholder="12345">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Secret Key</label>
+                                    <input type="password" class="form-control" id="clickSecretKey" placeholder="your_secret_key">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Merchant User ID</label>
+                                    <input type="text" class="form-control" id="clickMerchantUserId" placeholder="12345">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Payme Settings -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="mb-3"><i class="bi bi-credit-card-2-front"></i> Payme Sozlamalari</h6>
+                                <p class="text-muted">Payme merchant panelidan olinadi: <a href="https://checkout.paycom.uz" target="_blank">https://checkout.paycom.uz</a></p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Merchant ID</label>
+                                    <input type="text" class="form-control" id="paymeMerchantId" placeholder="5f1234567890abcdef123456">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Secret Key</label>
+                                    <input type="password" class="form-control" id="paymeSecretKey" placeholder="your_secret_key">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Webhook URLs -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h6 class="mb-3"><i class="bi bi-link-45deg"></i> Webhook URL'lar (to'lov provayderlarida sozlash kerak)</h6>
+                            </div>
+                            <div class="col-12">
+                                <div class="alert alert-secondary">
+                                    <strong>Click Prepare URL:</strong><br>
+                                    <code id="clickPrepareUrl">Loading...</code>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('clickPrepareUrl')">
+                                        <i class="bi bi-clipboard"></i> Copy
+                                    </button>
+                                </div>
+                                <div class="alert alert-secondary">
+                                    <strong>Click Complete URL:</strong><br>
+                                    <code id="clickCompleteUrl">Loading...</code>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('clickCompleteUrl')">
+                                        <i class="bi bi-clipboard"></i> Copy
+                                    </button>
+                                </div>
+                                <div class="alert alert-secondary">
+                                    <strong>Payme URL:</strong><br>
+                                    <code id="paymeUrl">Loading...</code>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('paymeUrl')">
+                                        <i class="bi bi-clipboard"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button class="btn btn-info text-white" id="savePaymentSettings">
+                                <i class="bi bi-save"></i> To'lov Sozlamalarini Saqlash
+                            </button>
+                        </div>
+
+                        <div class="alert alert-warning mt-3 mb-0">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Eslatma:</strong> Sozlamalarni saqlashdan keyin serverni restart qilish kerak!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

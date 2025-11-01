@@ -35,6 +35,7 @@ const adSchedulerRoutes = require('./routes/ad-scheduler');
 const botOrdersRoutes = require('./routes/bot-orders');
 const subscriptionsRoutes = require('./routes/subscriptions');
 const paymentRoutes = require('./routes/payment');
+const paymentManualRoutes = require('./routes/payment-manual');
 // const dailyStatisticsRoutes = require('./routes/daily-statistics'); // Vaqtincha o'chirildi - middleware muammosi
 
 // Initialize Express
@@ -91,6 +92,7 @@ app.use('/api/ad-scheduler', adSchedulerRoutes);
 app.use('/api/bot-orders', botOrdersRoutes);
 app.use('/api/subscriptions', subscriptionsRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/payment-manual', paymentManualRoutes);
 // app.use('/api/daily-statistics', dailyStatisticsRoutes); // Vaqtincha o'chirildi
 
 // Health check
