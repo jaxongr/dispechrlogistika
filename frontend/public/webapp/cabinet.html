@@ -95,7 +95,7 @@
             margin: 16px 0;
         }
         .phone {
-            background: #dc3545;
+            background: #000000;
             color: #ffffff;
             padding: 14px 24px;
             text-align: center;
@@ -114,7 +114,10 @@
         }
         .phone:active {
             transform: scale(0.97);
-            background: #c82333;
+            opacity: 0.8;
+        }
+        .phone-icon {
+            color: #dc3545;
         }
         .notes-section {
             margin-top: 16px;
@@ -306,7 +309,7 @@
                             phoneBtn.href = 'tel:' + announcement.phone;
                             phoneBtn.className = 'phone';
                             phoneBtn.innerHTML = `
-                                <span>📞</span>
+                                <span class="phone-icon">📞</span>
                                 <span>${announcement.phone}</span>
                             `;
                             card.appendChild(phoneBtn);
