@@ -1,0 +1,66 @@
+# Database Backup to GitHub - Har kuni soat 00:00 da
+name: Database Backup
+
+on:
+  schedule:
+    # Har kuni UTC soat 19:00 da (O'zbekiston 00:00)
+    - cron: '0 19 * * *'
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Download backup from server
+        run: |
+          # Server'dan eng yangi backup'ni yuklab olish
+          ssh -o StrictHostKeyChecking=no root@5.189.141.151 << 'EOF'
+            cd /var/www/dispatchr-logistics/database/backups
+            # Eng yangi backup faylini topish
+            latest_backup=$(ls -t db_backup_*.json | head -1)
+            echo "Latest backup: $latest_backup"
+          EOF
+
+          # Backup'ni download qilish
+          latest_backup=$(ssh -o StrictHostKeyChecking=no root@5.189.141.151 "cd /var/www/dispatchr-logistics/database/backups && ls -t db_backup_*.json | head -1")
+          scp -o StrictHostKeyChecking=no root@5.189.141.151:/var/www/dispatchr-logistics/database/backups/$latest_backup ./database/backups/
+
+          echo "✅ Backup downloaded: $latest_backup"
+          echo "BACKUP_FILE=$latest_backup" >> $GITHUB_ENV
+
+      - name: Commit backup to repository
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+          git add database/backups/
+          git commit -m "Backup: Automated database backup - $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push
+
+      - name: Keep only last 7 backups
+        run: |
+          cd database/backups
+          # Faqat oxirgi 7 ta backup'ni saqlash
+          ls -t db_backup_*.json | tail -n +8 | xargs -r rm -v
+
+          git add database/backups/
+          git commit -m "Cleanup: Remove old backups (keeping last 7)" || echo "No old backups to remove"
+          git push || echo "Nothing to push"
+
+      - name: Backup summary
+        run: |
+          echo "✅ Backup completed!"
+          echo "📁 Backup file: $BACKUP_FILE"
+          echo "📊 Backup size: $(ls -lh database/backups/$BACKUP_FILE | awk '{print $5}')"
+          echo "🗄️ Total backups in repo: $(ls -1 database/backups/db_backup_*.json | wc -l)"
