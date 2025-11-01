@@ -488,6 +488,25 @@ class TelegramSessionService {
 
           console.log(`✅ Saved: ${messageData.group_name}`);
 
+          // 🔥 REAL-TIME: Broadcast to WebApp clients
+          try {
+            const websocketServer = require('./websocket-server');
+            websocketServer.broadcastNewAnnouncement({
+              id: savedMessage.id,
+              text: savedMessage.message_text,
+              phone: savedMessage.contact_phone,
+              posted_at: savedMessage.message_date,
+              group_name: messageData.group_name,
+              route: savedMessage.route_from && savedMessage.route_to ?
+                `${savedMessage.route_from} → ${savedMessage.route_to}` : null,
+              cargo_type: savedMessage.cargo_type,
+              weight: savedMessage.weight,
+              price: savedMessage.price
+            });
+          } catch (wsError) {
+            console.error('WebSocket broadcast error:', wsError);
+          }
+
           // AUTO-SEND to target group with "Bu dispetcher ekan" button
           if (savedMessage && savedMessage.id) {
             const sendResult = await telegramBot.sendToChannel(savedMessage.id);

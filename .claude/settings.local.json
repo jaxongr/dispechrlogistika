@@ -33,7 +33,8 @@
       "Bash(git checkout:*)",
       "Bash(pm2 restart:*)",
       "Bash(git describe:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

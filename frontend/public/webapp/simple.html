@@ -226,6 +226,166 @@
         tg.ready();
         tg.expand();
 
+        // WebSocket connection for real-time updates
+        let ws = null;
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('📡 WebSocket connected');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+
+                    if (message.type === 'new_announcement') {
+                        console.log('🔥 New announcement received!', message.data);
+                        addNewAnnouncementToTop(message.data);
+                    } else if (message.type === 'announcement_deleted') {
+                        console.log('🗑️ Announcement deleted', message.data);
+                        removeAnnouncementCard(message.data.message_id);
+                    }
+                } catch (error) {
+                    console.error('WebSocket message parse error:', error);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('📡 WebSocket disconnected, reconnecting in 3s...');
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        // Add new announcement to top of list
+        function addNewAnnouncementToTop(item) {
+            const container = document.getElementById('announcements');
+
+            // Check if already exists
+            const existing = container.querySelector(`[data-id="${item.id}"]`);
+            if (existing) {
+                console.log('Announcement already exists, skipping');
+                return;
+            }
+
+            const card = createAnnouncementCard(item);
+
+            // Add animation
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(-20px)';
+
+            // Insert at top
+            if (container.firstChild) {
+                container.insertBefore(card, container.firstChild);
+            } else {
+                container.appendChild(card);
+            }
+
+            // Trigger animation
+            setTimeout(() => {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 10);
+
+            // Show notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('📦 Yangi yuk!', {
+                    body: item.text.substring(0, 100),
+                    icon: '/favicon.ico'
+                });
+            }
+        }
+
+        // Remove announcement card
+        function removeAnnouncementCard(messageId) {
+            const card = document.querySelector(`[data-id="${messageId}"]`);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                setTimeout(() => card.remove(), 300);
+            }
+        }
+
+        // Create announcement card element
+        function createAnnouncementCard(item) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.id = item.id;
+
+            const routeDiv = document.createElement('div');
+            routeDiv.className = 'route';
+            routeDiv.textContent = item.text || 'E\'lon matni yo\'q';
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'meta';
+            metaDiv.innerHTML = `
+                <div class="info">
+                    <span class="info-icon">🕐</span>
+                    <span>${formatTime(item.posted_at)}</span>
+                </div>
+                <div class="info">
+                    <span class="info-icon">📢</span>
+                    <span>${item.group_name || 'Guruh'}</span>
+                </div>
+            `;
+
+            card.appendChild(routeDiv);
+            card.appendChild(metaDiv);
+
+            if (item.phone) {
+                const divider = document.createElement('div');
+                divider.className = 'divider';
+                card.appendChild(divider);
+
+                const phoneBtn = document.createElement('div');
+                phoneBtn.className = 'phone';
+                phoneBtn.innerHTML = `
+                    <span class="phone-icon">📞</span>
+                    <span>${item.phone}</span>
+                `;
+                phoneBtn.onclick = () => makeCall(item.phone);
+                card.appendChild(phoneBtn);
+            }
+
+            // Action buttons
+            const actionButtons = document.createElement('div');
+            actionButtons.className = 'action-buttons';
+
+            const saveBtn = document.createElement('div');
+            saveBtn.className = 'save-btn';
+            saveBtn.innerHTML = `
+                <span>✅</span>
+                <span>Olindi</span>
+            `;
+            saveBtn.onclick = () => saveAnnouncement(item.id, item, card);
+
+            const reportBtn = document.createElement('div');
+            reportBtn.className = 'report-btn';
+            reportBtn.innerHTML = `
+                <span>🚫</span>
+                <span>Dispecher ekan</span>
+            `;
+            reportBtn.onclick = () => reportAnnouncement(item.id, item.phone, card);
+
+            actionButtons.appendChild(saveBtn);
+            actionButtons.appendChild(reportBtn);
+            card.appendChild(actionButtons);
+
+            return card;
+        }
+
+        // Connect WebSocket
+        connectWebSocket();
+
         // Load announcements
         async function loadAnnouncements() {
             try {
@@ -239,6 +399,7 @@
                     data.announcements.forEach(item => {
                         const card = document.createElement('div');
                         card.className = 'card';
+                        card.dataset.id = item.id;
 
                         const routeDiv = document.createElement('div');
                         routeDiv.className = 'route';

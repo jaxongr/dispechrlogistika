@@ -129,10 +129,14 @@ async function startServer() {
     console.log('   LOGISTIKA DISPETCHR FILTER SYSTEM');
     console.log('========================================\n');
 
-    // Start Express server
-    app.listen(PORT, () => {
+    // Start Express server with WebSocket
+    const server = app.listen(PORT, () => {
       console.log(`✅ HTTP Server ishga tushdi: http://localhost:${PORT}`);
     });
+
+    // Initialize WebSocket server
+    const websocketServer = require('./services/websocket-server');
+    websocketServer.initialize(server);
 
     // Start Telegram Bot (non-blocking)
     console.log('\n🤖 Telegram bot ishga tushmoqda...');
