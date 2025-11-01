@@ -98,45 +98,47 @@ router.get('/announcements', authenticateTWA, async (req, res) => {
     let announcements = db.get('messages')
       .filter(msg => {
         // Filter by time (last 24 hours)
-        const age = Date.now() - new Date(msg.timestamp).getTime();
+        const age = Date.now() - new Date(msg.message_date || msg.created_at).getTime();
         return age < 24 * 60 * 60 * 1000; // 24 hours
       })
-      .orderBy('timestamp', 'desc')
+      .orderBy('message_date', 'desc')
       .value();
 
     // Apply search filter
     if (search) {
       const searchLower = search.toLowerCase();
       announcements = announcements.filter(a =>
-        (a.text && a.text.toLowerCase().includes(searchLower)) ||
-        (a.phone && a.phone.includes(searchLower))
+        (a.message_text && a.message_text.toLowerCase().includes(searchLower)) ||
+        (a.contact_phone && a.contact_phone.includes(searchLower))
       );
     }
 
     // Apply route filter
     if (route_from) {
       announcements = announcements.filter(a =>
-        a.text && a.text.toLowerCase().includes(route_from.toLowerCase())
+        a.message_text && a.message_text.toLowerCase().includes(route_from.toLowerCase())
       );
     }
 
     if (route_to) {
       announcements = announcements.filter(a =>
-        a.text && a.text.toLowerCase().includes(route_to.toLowerCase())
+        a.message_text && a.message_text.toLowerCase().includes(route_to.toLowerCase())
       );
     }
 
     // Extract structured data
     const structuredAnnouncements = announcements.map(msg => {
+      const messageText = msg.message_text || '';
+
       // Try to extract route from text
       let route = 'Yo\'nalish ko\'rsatilmagan';
       let cargo_type = null;
-      let weight = null;
+      let weight = msg.weight || null; // Use existing weight if available
       let price = null;
 
-      if (msg.text) {
+      if (messageText) {
         // Extract route (e.g., "Toshkent - Samarqand" or "Toshkent → Samarqand")
-        const routeMatch = msg.text.match(/([А-Яа-яЎўҚқҒғҲҳЎўЁё\w]+)\s*[-→—]\s*([А-Яа-яЎўҚқҒғҲҳЎўЁё\w]+)/);
+        const routeMatch = messageText.match(/([А-Яа-яЎўҚқҒғҲҳЎўЁё\w]+)\s*[-→—]\s*([А-Яа-яЎўҚқҒғҲҳЎўЁё\w]+)/);
         if (routeMatch) {
           route = `${routeMatch[1]} → ${routeMatch[2]}`;
         }
@@ -144,20 +146,22 @@ router.get('/announcements', authenticateTWA, async (req, res) => {
         // Extract cargo type
         const cargoKeywords = ['мева', 'сабзавот', 'олма', 'узум', 'помидор', 'картошка', 'юк', 'груз', 'материал', 'техника'];
         for (const keyword of cargoKeywords) {
-          if (msg.text.toLowerCase().includes(keyword)) {
+          if (messageText.toLowerCase().includes(keyword)) {
             cargo_type = keyword.charAt(0).toUpperCase() + keyword.slice(1);
             break;
           }
         }
 
-        // Extract weight
-        const weightMatch = msg.text.match(/(\d+(?:[.,]\d+)?)\s*(т|тонна|тонн|ton)/i);
-        if (weightMatch) {
-          weight = `${weightMatch[1]} ${weightMatch[2]}`;
+        // Extract weight if not already set
+        if (!weight) {
+          const weightMatch = messageText.match(/(\d+(?:[.,]\d+)?)\s*(т|тонна|тонн|ton)/i);
+          if (weightMatch) {
+            weight = `${weightMatch[1]} ${weightMatch[2]}`;
+          }
         }
 
         // Extract price
-        const priceMatch = msg.text.match(/(\d+(?:\s?\d+)*)\s*(usd|dollar|\$|сум|so'm)/i);
+        const priceMatch = messageText.match(/(\d+(?:\s?\d+)*)\s*(usd|dollar|\$|сум|so'm)/i);
         if (priceMatch) {
           price = `${priceMatch[1]} ${priceMatch[2]}`;
         }
@@ -166,13 +170,13 @@ router.get('/announcements', authenticateTWA, async (req, res) => {
       return {
         id: msg.id,
         route: route,
-        cargo_type: cargo_type,
+        cargo_type: cargo_type || msg.cargo_type,
         weight: weight,
-        price: price,
-        phone: msg.phone || null,
-        text: msg.text,
-        posted_at: msg.timestamp,
-        group_name: msg.group_name || 'Unknown'
+        price: price || msg.price,
+        phone: msg.contact_phone || null,
+        text: messageText,
+        posted_at: msg.message_date || msg.created_at,
+        group_name: msg.raw_data?.chat?.title || 'Unknown'
       };
     });
 
