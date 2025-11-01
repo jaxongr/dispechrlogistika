@@ -105,6 +105,134 @@ class User {
   static async verifyPassword(plainPassword, hashedPassword) {
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
+
+  /**
+   * Telegram user yaratish/yangilash
+   */
+  static createOrUpdateTelegramUser(telegramData) {
+    const { id: telegram_id, username, first_name, last_name } = telegramData;
+    const full_name = [first_name, last_name].filter(Boolean).join(' ');
+
+    // Initialize telegram_users if not exists
+    if (!db.has('telegram_users').value()) {
+      db.set('telegram_users', []).write();
+    }
+
+    const existingUser = db.get('telegram_users')
+      .find({ telegram_id })
+      .value();
+
+    if (existingUser) {
+      // Update existing
+      db.get('telegram_users')
+        .find({ telegram_id })
+        .assign({
+          username,
+          full_name,
+          updated_at: new Date().toISOString()
+        })
+        .write();
+
+      return db.get('telegram_users').find({ telegram_id }).value();
+    } else {
+      // Create new
+      const newUser = {
+        id: Date.now(),
+        telegram_id,
+        username,
+        full_name,
+        is_vip: false,
+        registration_number: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      db.get('telegram_users').push(newUser).write();
+      console.log(`✅ New Telegram user: ${username} (${telegram_id})`);
+
+      return newUser;
+    }
+  }
+
+  /**
+   * Telegram ID bo'yicha userni topish
+   */
+  static findByTelegramId(telegram_id) {
+    if (!db.has('telegram_users').value()) {
+      return null;
+    }
+
+    return db.get('telegram_users')
+      .find({ telegram_id })
+      .value();
+  }
+
+  /**
+   * User VIP ekanligini tekshirish
+   */
+  static isVIP(telegram_id) {
+    const VIPUser = require('./VIPUser');
+    return VIPUser.isVIP(telegram_id);
+  }
+
+  /**
+   * User obunasi aktiv ekanligini tekshirish
+   */
+  static hasActiveSubscription(telegram_id) {
+    const Subscription = require('./Subscription');
+    return Subscription.isActive(telegram_id);
+  }
+
+  /**
+   * User to'liq ma'lumotlarini olish (VIP, obuna, balance bilan)
+   */
+  static getUserFullInfo(telegram_id) {
+    const user = this.findByTelegramId(telegram_id);
+
+    if (!user) {
+      return null;
+    }
+
+    const VIPUser = require('./VIPUser');
+    const Subscription = require('./Subscription');
+    const Referral = require('./Referral');
+
+    const vipInfo = VIPUser.findByTelegramId(telegram_id);
+    const subscription = Subscription.findActiveByTelegramId(telegram_id);
+    const referrals = vipInfo ? Referral.findByReferrer(telegram_id) : [];
+    const totalEarnings = vipInfo ? Referral.getTotalEarnings(telegram_id) : 0;
+
+    const balance = db.has('user_balances').value()
+      ? db.get('user_balances').find({ telegram_user_id: telegram_id }).value()
+      : null;
+
+    return {
+      ...user,
+      is_vip: !!vipInfo,
+      vip_info: vipInfo,
+      subscription: subscription,
+      has_active_subscription: !!subscription,
+      referral_count: referrals.length,
+      total_earnings: totalEarnings,
+      current_balance: balance ? balance.balance : 0
+    };
+  }
+
+  /**
+   * User grandfather ekanligini tekshirish (02.11.2025 18:00 gacha ro'yxatdan o'tgan)
+   */
+  static isGrandfathered(telegram_id) {
+    const user = this.findByTelegramId(telegram_id);
+
+    if (!user) {
+      return false;
+    }
+
+    const grandfatherDeadline = new Date('2025-11-02T18:00:00+05:00'); // Toshkent vaqti
+    const userCreatedAt = new Date(user.created_at);
+
+    return userCreatedAt < grandfatherDeadline;
+  }
 }
 
 module.exports = User;

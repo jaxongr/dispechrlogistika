@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIP A'zolar Boshqaruvi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .vip-card {
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+
+    .vip-number {
+      font-size: 3rem;
+      font-weight: bold;
+      text-align: center;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .vip-table-row:hover {
+      background: #f8f9fa;
+      transition: 0.3s;
+    }
+
+    .top-referrer {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .medal {
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/dashboard.html">
+        <i class="bi bi-truck"></i> Logistics System
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard.html">
+              <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/subscriptions.html">
+              <i class="bi bi-credit-card"></i> Obunalar
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/vip.html">
+              <i class="bi bi-star-fill"></i> VIP A'zolar
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="logout()">
+              <i class="bi bi-box-arrow-right"></i> Chiqish
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid mt-4">
+    <!-- VIP Statistics -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="vip-card">
+          <h6><i class="bi bi-star-fill"></i> VIP A'zolar</h6>
+          <div class="vip-number" id="vipCount">0</div>
+          <div class="text-center mt-2">
+            <small id="vipRemaining">100 joydan</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="vip-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+          <h6><i class="bi bi-people"></i> Jami Referrallar</h6>
+          <div class="vip-number" id="totalReferrals">0</div>
+          <div class="text-center mt-2">
+            <small>Barcha VIP tomonidan</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="vip-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <h6><i class="bi bi-currency-dollar"></i> Jami Komissiya</h6>
+          <div class="vip-number" id="totalCommission" style="font-size: 2rem;">0</div>
+          <div class="text-center mt-2">
+            <small>so'm</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- VIP List -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5><i class="bi bi-list-stars"></i> VIP A'zolar Ro'yxati</h5>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createVIPModal">
+              <i class="bi bi-plus-circle"></i> Yangi VIP
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Foydalanuvchi</th>
+                    <th>Referral Kod</th>
+                    <th>Referrallar</th>
+                    <th>Ishlab topgan</th>
+                    <th>Amallar</th>
+                  </tr>
+                </thead>
+                <tbody id="vipTable">
+                  <tr>
+                    <td colspan="6" class="text-center">
+                      <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Yuklanmoqda...</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Referrers -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="bi bi-trophy-fill"></i> Top Referrerlar</h5>
+          </div>
+          <div class="card-body" id="topReferrers">
+            <div class="text-center">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Yuklanmoqda...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create VIP Modal -->
+  <div class="modal fade" id="createVIPModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Yangi VIP A'zo Yaratish</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Diqqat!</strong> VIP a'zolik faqat birinchi 100 ta obunachilar uchun.
+            <br>Hozir: <span id="modalVIPCount">0</span> / 100
+          </div>
+          <form id="createVIPForm">
+            <div class="mb-3">
+              <label class="form-label">Telegram User ID</label>
+              <input type="text" class="form-control" name="telegram_user_id" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-control" name="username">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">To'liq ism</label>
+              <input type="text" class="form-control" name="full_name">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+          <button type="button" class="btn btn-primary" onclick="createVIP()">Yaratish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIP Details Modal -->
+  <div class="modal fade" id="vipDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">VIP A'zo Tafsilotlari</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="vipDetailsContent">
+          <div class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Yuklanmoqda...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = '/api';
+
+    // Check auth
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/index.html';
+    }
+
+    // Load on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStatistics();
+      loadVIPList();
+      loadTopReferrers();
+    });
+
+    async function loadStatistics() {
+      try {
+        const response = await fetch(`${API_BASE}/subscriptions/statistics`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const { vip, referrals } = data.statistics;
+
+          document.getElementById('vipCount').textContent = vip.total_vip;
+          document.getElementById('vipRemaining').textContent = `${vip.remaining_slots} joy qolgan`;
+          document.getElementById('totalReferrals').textContent = referrals.total_referrals;
+          document.getElementById('totalCommission').textContent = referrals.total_commission.toLocaleString();
+          document.getElementById('modalVIPCount').textContent = vip.total_vip;
+        }
+      } catch (error) {
+        console.error('Statistics load error:', error);
+      }
+    }
+
+    async function loadVIPList() {
+      try {
+        const response = await fetch(`${API_BASE}/subscriptions/vip/list`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          renderVIPList(data.vip_users);
+        }
+      } catch (error) {
+        console.error('VIP list load error:', error);
+      }
+    }
+
+    function renderVIPList(vipUsers) {
+      const tbody = document.getElementById('vipTable');
+
+      if (vipUsers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">VIP a\'zolar topilmadi</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = vipUsers.map(vip => {
+        return `
+          <tr class="vip-table-row">
+            <td><strong>#${vip.registration_number}</strong></td>
+            <td>
+              <strong>${vip.full_name || 'N/A'}</strong><br>
+              <small class="text-muted">@${vip.username || 'N/A'}</small>
+            </td>
+            <td>
+              <code>${vip.referral_code}</code>
+            </td>
+            <td>${vip.referral_count || 0}</td>
+            <td>${(vip.total_earnings || 0).toLocaleString()} so'm</td>
+            <td>
+              <button class="btn btn-sm btn-info" onclick="viewVIPDetails('${vip.telegram_user_id}')" title="Tafsilotlar">
+                <i class="bi bi-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="revokeVIP('${vip.telegram_user_id}')" title="VIP olib tashlash">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadTopReferrers() {
+      try {
+        const response = await fetch(`${API_BASE}/subscriptions/referrals/top?limit=5`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          renderTopReferrers(data.top_referrers);
+        }
+      } catch (error) {
+        console.error('Top referrers load error:', error);
+      }
+    }
+
+    function renderTopReferrers(topReferrers) {
+      const container = document.getElementById('topReferrers');
+
+      if (topReferrers.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted">Ma\'lumot yo\'q</p>';
+        return;
+      }
+
+      const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+
+      container.innerHTML = topReferrers.map((ref, index) => {
+        return `
+          <div class="top-referrer">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="medal">${medals[index]}</span>
+                <strong>Telegram ID: ${ref.telegram_id}</strong>
+              </div>
+              <div class="text-end">
+                <div><small>Referrallar:</small> <strong>${ref.total_referrals}</strong></div>
+                <div><small>Ishlab topgan:</small> <strong>${ref.total_earnings.toLocaleString()} so'm</strong></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function createVIP() {
+      const form = document.getElementById('createVIPForm');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch(`${API_BASE}/subscriptions/vip`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert(`VIP yaratildi: ${result.vip_user.referral_code}`);
+          bootstrap.Modal.getInstance(document.getElementById('createVIPModal')).hide();
+          form.reset();
+          loadStatistics();
+          loadVIPList();
+        } else {
+          alert('Xatolik: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Create VIP error:', error);
+        alert('Xatolik yuz berdi');
+      }
+    }
+
+    async function viewVIPDetails(telegram_id) {
+      const modal = new bootstrap.Modal(document.getElementById('vipDetailsModal'));
+      const content = document.getElementById('vipDetailsContent');
+
+      content.innerHTML = `
+        <div class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Yuklanmoqda...</span>
+          </div>
+        </div>
+      `;
+
+      modal.show();
+
+      try {
+        const response = await fetch(`${API_BASE}/subscriptions/vip/${telegram_id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const vip = data.vip_user;
+
+          content.innerHTML = `
+            <div class="row">
+              <div class="col-md-6">
+                <h6>VIP Ma'lumotlari</h6>
+                <table class="table">
+                  <tr>
+                    <th>VIP Raqami:</th>
+                    <td>#${vip.registration_number}</td>
+                  </tr>
+                  <tr>
+                    <th>Referral Kod:</th>
+                    <td><code>${vip.referral_code}</code></td>
+                  </tr>
+                  <tr>
+                    <th>To'liq ism:</th>
+                    <td>${vip.full_name || 'N/A'}</td>
+                  </tr>
+                  <tr>
+                    <th>Username:</th>
+                    <td>@${vip.username || 'N/A'}</td>
+                  </tr>
+                  <tr>
+                    <th>Telegram ID:</th>
+                    <td>${vip.telegram_user_id}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h6>Referral Statistika</h6>
+                <table class="table">
+                  <tr>
+                    <th>Jami referrallar:</th>
+                    <td><strong>${vip.total_referrals}</strong></td>
+                  </tr>
+                  <tr>
+                    <th>Jami ishlab topgan:</th>
+                    <td><strong>${vip.total_earnings.toLocaleString()} so'm</strong></td>
+                  </tr>
+                  <tr>
+                    <th>Joriy balans:</th>
+                    <td><strong>${vip.current_balance.toLocaleString()} so'm</strong></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <hr>
+            <h6>Referrallar ro'yxati (${vip.referrals.length})</h6>
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Foydalanuvchi</th>
+                    <th>Obuna turi</th>
+                    <th>Summa</th>
+                    <th>Komissiya</th>
+                    <th>Sana</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${vip.referrals.map(ref => `
+                    <tr>
+                      <td>
+                        <strong>${ref.referred_full_name || 'N/A'}</strong><br>
+                        <small>@${ref.referred_username || 'N/A'}</small>
+                      </td>
+                      <td>${ref.subscription_type}</td>
+                      <td>${ref.subscription_amount.toLocaleString()} so'm</td>
+                      <td><strong class="text-success">${ref.commission_amount.toLocaleString()} so'm</strong></td>
+                      <td>${new Date(ref.created_at).toLocaleDateString('uz-UZ')}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        } else {
+          content.innerHTML = `<p class="text-danger">Xatolik: ${data.error}</p>`;
+        }
+      } catch (error) {
+        console.error('VIP details error:', error);
+        content.innerHTML = '<p class="text-danger">Xatolik yuz berdi</p>';
+      }
+    }
+
+    async function revokeVIP(telegram_id) {
+      if (!confirm('VIP statusini olib tashlashni xohlaysizmi?')) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/subscriptions/vip/${telegram_id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('VIP status olib tashlandi!');
+          loadStatistics();
+          loadVIPList();
+          loadTopReferrers();
+        } else {
+          alert('Xatolik: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Revoke VIP error:', error);
+        alert('Xatolik yuz berdi');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/index.html';
+    }
+  </script>
+</body>
+</html>
