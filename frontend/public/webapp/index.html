@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jonli Yuklar</title>
+
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Vue.js 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        #app {
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--tg-theme-hint-color, #999);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Search & Filter */
+        .search-section {
+            padding: 12px 16px;
+            background: var(--tg-theme-bg-color, #ffffff);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+            border-radius: 12px;
+            font-size: 15px;
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            color: var(--tg-theme-text-color, #000);
+        }
+
+        .filter-btn {
+            padding: 12px 16px;
+            border: 1px solid var(--tg-theme-button-color, #3390ec);
+            background: transparent;
+            color: var(--tg-theme-button-color, #3390ec);
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .filter-btn:active {
+            opacity: 0.7;
+        }
+
+        /* Filter Tags */
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border-radius: 16px;
+            font-size: 13px;
+        }
+
+        .filter-tag-close {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px 16px;
+            color: var(--tg-theme-hint-color, #999);
+        }
+
+        .spinner {
+            border: 3px solid var(--tg-theme-hint-color, #e0e0e0);
+            border-top: 3px solid var(--tg-theme-button-color, #3390ec);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Announcement Card */
+        .announcements-list {
+            padding: 0 16px;
+        }
+
+        .announcement-card {
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .route {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--tg-theme-text-color, #000);
+        }
+
+        .time-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .card-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #666);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+            color: var(--tg-theme-text-color, #000);
+        }
+
+        .btn:active {
+            opacity: 0.7;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 16px;
+            color: var(--tg-theme-hint-color, #999);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-subtext {
+            font-size: 14px;
+        }
+
+        /* Load More */
+        .load-more {
+            text-align: center;
+            padding: 16px;
+        }
+
+        .load-more-btn {
+            padding: 12px 24px;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">📦 Jonli E'lonlar</div>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span>📊</span>
+                    <span>{{ announcements.length }} ta yuk</span>
+                </div>
+                <div class="stat-item" v-if="user">
+                    <span>👤</span>
+                    <span>{{ user.first_name }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="search-section">
+            <div class="search-box">
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="🔍 Qidirish... (Toshkent, Samarqand)"
+                    v-model="searchQuery"
+                    @input="onSearch"
+                >
+                <button class="filter-btn" @click="showFilters = !showFilters">
+                    {{ showFilters ? '✕' : '⚙️' }} Filter
+                </button>
+            </div>
+
+            <!-- Filter Tags -->
+            <div class="filter-tags" v-if="activeFilters.length > 0">
+                <span class="filter-tag" v-for="filter in activeFilters" :key="filter.key">
+                    {{ filter.label }}
+                    <span class="filter-tag-close" @click="removeFilter(filter.key)">×</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" v-if="loading">
+            <div class="spinner"></div>
+            <div>Yuklanmoqda...</div>
+        </div>
+
+        <!-- Announcements List -->
+        <div class="announcements-list" v-else-if="filteredAnnouncements.length > 0">
+            <div
+                class="announcement-card"
+                v-for="announcement in filteredAnnouncements"
+                :key="announcement.id"
+            >
+                <div class="card-header">
+                    <div class="route">
+                        📍 {{ announcement.route || 'Yo\'nalish ko\'rsatilmagan' }}
+                    </div>
+                    <div class="time-badge">
+                        ⏰ {{ formatTime(announcement.posted_at) }}
+                    </div>
+                </div>
+
+                <div class="card-info">
+                    <div class="info-item" v-if="announcement.cargo_type">
+                        <span>📦</span>
+                        <span>{{ announcement.cargo_type }}</span>
+                    </div>
+                    <div class="info-item" v-if="announcement.weight">
+                        <span>⚖️</span>
+                        <span>{{ announcement.weight }}</span>
+                    </div>
+                    <div class="info-item" v-if="announcement.price">
+                        <span>💰</span>
+                        <span>{{ announcement.price }}</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn btn-primary" @click="contactSeller(announcement)">
+                        📞 Bog'lanish
+                    </button>
+                    <button class="btn btn-secondary" @click="saveAnnouncement(announcement)">
+                        ⭐
+                    </button>
+                </div>
+            </div>
+
+            <!-- Load More -->
+            <div class="load-more" v-if="hasMore">
+                <button class="load-more-btn" @click="loadMore">
+                    Ko'proq yuklash
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" v-else>
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">E'lon topilmadi</div>
+            <div class="empty-subtext">Boshqa so'rovlar bilan qidiring</div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    // Telegram Web App
+                    tg: window.Telegram.WebApp,
+                    user: null,
+
+                    // Data
+                    announcements: [],
+                    loading: true,
+                    searchQuery: '',
+                    showFilters: false,
+                    activeFilters: [],
+
+                    // Pagination
+                    page: 1,
+                    limit: 20,
+                    hasMore: false
+                };
+            },
+
+            computed: {
+                filteredAnnouncements() {
+                    let result = this.announcements;
+
+                    // Search filter
+                    if (this.searchQuery.trim()) {
+                        const query = this.searchQuery.toLowerCase();
+                        result = result.filter(a =>
+                            (a.route && a.route.toLowerCase().includes(query)) ||
+                            (a.cargo_type && a.cargo_type.toLowerCase().includes(query))
+                        );
+                    }
+
+                    return result;
+                }
+            },
+
+            mounted() {
+                // Initialize Telegram Web App
+                this.tg.ready();
+                this.tg.expand();
+
+                // Get user info
+                this.user = this.tg.initDataUnsafe.user;
+
+                // Load announcements
+                this.loadAnnouncements();
+
+                // Set header color
+                this.tg.setHeaderColor('secondary_bg_color');
+            },
+
+            methods: {
+                async loadAnnouncements() {
+                    this.loading = true;
+
+                    try {
+                        // API call - hozircha mock data
+                        await this.sleep(500);
+
+                        // Mock data
+                        this.announcements = this.generateMockData();
+
+                        // Real API call (keyinroq)
+                        // const response = await fetch('/api/webapp/announcements', {
+                        //     headers: {
+                        //         'Authorization': `tma ${this.tg.initData}`
+                        //     }
+                        // });
+                        // this.announcements = await response.json();
+
+                    } catch (error) {
+                        console.error('Load error:', error);
+                        this.tg.showAlert('Xatolik yuz berdi: ' + error.message);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                generateMockData() {
+                    const routes = [
+                        'Toshkent → Samarqand',
+                        'Andijon → Namangan',
+                        'Farg\'ona → Toshkent',
+                        'Buxoro → Toshkent',
+                        'Samarqand → Buxoro'
+                    ];
+
+                    const cargoTypes = ['Meva', 'Sabzavot', 'Qurilish materiallari', 'Texnika', 'Maishiy buyumlar'];
+
+                    return Array.from({ length: 15 }, (_, i) => ({
+                        id: i + 1,
+                        route: routes[Math.floor(Math.random() * routes.length)],
+                        cargo_type: cargoTypes[Math.floor(Math.random() * cargoTypes.length)],
+                        weight: `${Math.floor(Math.random() * 20) + 5} tonna`,
+                        price: `${Math.floor(Math.random() * 2000) + 500} USD`,
+                        phone: `+99890${Math.floor(Math.random() * 9000000) + 1000000}`,
+                        posted_at: new Date(Date.now() - Math.random() * 3600000 * 12).toISOString()
+                    }));
+                },
+
+                formatTime(timestamp) {
+                    const now = Date.now();
+                    const diff = now - new Date(timestamp).getTime();
+                    const minutes = Math.floor(diff / 60000);
+                    const hours = Math.floor(minutes / 60);
+
+                    if (minutes < 1) return 'Hozir';
+                    if (minutes < 60) return `${minutes}min oldin`;
+                    if (hours < 24) return `${hours}soat oldin`;
+                    return `${Math.floor(hours / 24)} kun oldin`;
+                },
+
+                contactSeller(announcement) {
+                    // Open phone dialer or show phone
+                    if (announcement.phone) {
+                        this.tg.openLink(`tel:${announcement.phone}`);
+                    } else {
+                        this.tg.showAlert('Telefon raqam topilmadi');
+                    }
+                },
+
+                saveAnnouncement(announcement) {
+                    // Save to favorites
+                    this.tg.showPopup({
+                        title: 'Saqlash',
+                        message: 'E\'lon sevimlilarga saqlandi!',
+                        buttons: [{ type: 'ok' }]
+                    });
+                },
+
+                onSearch() {
+                    // Debounce search
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(() => {
+                        // Trigger search
+                    }, 300);
+                },
+
+                removeFilter(key) {
+                    this.activeFilters = this.activeFilters.filter(f => f.key !== key);
+                },
+
+                loadMore() {
+                    this.page++;
+                    this.loadAnnouncements();
+                },
+
+                sleep(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

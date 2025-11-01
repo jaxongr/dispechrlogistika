@@ -77,6 +77,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/blocked-users', blockedUsersRoutes);
 app.use('/api/dispatcher-reports', dispatcherReportsRoutes);
 app.use('/api/sms', smsRoutes);
+app.use('/api/webapp', require('./routes/webapp')); // Mini Web App API
 app.use('/api/auto-reply', autoReplyRoutes);
 app.use('/api/broadcast', broadcastRoutes);
 app.use('/api/group-stats', groupStatisticsRoutes);
