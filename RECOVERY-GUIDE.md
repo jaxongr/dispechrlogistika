@@ -157,6 +157,52 @@ Tiklaganingizdan keyin quyidagi testlarni o'tkazing:
 
 ---
 
+---
+
+## 💾 DATABASE BACKUP TIZIMI
+
+### **3 JOYDA AVTOMATIK SAQLASH:**
+
+| Joy | Interval | Saqlash muddati | Status |
+|-----|----------|-----------------|--------|
+| **1. Server** | Har 6 soat | 7 kun | ✅ Ishlamoqda |
+| **2. GitHub** | Har kuni 00:00 | 7 backup | ✅ Avtomatik |
+| **3. Lokal** | Manual pull | Istalgancha | ✅ Tayyor |
+
+### **Server Backup:**
+- Interval: Har 6 soat
+- Hajm: ~19 MB
+- Joylashuv: `/var/www/dispatchr-logistics/database/backups/`
+- Auto-cleanup: 7 kundan eski backup'lar o'chiriladi
+
+### **GitHub Backup:**
+- Schedule: Har kuni UTC 19:00 (UZ 00:00)
+- Workflow: `.github/workflows/backup-database.yml`
+- Oxirgi 7 ta backup saqlanadi
+- Manual trigger: GitHub Actions → Run workflow
+
+### **Database Tiklash:**
+
+**Server'dan tiklash:**
+```bash
+ssh root@5.189.141.151
+cd /var/www/dispatchr-logistics
+node -e "const backup = require('./backend/src/services/database-backup'); backup.restoreFromBackup('db_backup_YYYY-MM-DD_HH-MM-SS.json')"
+pm2 restart dispatchr-logistics
+```
+
+**GitHub'dan tiklash:**
+```bash
+git pull origin main
+# Oxirgi backup database/backups/ da bo'ladi
+# Manual tiklash kerak bo'lsa, faylni serverga yuklash
+scp database/backups/db_backup_*.json root@5.189.141.151:/var/www/dispatchr-logistics/database/db.json
+ssh root@5.189.141.151 "pm2 restart dispatchr-logistics"
+```
+
+---
+
 **Yaratilgan:** 2025-11-01
 **Oxirgi yangilanish:** 2025-11-01
 **Status:** ✅ PRODUCTION READY
+**Backup:** ✅ 3 JOYDA AVTOMATIK
