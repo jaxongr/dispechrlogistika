@@ -53,7 +53,8 @@ db.defaults({
   drivers: [],                  // Yuk mashinasi haydovchilari (qora/oq ro'yxat)
   bot_orders: [],               // Botda yaratilgan buyurtmalar
   bot_order_daily_stats: [],    // Bot buyurtmalar kunlik statistikasi
-  driver_advance_bookings: []   // Haydovchilarning oldindan bron qilishlari
+  driver_advance_bookings: [],  // Haydovchilarning oldindan bron qilishlari
+  broadcast_sessions: []        // Multi-session broadcast sessionlari
 }).write();
 
 console.log('✅ LowDB (JSON) database ulandi:', dbPath);
