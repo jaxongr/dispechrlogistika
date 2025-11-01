@@ -521,6 +521,9 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
       // FAQAT 1 xabar bir vaqtda (batch = 1)
       const batch = this.broadcastQueue.splice(0, 1);
 
+      // DAQIQADA 20TA LIMIT - 3 soniya interval
+      const delayMs = 3000; // 3 soniya
+
       for (const item of batch) {
         try {
           await this.sendBroadcastMessage(item);
@@ -530,14 +533,6 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
           if (this.broadcastProgress.sent % 10 === 0) {
             console.log(`📊 Progress: ${this.broadcastProgress.sent}/${this.broadcastProgress.total} sent`);
           }
-
-          // YANGILANGAN TEZLIKLAR - 3 soniya barcha rejimlar uchun
-          // safe: 20 guruh/min (3s delay) = 10 daqiqa (200 guruh)
-          // fast: 20 guruh/min (3s delay) = 10 daqiqa (200 guruh)
-          // turbo: 20 guruh/min (3s delay) = 10 daqiqa (200 guruh)
-          const delayMs = 3000; // 3 soniya - barcha rejimlar uchun bir xil
-
-          await this.sleep(delayMs);
 
         } catch (error) {
           // Handle FloodWaitError
@@ -555,13 +550,6 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
 
             this.broadcastProgress.restricted++;
 
-            // DON'T re-add to queue - just skip it!
-            // Commented out to prevent blocking:
-            // this.broadcastQueue.push({
-            //   ...item,
-            //   retries: item.retries + 1
-            // });
-
           } else if (error.message.includes('USER_BANNED')) {
             console.log(`❌ Banned in ${item.groupName} - SKIP`);
             this.broadcastProgress.failed++;
@@ -571,6 +559,10 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
             this.broadcastProgress.failed++;
           }
         }
+
+        // MUHIM: Success yoki error - HAR DOIM 3 soniya kutamiz!
+        // Bu daqiqada 20ta limit uchun zarur
+        await this.sleep(delayMs);
       }
 
     } catch (error) {
