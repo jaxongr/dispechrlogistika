@@ -413,48 +413,70 @@
             },
 
             mounted() {
-                // Initialize Telegram Web App
-                this.tg.ready();
-                this.tg.expand();
+                try {
+                    console.log('App mounted!');
 
-                // Get user info
-                this.user = this.tg.initDataUnsafe.user;
+                    // Initialize Telegram Web App
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        console.log('Telegram WebApp SDK found');
+                        this.tg.ready();
+                        this.tg.expand();
 
-                // Load announcements
-                this.loadAnnouncements();
+                        // Get user info
+                        this.user = this.tg.initDataUnsafe.user;
+                        console.log('User:', this.user);
 
-                // Set header color
-                this.tg.setHeaderColor('secondary_bg_color');
+                        // Set header color
+                        this.tg.setHeaderColor('secondary_bg_color');
+                    } else {
+                        console.error('Telegram WebApp SDK not found!');
+                        alert('Telegram WebApp SDK yuklanmadi!');
+                    }
+
+                    // Load announcements
+                    this.loadAnnouncements();
+                } catch (error) {
+                    console.error('Mount error:', error);
+                    alert('Xato: ' + error.message);
+                }
             },
 
             methods: {
                 async loadAnnouncements() {
                     this.loading = true;
+                    console.log('Loading announcements...');
 
                     try {
                         // Real API call
+                        console.log('Fetching from /api/webapp/announcements');
                         const response = await fetch('/api/webapp/announcements', {
                             headers: {
-                                'Authorization': `tma ${this.tg.initData}`
+                                'Authorization': `tma ${this.tg.initData || 'no-auth'}`
                             }
                         });
 
+                        console.log('Response status:', response.status);
                         const data = await response.json();
+                        console.log('API response:', data);
 
                         if (data.success) {
                             this.announcements = data.announcements;
+                            console.log('Loaded', this.announcements.length, 'announcements');
                         } else {
                             console.error('API error:', data.error);
+                            alert('API xato: ' + data.error);
                             // Fallback to mock data if API fails
                             this.announcements = this.generateMockData();
                         }
 
                     } catch (error) {
                         console.error('Load error:', error);
+                        alert('Yuklashda xato: ' + error.message);
                         // Fallback to mock data on error
                         this.announcements = this.generateMockData();
                     } finally {
                         this.loading = false;
+                        console.log('Loading finished');
                     }
                 },
 
@@ -532,6 +554,19 @@
                 }
             }
         }).mount('#app');
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            alert('JavaScript xato: ' + e.message);
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled rejection:', e.reason);
+            alert('Promise xato: ' + e.reason);
+        });
+
+        console.log('App script loaded!');
     </script>
 </body>
 </html>
