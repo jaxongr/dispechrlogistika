@@ -156,6 +156,7 @@ async function startServer() {
     console.log('\n💬 Auto-reply session ishga tushmoqda...');
     autoReplySession.connect().catch(err => {
       // Bu xato critical emas - auto-reply shunchaki o'chiriladi
+      console.error('❌ Auto-reply session xatolik:', err.message);
       console.log('   Auto-reply o\'chirilgan - faqat monitoring ishlaydi');
     });
 
