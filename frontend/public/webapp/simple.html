@@ -105,25 +105,25 @@
             opacity: 0.8;
         }
         .report-btn {
-            background: rgba(255, 0, 0, 0.1);
-            color: #dc3545;
-            padding: 10px 16px;
+            background: transparent;
+            color: rgba(0,0,0,0.4);
+            padding: 12px 16px;
             text-align: center;
             border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 500;
             font-size: 13px;
             transition: all 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            border: 1px solid rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(0,0,0,0.1);
             margin-top: 12px;
         }
         .report-btn:active {
-            transform: scale(0.97);
-            background: rgba(255, 0, 0, 0.15);
+            transform: scale(0.98);
+            background: rgba(0,0,0,0.03);
         }
         .loading {
             text-align: center;
@@ -226,8 +226,8 @@
                         const reportBtn = document.createElement('div');
                         reportBtn.className = 'report-btn';
                         reportBtn.innerHTML = `
-                            <span>⚠️</span>
-                            <span>Bu dispecher emas</span>
+                            <span>🚫</span>
+                            <span>Bu dispecher ekan</span>
                         `;
                         reportBtn.onclick = () => reportAnnouncement(item.id, item.phone, card);
                         card.appendChild(reportBtn);
@@ -299,7 +299,7 @@
                 const reportBtn = cardElement.querySelector('.report-btn');
                 reportBtn.style.opacity = '1';
                 reportBtn.style.pointerEvents = 'auto';
-                reportBtn.innerHTML = '<span>⚠️</span><span>Bu dispecher emas</span>';
+                reportBtn.innerHTML = '<span>🚫</span><span>Bu dispecher ekan</span>';
             }
         }
 

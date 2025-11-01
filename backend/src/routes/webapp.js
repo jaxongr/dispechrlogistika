@@ -263,7 +263,7 @@ router.post('/report', authenticateTWA, async (req, res) => {
         .push({
           id: Date.now(),
           phone: phone,
-          reason: 'WebApp report: Bu dispecher emas',
+          reason: 'WebApp report: Bu dispecher ekan',
           blocked_at: new Date().toISOString(),
           blocked_by: 'webapp_user'
         })
