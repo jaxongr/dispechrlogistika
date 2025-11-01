@@ -372,6 +372,21 @@
     </div>
 
     <script>
+        // Check if Vue is loaded
+        if (typeof Vue === 'undefined') {
+            document.body.innerHTML = '<div style="padding:20px;text-align:center;"><h1>❌ Vue.js yuklanmadi!</h1><p>Iltimos internetni tekshiring.</p></div>';
+            throw new Error('Vue is not loaded');
+        }
+
+        // Check if Telegram SDK is loaded
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            document.body.innerHTML = '<div style="padding:20px;text-align:center;"><h1>❌ Telegram SDK yuklanmadi!</h1><p>Iltimos botdan oching.</p></div>';
+            throw new Error('Telegram SDK is not loaded');
+        }
+
+        console.log('✅ Vue loaded:', Vue);
+        console.log('✅ Telegram SDK loaded:', window.Telegram.WebApp);
+
         const { createApp } = Vue;
 
         createApp({
