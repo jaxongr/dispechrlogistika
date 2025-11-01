@@ -6,49 +6,132 @@
     <title>Jonli Yuklar - Simple</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background: #f5f5f5;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
         .header {
-            background: #007bff;
-            color: white;
-            padding: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
             text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        #count {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .container {
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
         }
         .card {
             background: white;
-            margin: 10px;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #667eea;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
         }
         .route {
             font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 10px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #2d3748;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+        .meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
         .info {
-            color: #666;
-            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #718096;
             font-size: 13px;
+            font-weight: 500;
+        }
+        .info-icon {
+            font-size: 16px;
         }
         .phone {
-            background: #28a745;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 10px;
+            padding: 14px 20px;
             text-align: center;
-            border-radius: 5px;
-            margin-top: 10px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .phone:active {
+            transform: scale(0.98);
         }
         .loading {
             text-align: center;
-            padding: 50px;
+            padding: 60px 20px;
+            color: white;
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -58,8 +141,11 @@
         <div id="count">Yuklanmoqda...</div>
     </div>
 
-    <div id="announcements" class="loading">
-        ⏳ Yuklanmoqda...
+    <div class="container">
+        <div id="announcements" class="loading">
+            <div class="spinner"></div>
+            <div>Yuklanmoqda...</div>
+        </div>
     </div>
 
     <script>
@@ -86,9 +172,20 @@
                         card.className = 'card';
                         card.innerHTML = `
                             <div class="route">${item.text || 'E\'lon matni yo\'q'}</div>
-                            <div class="info">🕐 ${formatTime(item.posted_at)}</div>
-                            <div class="info">📢 ${item.group_name || 'Guruh nomi yo\'q'}</div>
-                            ${item.phone ? `<div class="phone" onclick="call('${item.phone}')">📞 Bog'lanish: ${item.phone}</div>` : ''}
+                            <div class="meta">
+                                <div class="info">
+                                    <span class="info-icon">🕐</span>
+                                    <span>${formatTime(item.posted_at)}</span>
+                                </div>
+                                <div class="info">
+                                    <span class="info-icon">📢</span>
+                                    <span>${item.group_name || 'Guruh'}</span>
+                                </div>
+                            </div>
+                            ${item.phone ? `<div class="phone" onclick="call('${item.phone}')">
+                                <span>📞</span>
+                                <span>Bog'lanish</span>
+                            </div>` : ''}
                         `;
                         container.appendChild(card);
                     });
