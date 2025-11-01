@@ -210,8 +210,14 @@ class DispatcherDetector {
 
       // =====================================================
       // GROUP 2: 9 raqamli formatlar (operator code bilan)
-      // O'zbekiston operator kodlari: 33, 50, 55, 61-69, 71, 74-79, 88, 90-99
+      // O'zbekiston operator kodlari: 20, 33, 50, 55, 61-69, 71, 74-79, 88, 90-99
       // =====================================================
+
+      // 20 007 00 58 (20 operator kodi bilan) - UMS, Perfectum
+      new RegExp(`(?<!\\d)(20)${sepReq}(\\d{3})${sepReq}(\\d{2})${sepReq}(\\d{2})(?!\\d)`, 'g'),
+      new RegExp(`(?<!\\d)(20)${sepReq}(\\d{3})${sepReq}(\\d{4})(?!\\d)`, 'g'),
+      new RegExp(`(?<!\\d)(20)${sepReq}(\\d{7})(?!\\d)`, 'g'),
+      /(?<!\d)(20\d{7})(?!\d)/g,
 
       // 90 123 45 67 (bo'shliq bilan, 2-3-2-2 format) ⭐ USER'S EXAMPLE: "88 149 04 07"
       new RegExp(`(?<!\\d)([3-9]\\d)${sepReq}(\\d{3})${sepReq}(\\d{2})${sepReq}(\\d{2})(?!\\d)`, 'g'),
@@ -310,8 +316,9 @@ class DispatcherDetector {
         }
 
         // VALIDATION: O'zbekiston operator kodlarini tekshirish
-        // Valid operator codes: 33, 50, 55, 61-69, 71, 74-79, 88, 90-99
+        // Valid operator codes: 20, 33, 50, 55, 61-69, 71, 74-79, 88, 90-99
         const validOperatorCodes = [
+          '20', // UMS, Perfectum
           '33', '50', '55',
           '61', '62', '65', '66', '67', '69',
           '71', '74', '75', '76', '77', '78', '79',

@@ -182,6 +182,27 @@ Buyurtmani yaratishni tasdiqlaysizmi?
    */
   async createAndSendOrder(bot, orderData) {
     try {
+      // DOUBLE-CHECK: 30 daqiqalik limitni qayta tekshirish
+      const userId = orderData.user_id;
+      const now = Date.now();
+      const THIRTY_MINUTES = 30 * 60 * 1000;
+
+      if (this.lastOrderTime.has(userId)) {
+        const lastTime = this.lastOrderTime.get(userId);
+        const timePassed = now - lastTime;
+
+        if (timePassed < THIRTY_MINUTES) {
+          const remainingMinutes = Math.ceil((THIRTY_MINUTES - timePassed) / 60000);
+          return {
+            success: false,
+            error: `30 daqiqalik limit! ${remainingMinutes} daqiqadan keyin urinib ko'ring.`
+          };
+        }
+      }
+
+      // Limitni yangilash
+      this.lastOrderTime.set(userId, now);
+
       // Buyurtma yaratish
       const orderId = uuidv4();
       const order = {

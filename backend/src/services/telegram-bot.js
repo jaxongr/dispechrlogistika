@@ -2490,6 +2490,16 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
       return;
     }
 
+    // DOUBLE-SUBMIT PREVENTION: State'ni darhol "processing" ga o'zgartirish
+    if (userState.state === 'processing') {
+      await ctx.answerCbQuery('⏳ Buyurtma yaratilmoqda, iltimos kuting...', { show_alert: true });
+      return;
+    }
+
+    // State'ni "processing" ga o'zgartirish - qayta bosishni oldini olish
+    userState.state = 'processing';
+    this.userOrderState.set(userId, userState);
+
     // Buyurtmani yaratish va userlarga yuborish
     const result = await botOrder.createAndSendOrder(this.bot, userState.data);
 
