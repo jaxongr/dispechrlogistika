@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonli Yuklar - Simple</title>
+    <title>Mening Kabinetim</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -39,23 +39,16 @@
             color: #000000;
             letter-spacing: -0.4px;
         }
-        .cabinet-btn {
-            background: #000000;
-            color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
+        .back-btn {
+            background: transparent;
             border: none;
+            font-size: 20px;
             cursor: pointer;
-            transition: all 0.15s ease;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            padding: 8px;
+            transition: transform 0.15s ease;
         }
-        .cabinet-btn:active {
-            transform: scale(0.95);
-            opacity: 0.8;
+        .back-btn:active {
+            transform: scale(0.9);
         }
         .container {
             padding: 16px;
@@ -64,7 +57,7 @@
         }
         .card {
             background: #fffef8;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             padding: 20px;
             border-radius: 16px;
             border: 1px solid rgba(0,0,0,0.06);
@@ -123,33 +116,38 @@
             transform: scale(0.97);
             opacity: 0.8;
         }
-        .report-btn {
-            background: transparent;
-            color: rgba(0,0,0,0.4);
-            padding: 12px 16px;
-            text-align: center;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 13px;
-            transition: all 0.15s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            border: 1px solid rgba(0,0,0,0.1);
-            margin-top: 12px;
+        .notes-section {
+            margin-top: 16px;
         }
-        .report-btn:active {
-            transform: scale(0.98);
-            background: rgba(0,0,0,0.03);
+        .notes-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.6);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .notes-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            background: #ffffff;
+            transition: border-color 0.15s ease;
+        }
+        .notes-textarea:focus {
+            outline: none;
+            border-color: rgba(0,0,0,0.3);
         }
         .action-buttons {
             display: flex;
             gap: 8px;
             margin-top: 12px;
         }
-        .save-btn {
+        .save-notes-btn {
             flex: 1;
             background: #000000;
             color: #ffffff;
@@ -160,18 +158,28 @@
             font-weight: 600;
             font-size: 14px;
             transition: all 0.15s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
             border: none;
         }
-        .save-btn:active {
+        .save-notes-btn:active {
             transform: scale(0.98);
             opacity: 0.8;
         }
-        .report-btn {
+        .delete-btn {
             flex: 1;
+            background: transparent;
+            color: rgba(0,0,0,0.4);
+            padding: 12px 16px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.15s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .delete-btn:active {
+            transform: scale(0.98);
+            background: rgba(0,0,0,0.03);
         }
         .loading {
             text-align: center;
@@ -205,14 +213,13 @@
 </head>
 <body>
     <div class="header">
-        <h1>📦 Jonli E'lonlar</h1>
-        <button class="cabinet-btn" onclick="window.location.href='cabinet.html'">
-            📋 Kabinetim
-        </button>
+        <button class="back-btn" onclick="goBack()">←</button>
+        <h1>📋 Mening E'lonlarim</h1>
+        <div style="width:36px"></div>
     </div>
 
     <div class="container">
-        <div id="announcements" class="loading">
+        <div id="saved-announcements" class="loading">
             <div class="spinner"></div>
             <div>Yuklanmoqda...</div>
         </div>
@@ -224,200 +231,213 @@
         tg.ready();
         tg.expand();
 
-        // Load announcements
-        async function loadAnnouncements() {
+        // Go back to main page
+        function goBack() {
+            window.location.href = 'simple.html';
+        }
+
+        // Load saved announcements
+        async function loadSavedAnnouncements() {
             try {
-                const response = await fetch('/api/webapp/announcements?limit=50');
+                const response = await fetch('/api/webapp/saved', {
+                    headers: {
+                        'Authorization': `tma ${tg.initData}`
+                    }
+                });
                 const data = await response.json();
 
+                const container = document.getElementById('saved-announcements');
+
                 if (data.success) {
-                    const container = document.getElementById('announcements');
+                    if (data.announcements.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty">
+                                <div class="empty-icon">📭</div>
+                                <div>Hali saqlangan e'lonlar yo'q</div>
+                            </div>
+                        `;
+                        return;
+                    }
+
                     container.innerHTML = '';
 
                     data.announcements.forEach(item => {
+                        const announcement = item.announcement_data;
                         const card = document.createElement('div');
                         card.className = 'card';
+                        card.dataset.id = item.id;
 
                         const routeDiv = document.createElement('div');
                         routeDiv.className = 'route';
-                        routeDiv.textContent = item.text || 'E\'lon matni yo\'q';
+                        routeDiv.textContent = announcement.text || 'E\'lon matni yo\'q';
 
                         const metaDiv = document.createElement('div');
                         metaDiv.className = 'meta';
                         metaDiv.innerHTML = `
                             <div class="info">
                                 <span class="info-icon">🕐</span>
-                                <span>${formatTime(item.posted_at)}</span>
+                                <span>${formatTime(item.saved_at)}</span>
                             </div>
                             <div class="info">
                                 <span class="info-icon">📢</span>
-                                <span>${item.group_name || 'Guruh'}</span>
+                                <span>${announcement.group_name || 'Guruh'}</span>
                             </div>
                         `;
 
                         card.appendChild(routeDiv);
                         card.appendChild(metaDiv);
 
-                        if (item.phone) {
+                        if (announcement.phone) {
                             const divider = document.createElement('div');
                             divider.className = 'divider';
                             card.appendChild(divider);
 
                             const phoneBtn = document.createElement('a');
-                            phoneBtn.href = 'tel:' + item.phone;
+                            phoneBtn.href = 'tel:' + announcement.phone;
                             phoneBtn.className = 'phone';
                             phoneBtn.innerHTML = `
                                 <span>📞</span>
-                                <span>${item.phone}</span>
+                                <span>${announcement.phone}</span>
                             `;
                             card.appendChild(phoneBtn);
                         }
+
+                        // Notes section
+                        const notesSection = document.createElement('div');
+                        notesSection.className = 'notes-section';
+
+                        const notesLabel = document.createElement('label');
+                        notesLabel.className = 'notes-label';
+                        notesLabel.textContent = '📝 Eslatmalar';
+
+                        const notesTextarea = document.createElement('textarea');
+                        notesTextarea.className = 'notes-textarea';
+                        notesTextarea.placeholder = 'Bu yuk haqida eslatmalar yozing...';
+                        notesTextarea.value = item.notes || '';
+
+                        notesSection.appendChild(notesLabel);
+                        notesSection.appendChild(notesTextarea);
+                        card.appendChild(notesSection);
 
                         // Action buttons
                         const actionButtons = document.createElement('div');
                         actionButtons.className = 'action-buttons';
 
-                        const saveBtn = document.createElement('div');
-                        saveBtn.className = 'save-btn';
-                        saveBtn.innerHTML = `
-                            <span>✅</span>
-                            <span>Olindi</span>
-                        `;
-                        saveBtn.onclick = () => saveAnnouncement(item.id, item, card);
+                        const saveNotesBtn = document.createElement('button');
+                        saveNotesBtn.className = 'save-notes-btn';
+                        saveNotesBtn.textContent = '💾 Saqlash';
+                        saveNotesBtn.onclick = () => saveNotes(item.id, notesTextarea.value, saveNotesBtn);
 
-                        const reportBtn = document.createElement('div');
-                        reportBtn.className = 'report-btn';
-                        reportBtn.innerHTML = `
-                            <span>🚫</span>
-                            <span>Bu dispecher ekan</span>
-                        `;
-                        reportBtn.onclick = () => reportAnnouncement(item.id, item.phone, card);
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.textContent = '🗑️ O\'chirish';
+                        deleteBtn.onclick = () => deleteSavedAnnouncement(item.id, card);
 
-                        actionButtons.appendChild(saveBtn);
-                        actionButtons.appendChild(reportBtn);
+                        actionButtons.appendChild(saveNotesBtn);
+                        actionButtons.appendChild(deleteBtn);
                         card.appendChild(actionButtons);
 
                         container.appendChild(card);
                     });
                 } else {
-                    document.getElementById('announcements').innerHTML =
-                        '<p style="text-align:center;color:red;">Xato: ' + data.error + '</p>';
+                    container.innerHTML = `<p style="text-align:center;color:red;">Xato: ${data.error}</p>`;
                 }
             } catch (error) {
-                document.getElementById('announcements').innerHTML =
+                document.getElementById('saved-announcements').innerHTML =
                     '<p style="text-align:center;color:red;">Yuklanmadi: ' + error.message + '</p>';
+            }
+        }
+
+        // Save notes
+        async function saveNotes(id, notes, button) {
+            const originalText = button.textContent;
+            button.textContent = '⏳ Saqlanmoqda...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch(`/api/webapp/saved/${id}/notes`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `tma ${tg.initData}`
+                    },
+                    body: JSON.stringify({ notes })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    button.textContent = '✅ Saqlandi';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 1500);
+                } else {
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Save notes error:', error);
+                tg.showAlert('❌ Xatolik: ' + error.message);
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // Delete saved announcement
+        async function deleteSavedAnnouncement(id, cardElement) {
+            if (!confirm('Bu e\'lonni o\'chirish tasdiqlaysizmi?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/webapp/saved/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `tma ${tg.initData}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Remove card with animation
+                    cardElement.style.transition = 'all 0.3s ease';
+                    cardElement.style.opacity = '0';
+                    cardElement.style.transform = 'scale(0.9)';
+
+                    setTimeout(() => {
+                        cardElement.remove();
+
+                        // Check if empty
+                        const container = document.getElementById('saved-announcements');
+                        if (container.children.length === 0) {
+                            container.innerHTML = `
+                                <div class="empty">
+                                    <div class="empty-icon">📭</div>
+                                    <div>Hali saqlangan e'lonlar yo'q</div>
+                                </div>
+                            `;
+                        }
+                    }, 300);
+                } else {
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                tg.showAlert('❌ Xatolik: ' + error.message);
             }
         }
 
         function formatTime(timestamp) {
             const diff = Date.now() - new Date(timestamp).getTime();
             const hours = Math.floor(diff / (1000 * 60 * 60));
-            if (hours < 1) return 'Hozir';
+            if (hours < 1) return 'Hozir saqlandi';
             if (hours < 24) return hours + ' soat oldin';
             return Math.floor(hours / 24) + ' kun oldin';
         }
 
-        // Save announcement to user's cabinet
-        async function saveAnnouncement(messageId, announcementData, cardElement) {
-            try {
-                // Disable button
-                const saveBtn = cardElement.querySelector('.save-btn');
-                saveBtn.style.opacity = '0.5';
-                saveBtn.style.pointerEvents = 'none';
-                saveBtn.innerHTML = '<span>⏳</span><span>Saqlanmoqda...</span>';
-
-                const response = await fetch('/api/webapp/save', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `tma ${tg.initData}`
-                    },
-                    body: JSON.stringify({
-                        message_id: messageId,
-                        announcement: announcementData
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Remove card with animation
-                    cardElement.style.transition = 'all 0.3s ease';
-                    cardElement.style.opacity = '0';
-                    cardElement.style.transform = 'scale(0.9)';
-
-                    setTimeout(() => {
-                        cardElement.remove();
-                        tg.showAlert('✅ Saqlandi!\n\nE\'lon kabinetingizga qo\'shildi.');
-                    }, 300);
-                } else {
-                    throw new Error(data.error || 'Xatolik yuz berdi');
-                }
-            } catch (error) {
-                console.error('Save error:', error);
-                tg.showAlert('❌ Xatolik: ' + error.message);
-
-                // Re-enable button
-                const saveBtn = cardElement.querySelector('.save-btn');
-                saveBtn.style.opacity = '1';
-                saveBtn.style.pointerEvents = 'auto';
-                saveBtn.innerHTML = '<span>✅</span><span>Olindi</span>';
-            }
-        }
-
-        // Report announcement (block sender)
-        async function reportAnnouncement(messageId, phone, cardElement) {
-            if (!confirm('Bu raqamni bloklash va e\'lonni o\'chirish tasdiqlaysizmi?\n\nRaqam: ' + phone)) {
-                return;
-            }
-
-            try {
-                // Disable button
-                const reportBtn = cardElement.querySelector('.report-btn');
-                reportBtn.style.opacity = '0.5';
-                reportBtn.style.pointerEvents = 'none';
-                reportBtn.innerHTML = '<span>⏳</span><span>Bloklanmoqda...</span>';
-
-                const response = await fetch('/api/webapp/report', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message_id: messageId,
-                        phone: phone
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Remove card with animation
-                    cardElement.style.transition = 'all 0.3s ease';
-                    cardElement.style.opacity = '0';
-                    cardElement.style.transform = 'scale(0.9)';
-
-                    setTimeout(() => {
-                        cardElement.remove();
-                        tg.showAlert('✅ Bloklandi!\n\nRaqam: ' + phone + '\nE\'lon o\'chirildi.');
-                    }, 300);
-                } else {
-                    throw new Error(data.error || 'Xatolik yuz berdi');
-                }
-            } catch (error) {
-                console.error('Report error:', error);
-                tg.showAlert('❌ Xatolik: ' + error.message);
-
-                // Re-enable button
-                const reportBtn = cardElement.querySelector('.report-btn');
-                reportBtn.style.opacity = '1';
-                reportBtn.style.pointerEvents = 'auto';
-                reportBtn.innerHTML = '<span>🚫</span><span>Bu dispecher ekan</span>';
-            }
-        }
-
         // Load on start
-        loadAnnouncements();
+        loadSavedAnnouncements();
     </script>
 </body>
 </html>

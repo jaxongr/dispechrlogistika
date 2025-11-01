@@ -236,6 +236,181 @@ router.get('/stats', authenticateTWA, async (req, res) => {
 });
 
 /**
+ * GET /api/webapp/saved
+ * Foydalanuvchining saqlangan e'lonlarini olish
+ */
+router.get('/saved', authenticateTWA, async (req, res) => {
+  try {
+    const { db } = require('../config/database');
+    const userId = req.user?.id || 'anonymous';
+
+    console.log(`📥 WebApp saved: User ${userId} fetching saved announcements`);
+
+    // Initialize if not exists
+    if (!db.has('saved_announcements').value()) {
+      db.set('saved_announcements', []).write();
+    }
+
+    // Get user's saved announcements
+    const savedAnnouncements = db.get('saved_announcements')
+      .filter({ user_id: userId })
+      .orderBy('saved_at', 'desc')
+      .value();
+
+    res.json({
+      success: true,
+      announcements: savedAnnouncements
+    });
+
+  } catch (error) {
+    console.error('WebApp saved error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/webapp/saved/:id/notes
+ * Saqlangan e'lon uchun eslatma qo'shish
+ */
+router.put('/saved/:id/notes', authenticateTWA, async (req, res) => {
+  try {
+    const { db } = require('../config/database');
+    const { id } = req.params;
+    const { notes } = req.body;
+    const userId = req.user?.id || 'anonymous';
+
+    console.log(`📝 WebApp notes: User ${userId} updating notes for ${id}`);
+
+    // Find and update
+    const announcement = db.get('saved_announcements')
+      .find({ id: parseInt(id), user_id: userId })
+      .value();
+
+    if (!announcement) {
+      return res.status(404).json({
+        success: false,
+        error: 'E\'lon topilmadi'
+      });
+    }
+
+    db.get('saved_announcements')
+      .find({ id: parseInt(id), user_id: userId })
+      .assign({ notes: notes, updated_at: new Date().toISOString() })
+      .write();
+
+    res.json({
+      success: true,
+      message: 'Eslatma saqlandi'
+    });
+
+  } catch (error) {
+    console.error('WebApp notes error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * DELETE /api/webapp/saved/:id
+ * Saqlangan e'lonni o'chirish
+ */
+router.delete('/saved/:id', authenticateTWA, async (req, res) => {
+  try {
+    const { db } = require('../config/database');
+    const { id } = req.params;
+    const userId = req.user?.id || 'anonymous';
+
+    console.log(`🗑️ WebApp delete: User ${userId} deleting saved announcement ${id}`);
+
+    db.get('saved_announcements')
+      .remove({ id: parseInt(id), user_id: userId })
+      .write();
+
+    res.json({
+      success: true,
+      message: 'E\'lon o\'chirildi'
+    });
+
+  } catch (error) {
+    console.error('WebApp delete error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/webapp/save
+ * E'lonni foydalanuvchi kabinetiga saqlash
+ */
+router.post('/save', authenticateTWA, async (req, res) => {
+  try {
+    const { db } = require('../config/database');
+    const { message_id, announcement } = req.body;
+    const userId = req.user?.id || 'anonymous';
+
+    if (!message_id) {
+      return res.status(400).json({
+        success: false,
+        error: 'Message ID kiritilmagan'
+      });
+    }
+
+    console.log(`💾 WebApp save: User ${userId} saving announcement ${message_id}`);
+
+    // Initialize saved_announcements table if not exists
+    if (!db.has('saved_announcements').value()) {
+      db.set('saved_announcements', []).write();
+    }
+
+    // Check if already saved
+    const existingSave = db.get('saved_announcements')
+      .find({ user_id: userId, message_id: message_id })
+      .value();
+
+    if (existingSave) {
+      return res.json({
+        success: true,
+        message: 'E\'lon allaqachon saqlangan',
+        already_saved: true
+      });
+    }
+
+    // Save announcement
+    db.get('saved_announcements')
+      .push({
+        id: Date.now(),
+        user_id: userId,
+        message_id: message_id,
+        announcement_data: announcement,
+        notes: '',
+        saved_at: new Date().toISOString()
+      })
+      .write();
+
+    console.log(`✅ Announcement saved for user ${userId}`);
+
+    res.json({
+      success: true,
+      message: 'E\'lon saqlandi'
+    });
+
+  } catch (error) {
+    console.error('WebApp save error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
  * POST /api/webapp/report
  * E'lonni bloklash va o'chirish (admin tasdiqisiz)
  */
