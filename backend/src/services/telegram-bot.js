@@ -2497,14 +2497,20 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
     const userId = ctx.from.id.toString();
     const userState = this.userOrderState.get(userId);
 
-    if (!userState || userState.state !== 'awaiting_confirmation') {
+    if (!userState) {
       await ctx.answerCbQuery('❌ Buyurtma topilmadi');
       return;
     }
 
-    // DOUBLE-SUBMIT PREVENTION: State'ni darhol "processing" ga o'zgartirish
+    // DOUBLE-SUBMIT PREVENTION: Agar allaqachon "processing" bo'lsa
     if (userState.state === 'processing') {
       await ctx.answerCbQuery('⏳ Buyurtma yaratilmoqda, iltimos kuting...', { show_alert: true });
+      return;
+    }
+
+    // Agar state to'g'ri bo'lmasa
+    if (userState.state !== 'awaiting_confirmation') {
+      await ctx.answerCbQuery('❌ Buyurtma topilmadi');
       return;
     }
 
