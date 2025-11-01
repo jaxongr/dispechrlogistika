@@ -25,6 +25,7 @@ class AutoReplySessionService {
     // Mass messaging state
     this.broadcastQueue = [];
     this.broadcastInProgress = false;
+    this.broadcastProcessing = false; // Flag to prevent concurrent processing
     this.broadcastSpeed = 'safe'; // safe, fast, turbo
     this.broadcastLoopEnabled = false; // Tsiklik rejim
     this.broadcastMessage = null; // Loop uchun xabar
@@ -449,6 +450,11 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
    * Sends messages at controlled rate
    */
   async processBroadcastQueue() {
+    // CRITICAL: Prevent concurrent execution
+    if (this.broadcastProcessing) {
+      return; // Already processing, skip this interval
+    }
+
     if (!this.isConnected || !this.broadcastInProgress || this.broadcastQueue.length === 0) {
       // If queue is empty but broadcast was in progress
       if (this.broadcastInProgress && this.broadcastQueue.length === 0) {
@@ -512,6 +518,9 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
       return;
     }
 
+    // Set processing flag
+    this.broadcastProcessing = true;
+
     try {
       // YANGI TEZLIKLAR - Telegram limitlari asosida
       // safe: 20 guruh/min (3s delay) = 10 daqiqa (200 guruh)
@@ -567,6 +576,9 @@ Muvaffaqiyatli yuklaringiz bo'lsin! 🚀`,
 
     } catch (error) {
       console.error('❌ Broadcast queue processing error:', error.message);
+    } finally {
+      // CRITICAL: Always reset processing flag
+      this.broadcastProcessing = false;
     }
   }
 
