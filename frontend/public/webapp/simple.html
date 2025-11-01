@@ -265,13 +265,13 @@
                             divider.className = 'divider';
                             card.appendChild(divider);
 
-                            const phoneBtn = document.createElement('a');
-                            phoneBtn.href = 'tel:' + item.phone;
+                            const phoneBtn = document.createElement('div');
                             phoneBtn.className = 'phone';
                             phoneBtn.innerHTML = `
                                 <span class="phone-icon">📞</span>
                                 <span>${item.phone}</span>
                             `;
+                            phoneBtn.onclick = () => makeCall(item.phone);
                             card.appendChild(phoneBtn);
                         }
 
@@ -317,6 +317,12 @@
             if (hours < 1) return 'Hozir';
             if (hours < 24) return hours + ' soat oldin';
             return Math.floor(hours / 24) + ' kun oldin';
+        }
+
+        // Make phone call
+        function makeCall(phone) {
+            // Try to open phone dialer directly
+            window.location.href = 'tel:' + phone;
         }
 
         // Save announcement to user's cabinet
