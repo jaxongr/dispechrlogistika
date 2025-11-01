@@ -38,8 +38,9 @@ class TelegramBotService {
         [{ text: '📝 Buyurtma yaratish' }, { text: '🔍 Yuk qidirish' }],
         [{ text: '📅 Oldindan bron qilish' }, { text: '📋 Mening bronlarim' }],
         [{ text: '📢 E\'lon tarqatish' }, { text: '📊 Statistika' }],
-        [{ text: '🚛 Haydovchilar' }, { text: 'ℹ️ Yordam' }],
-        [{ text: '📦 Barcha yuklar', web_app: { url: `${process.env.APP_URL || 'http://localhost:3001'}/webapp/` } }]
+        [{ text: '🚛 Haydovchilar' }, { text: 'ℹ️ Yordam' }]
+        // ⚠️ Mini Web App HTTPS talab qiladi - HTTP bilan ishlamaydi
+        // [{ text: '📦 Barcha yuklar', web_app: { url: `${process.env.APP_URL || 'http://localhost:3001'}/webapp/` } }]
       ],
       resize_keyboard: true
     };
