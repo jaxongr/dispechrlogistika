@@ -26,13 +26,16 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .route {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 15px;
+            line-height: 1.5;
             margin-bottom: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
         .info {
             color: #666;
             margin: 5px 0;
+            font-size: 13px;
         }
         .phone {
             background: #28a745;
@@ -68,7 +71,7 @@
         // Load announcements
         async function loadAnnouncements() {
             try {
-                const response = await fetch('/api/webapp/announcements?limit=10');
+                const response = await fetch('/api/webapp/announcements?limit=50');
                 const data = await response.json();
 
                 if (data.success) {
@@ -82,12 +85,10 @@
                         const card = document.createElement('div');
                         card.className = 'card';
                         card.innerHTML = `
-                            <div class="route">📍 ${item.route}</div>
-                            ${item.weight ? `<div class="info">⚖️ ${item.weight}</div>` : ''}
-                            ${item.price ? `<div class="info">💰 ${item.price}</div>` : ''}
-                            ${item.cargo_type ? `<div class="info">📦 ${item.cargo_type}</div>` : ''}
+                            <div class="route">${item.text || 'E\'lon matni yo\'q'}</div>
                             <div class="info">🕐 ${formatTime(item.posted_at)}</div>
-                            ${item.phone ? `<div class="phone" onclick="call('${item.phone}')">📞 ${item.phone}</div>` : ''}
+                            <div class="info">📢 ${item.group_name || 'Guruh nomi yo\'q'}</div>
+                            ${item.phone ? `<div class="phone" onclick="call('${item.phone}')">📞 Bog'lanish: ${item.phone}</div>` : ''}
                         `;
                         container.appendChild(card);
                     });
