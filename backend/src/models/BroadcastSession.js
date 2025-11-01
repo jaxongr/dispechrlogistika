@@ -3,16 +3,9 @@
  * Ko'p broadcast sessionlarni boshqarish uchun
  */
 
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const path = require('path');
+const { db } = require('../config/database');
 
-const dbPath = path.join(__dirname, '../../db.json');
-const adapter = new FileSync(dbPath);
-const db = low(adapter);
-
-// Initialize broadcast_sessions table
-db.defaults({ broadcast_sessions: [] }).write();
+// broadcast_sessions table allaqachon database.js da initialized
 
 class BroadcastSession {
   /**
