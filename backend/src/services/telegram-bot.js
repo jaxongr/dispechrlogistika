@@ -127,6 +127,12 @@ class TelegramBotService {
           console.error('Error saving bot user:', err.message);
         }
 
+        // STATE RESET: /start bosish - barcha state'larni tozalash
+        const userId = ctx.from.id.toString();
+        this.userOrderState.delete(userId);
+        this.userSearchState.delete(userId);
+        this.userBroadcastState.delete(userId);
+
         const welcomeMessage = `🤖 <b>YO'LDA | Yuk Markazi Bot</b>
 
 Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi.
@@ -155,8 +161,14 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
 
       // Setup /menu command - menyu'ni yangilash
       this.bot.command('menu', async (ctx) => {
+        // STATE RESET: /menu bosish - barcha state'larni tozalash
+        const userId = ctx.from.id.toString();
+        this.userOrderState.delete(userId);
+        this.userSearchState.delete(userId);
+        this.userBroadcastState.delete(userId);
+
         await ctx.reply(
-          '📱 Menyu yangilandi!',
+          '📱 Menyu yangilandi! Barcha jarayonlar bekor qilindi.',
           {
             parse_mode: 'HTML',
             reply_markup: this.getMainKeyboard()
