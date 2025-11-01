@@ -235,4 +235,76 @@ router.get('/stats', authenticateTWA, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/webapp/report
+ * E'lonni bloklash va o'chirish (admin tasdiqisiz)
+ */
+router.post('/report', authenticateTWA, async (req, res) => {
+  try {
+    const { db } = require('../config/database');
+    const { message_id, phone } = req.body;
+
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        error: 'Telefon raqam kiritilmagan'
+      });
+    }
+
+    console.log(`📢 WebApp report: Blocking phone ${phone} (message ${message_id})`);
+
+    // 1. Block the phone number
+    const existingBlock = db.get('blocked_phones')
+      .find({ phone: phone })
+      .value();
+
+    if (!existingBlock) {
+      db.get('blocked_phones')
+        .push({
+          id: Date.now(),
+          phone: phone,
+          reason: 'WebApp report: Bu dispecher emas',
+          blocked_at: new Date().toISOString(),
+          blocked_by: 'webapp_user'
+        })
+        .write();
+
+      console.log(`🚫 Phone blocked: ${phone}`);
+    } else {
+      console.log(`⚠️ Phone already blocked: ${phone}`);
+    }
+
+    // 2. Delete the specific message
+    if (message_id) {
+      db.get('messages')
+        .remove({ id: message_id })
+        .write();
+
+      console.log(`🗑️ Message deleted: ${message_id}`);
+    }
+
+    // 3. Delete all other messages from this phone
+    const deletedCount = db.get('messages')
+      .remove({ contact_phone: phone })
+      .write()
+      .length;
+
+    console.log(`🗑️ Deleted ${deletedCount} messages from phone ${phone}`);
+
+    res.json({
+      success: true,
+      message: 'Raqam bloklandi va barcha e\'lonlar o\'chirildi',
+      phone: phone,
+      deleted_messages: deletedCount + (message_id ? 1 : 0)
+    });
+
+  } catch (error) {
+    console.error('WebApp report error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

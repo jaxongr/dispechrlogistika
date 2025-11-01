@@ -104,6 +104,27 @@
             transform: scale(0.97);
             opacity: 0.8;
         }
+        .report-btn {
+            background: rgba(255, 0, 0, 0.1);
+            color: #dc3545;
+            padding: 10px 16px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            margin-top: 12px;
+        }
+        .report-btn:active {
+            transform: scale(0.97);
+            background: rgba(255, 0, 0, 0.15);
+        }
         .loading {
             text-align: center;
             padding: 80px 20px;
@@ -201,6 +222,16 @@
                             card.appendChild(phoneBtn);
                         }
 
+                        // Report button
+                        const reportBtn = document.createElement('div');
+                        reportBtn.className = 'report-btn';
+                        reportBtn.innerHTML = `
+                            <span>⚠️</span>
+                            <span>Bu dispecher emas</span>
+                        `;
+                        reportBtn.onclick = () => reportAnnouncement(item.id, item.phone, card);
+                        card.appendChild(reportBtn);
+
                         container.appendChild(card);
                     });
                 } else {
@@ -219,6 +250,57 @@
             if (hours < 1) return 'Hozir';
             if (hours < 24) return hours + ' soat oldin';
             return Math.floor(hours / 24) + ' kun oldin';
+        }
+
+        // Report announcement (block sender)
+        async function reportAnnouncement(messageId, phone, cardElement) {
+            if (!confirm('Bu raqamni bloklash va e\'lonni o\'chirish tasdiqlaysizmi?\n\nRaqam: ' + phone)) {
+                return;
+            }
+
+            try {
+                // Disable button
+                const reportBtn = cardElement.querySelector('.report-btn');
+                reportBtn.style.opacity = '0.5';
+                reportBtn.style.pointerEvents = 'none';
+                reportBtn.innerHTML = '<span>⏳</span><span>Bloklanmoqda...</span>';
+
+                const response = await fetch('/api/webapp/report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message_id: messageId,
+                        phone: phone
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Remove card with animation
+                    cardElement.style.transition = 'all 0.3s ease';
+                    cardElement.style.opacity = '0';
+                    cardElement.style.transform = 'scale(0.9)';
+
+                    setTimeout(() => {
+                        cardElement.remove();
+                        tg.showAlert('✅ Bloklandi!\n\nRaqam: ' + phone + '\nE\'lon o\'chirildi.');
+                    }, 300);
+                } else {
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Report error:', error);
+                tg.showAlert('❌ Xatolik: ' + error.message);
+
+                // Re-enable button
+                const reportBtn = cardElement.querySelector('.report-btn');
+                reportBtn.style.opacity = '1';
+                reportBtn.style.pointerEvents = 'auto';
+                reportBtn.innerHTML = '<span>⚠️</span><span>Bu dispecher emas</span>';
+            }
         }
 
         // Load on start
