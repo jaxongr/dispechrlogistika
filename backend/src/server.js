@@ -17,6 +17,7 @@ const telegramSession = require('./services/telegram-session');
 const telegramBot = require('./services/telegram-bot');
 const autoReplySession = require('./services/autoReplySession');
 const { startDailyStatisticsScheduler } = require('./services/daily-statistics-scheduler');
+const databaseBackup = require('./services/database-backup');
 
 // Routes
 const authRoutes = require('./routes/auth');
@@ -162,6 +163,10 @@ async function startServer() {
     console.log('\n📅 Kunlik statistika scheduler ishga tushmoqda...');
     startDailyStatisticsScheduler();
 
+    // Start Database Backup Service
+    console.log('\n💾 Database backup service ishga tushmoqda...');
+    databaseBackup.start();
+
     console.log('\n✅ Barcha xizmatlar ishga tushdi!');
     console.log('📊 Dashboard: http://localhost:' + PORT);
     console.log('🔌 API: http://localhost:' + PORT + '/api');
@@ -181,6 +186,7 @@ process.on('SIGINT', async () => {
     await telegramSession.disconnect();
     await autoReplySession.disconnect();
     telegramBot.stop();
+    databaseBackup.stop();
     console.log('✅ Barcha xizmatlar to\'xtatildi');
     process.exit(0);
   } catch (error) {
