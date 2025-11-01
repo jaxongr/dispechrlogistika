@@ -19,6 +19,14 @@ Agar kod buzilsa yoki muammo bo'lsa, **WORKING-PERFECTLY-2025-11-01** tag'iga qa
 
 ---
 
+## 🔢 VERSIYA TARIXI:
+
+- **v2.5-stable** ← HOZIRGI VERSIYA (2025-11-01) - Spam prevention fix
+- **v2.4-stable** - Avvalgi versiya
+- **WORKING-PERFECTLY-2025-11-01** - Shu bilan bir xil (alternative tag)
+
+---
+
 ## 🔄 TIKLASH USULLARI
 
 ### 1️⃣ Butun loyihani ishlaydigan holatga qaytarish
@@ -82,9 +90,10 @@ git checkout main
 
 | Tag nomi | Tavsif | Commit |
 |----------|--------|--------|
-| **WORKING-PERFECTLY-2025-11-01** | ⭐ To'liq ishlaydigan versiya | 45daa0b |
-| v1.0-stable-rate-limit-fix | 30-daqiqalik spam prevention | 45daa0b |
-| v2.4-stable | Avvalgi stable versiya | ... |
+| **v2.5-stable** | ⭐ To'liq ishlaydigan versiya (HOZIRGI) | 45daa0b |
+| **WORKING-PERFECTLY-2025-11-01** | Alternative nom (shu bilan bir xil) | 45daa0b |
+| v2.4-stable | Avvalgi stable versiya | a9ce6fe |
+| v2.3-stable | Eski versiya | ... |
 
 ---
 
