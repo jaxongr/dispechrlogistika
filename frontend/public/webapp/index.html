@@ -432,23 +432,27 @@
                     this.loading = true;
 
                     try {
-                        // API call - hozircha mock data
-                        await this.sleep(500);
+                        // Real API call
+                        const response = await fetch('/api/webapp/announcements', {
+                            headers: {
+                                'Authorization': `tma ${this.tg.initData}`
+                            }
+                        });
 
-                        // Mock data
-                        this.announcements = this.generateMockData();
+                        const data = await response.json();
 
-                        // Real API call (keyinroq)
-                        // const response = await fetch('/api/webapp/announcements', {
-                        //     headers: {
-                        //         'Authorization': `tma ${this.tg.initData}`
-                        //     }
-                        // });
-                        // this.announcements = await response.json();
+                        if (data.success) {
+                            this.announcements = data.announcements;
+                        } else {
+                            console.error('API error:', data.error);
+                            // Fallback to mock data if API fails
+                            this.announcements = this.generateMockData();
+                        }
 
                     } catch (error) {
                         console.error('Load error:', error);
-                        this.tg.showAlert('Xatolik yuz berdi: ' + error.message);
+                        // Fallback to mock data on error
+                        this.announcements = this.generateMockData();
                     } finally {
                         this.loading = false;
                     }
