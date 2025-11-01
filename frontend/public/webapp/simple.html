@@ -21,25 +21,17 @@
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 20px;
+            padding: 12px 20px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             position: sticky;
             top: 0;
             z-index: 100;
         }
         .header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-        #count {
-            color: #666;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
         }
         .container {
             padding: 15px;
@@ -138,7 +130,6 @@
 <body>
     <div class="header">
         <h1>📦 Jonli E'lonlar</h1>
-        <div id="count">Yuklanmoqda...</div>
     </div>
 
     <div class="container">
@@ -164,29 +155,43 @@
                     const container = document.getElementById('announcements');
                     container.innerHTML = '';
 
-                    document.getElementById('count').textContent =
-                        data.pagination.total + ' ta yuk mavjud';
-
                     data.announcements.forEach(item => {
                         const card = document.createElement('div');
                         card.className = 'card';
-                        card.innerHTML = `
-                            <div class="route">${item.text || 'E\'lon matni yo\'q'}</div>
-                            <div class="meta">
-                                <div class="info">
-                                    <span class="info-icon">🕐</span>
-                                    <span>${formatTime(item.posted_at)}</span>
-                                </div>
-                                <div class="info">
-                                    <span class="info-icon">📢</span>
-                                    <span>${item.group_name || 'Guruh'}</span>
-                                </div>
+
+                        const routeDiv = document.createElement('div');
+                        routeDiv.className = 'route';
+                        routeDiv.textContent = item.text || 'E\'lon matni yo\'q';
+
+                        const metaDiv = document.createElement('div');
+                        metaDiv.className = 'meta';
+                        metaDiv.innerHTML = `
+                            <div class="info">
+                                <span class="info-icon">🕐</span>
+                                <span>${formatTime(item.posted_at)}</span>
                             </div>
-                            ${item.phone ? `<div class="phone" onclick="call('${item.phone}')">
+                            <div class="info">
+                                <span class="info-icon">📢</span>
+                                <span>${item.group_name || 'Guruh'}</span>
+                            </div>
+                        `;
+
+                        card.appendChild(routeDiv);
+                        card.appendChild(metaDiv);
+
+                        if (item.phone) {
+                            const phoneBtn = document.createElement('div');
+                            phoneBtn.className = 'phone';
+                            phoneBtn.innerHTML = `
                                 <span>📞</span>
                                 <span>Bog'lanish</span>
-                            </div>` : ''}
-                        `;
+                            `;
+                            phoneBtn.addEventListener('click', () => {
+                                tg.openLink('tel:' + item.phone);
+                            });
+                            card.appendChild(phoneBtn);
+                        }
+
                         container.appendChild(card);
                     });
                 } else {
@@ -205,10 +210,6 @@
             if (hours < 1) return 'Hozir';
             if (hours < 24) return hours + ' soat oldin';
             return Math.floor(hours / 24) + ' kun oldin';
-        }
-
-        function call(phone) {
-            tg.openLink('tel:' + phone);
         }
 
         // Load on start
