@@ -156,12 +156,17 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.15s ease;
             border: none;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         .save-notes-btn:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
             opacity: 0.8;
         }
         .delete-btn {
@@ -176,9 +181,14 @@
             font-size: 13px;
             transition: all 0.15s ease;
             border: 1px solid rgba(0,0,0,0.1);
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         .delete-btn:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
             background: rgba(0,0,0,0.03);
         }
         .loading {
@@ -325,12 +335,12 @@
 
                         const saveNotesBtn = document.createElement('button');
                         saveNotesBtn.className = 'save-notes-btn';
-                        saveNotesBtn.textContent = '💾 Saqlash';
+                        saveNotesBtn.innerHTML = '<span>💾</span><span>Saqlash</span>';
                         saveNotesBtn.onclick = () => saveNotes(item.id, notesTextarea.value, saveNotesBtn);
 
                         const deleteBtn = document.createElement('button');
                         deleteBtn.className = 'delete-btn';
-                        deleteBtn.textContent = '🗑️ O\'chirish';
+                        deleteBtn.innerHTML = '<span>🗑️</span><span>O\'chirish</span>';
                         deleteBtn.onclick = () => deleteSavedAnnouncement(item.id, card);
 
                         actionButtons.appendChild(saveNotesBtn);
@@ -350,8 +360,8 @@
 
         // Save notes
         async function saveNotes(id, notes, button) {
-            const originalText = button.textContent;
-            button.textContent = '⏳ Saqlanmoqda...';
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<span>⏳</span><span>Saqlanmoqda...</span>';
             button.disabled = true;
 
             try {
@@ -367,9 +377,9 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    button.textContent = '✅ Saqlandi';
+                    button.innerHTML = '<span>✅</span><span>Saqlandi</span>';
                     setTimeout(() => {
-                        button.textContent = originalText;
+                        button.innerHTML = originalHTML;
                         button.disabled = false;
                     }, 1500);
                 } else {
@@ -378,7 +388,7 @@
             } catch (error) {
                 console.error('Save notes error:', error);
                 tg.showAlert('❌ Xatolik: ' + error.message);
-                button.textContent = originalText;
+                button.innerHTML = originalHTML;
                 button.disabled = false;
             }
         }
