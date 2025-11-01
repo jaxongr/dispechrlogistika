@@ -11,6 +11,13 @@
     <!-- Vue.js 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
+    <!-- TEST: Ko'rinish uchun oddiy HTML -->
+    <noscript>
+        <div style="padding:20px;background:red;color:white;">
+            ❌ JavaScript o'chirilgan!
+        </div>
+    </noscript>
+
     <style>
         * {
             margin: 0;
@@ -268,6 +275,11 @@
     </style>
 </head>
 <body>
+    <!-- TEST: Bu ko'rinishi kerak! -->
+    <div style="position:fixed;top:0;left:0;right:0;background:green;color:white;padding:10px;text-align:center;z-index:9999;">
+        ✅ HTML YUKLANDI! Agar buni ko'rsangiz - HTML ishlayapti!
+    </div>
+
     <div id="app">
         <!-- Header -->
         <div class="header">
