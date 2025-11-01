@@ -42,7 +42,7 @@ class BotOrderService {
       return { state: null };
     }
 
-    // RATE LIMITING: 30 daqiqada 1 marta
+    // RATE LIMITING: 30 daqiqada 1 marta - faqat tekshirish (set qilish createAndSendOrder da amalga oshiriladi)
     const now = Date.now();
     const THIRTY_MINUTES = 30 * 60 * 1000; // 30 daqiqa millisecondlarda
 
@@ -63,8 +63,7 @@ class BotOrderService {
       }
     }
 
-    // Buyurtma yaratishga ruxsat berish va vaqtni yangilash
-    this.lastOrderTime.set(userId, now);
+    // ESLATMA: lastOrderTime faqat createAndSendOrder() da set qilinadi - buyurtma haqiqatdan yaratilgandan keyin
 
     await ctx.reply(
       '📝 <b>Buyurtma yaratish</b>\n\n' +
@@ -187,12 +186,16 @@ Buyurtmani yaratishni tasdiqlaysizmi?
       const now = Date.now();
       const THIRTY_MINUTES = 30 * 60 * 1000;
 
+      console.log(`🔍 Rate limit check: userId=${userId}, has previous order: ${this.lastOrderTime.has(userId)}`);
+
       if (this.lastOrderTime.has(userId)) {
         const lastTime = this.lastOrderTime.get(userId);
         const timePassed = now - lastTime;
+        console.log(`⏱ Time passed: ${Math.floor(timePassed / 1000)}s (${Math.floor(timePassed / 60000)} minutes)`);
 
         if (timePassed < THIRTY_MINUTES) {
           const remainingMinutes = Math.ceil((THIRTY_MINUTES - timePassed) / 60000);
+          console.log(`❌ RATE LIMIT BLOCKED: ${remainingMinutes} minutes remaining`);
           return {
             success: false,
             error: `30 daqiqalik limit! ${remainingMinutes} daqiqadan keyin urinib ko'ring.`
@@ -201,6 +204,7 @@ Buyurtmani yaratishni tasdiqlaysizmi?
       }
 
       // Limitni yangilash
+      console.log(`✅ Rate limit passed, setting timestamp for ${userId}`);
       this.lastOrderTime.set(userId, now);
 
       // Buyurtma yaratish
@@ -584,6 +588,17 @@ Buyurtmani yaratishni tasdiqlaysizmi?
       }
     }
     console.log(`🗑️ Deleted order messages from other users`);
+  }
+
+  /**
+   * User uchun rate limit'ni reset qilish
+   * /start yoki /menu bosilganda ishlatiladi
+   */
+  resetUserRateLimit(userId) {
+    if (this.lastOrderTime.has(userId)) {
+      this.lastOrderTime.delete(userId);
+      console.log(`🔄 Rate limit reset for user ${userId}`);
+    }
   }
 }
 

@@ -133,6 +133,9 @@ class TelegramBotService {
         this.userSearchState.delete(userId);
         this.userBroadcastState.delete(userId);
 
+        // RATE LIMIT RESET: Buyurtma yaratish limit'ini ham tozalash
+        botOrder.resetUserRateLimit(userId);
+
         const welcomeMessage = `🤖 <b>YO'LDA | Yuk Markazi Bot</b>
 
 Assalomu alaykum! Bu bot logistika e'lonlarini filter qiladi va guruhga yuboradi.
@@ -166,6 +169,9 @@ Noto'g'ri e'lonlarni "Bu dispetcher ekan" deb belgilasangiz, admin tasdiqlashini
         this.userOrderState.delete(userId);
         this.userSearchState.delete(userId);
         this.userBroadcastState.delete(userId);
+
+        // RATE LIMIT RESET: Buyurtma yaratish limit'ini ham tozalash
+        botOrder.resetUserRateLimit(userId);
 
         await ctx.reply(
           '📱 Menyu yangilandi! Barcha jarayonlar bekor qilindi.',
@@ -2497,22 +2503,30 @@ Tugmani qayta ko'rish uchun /start ni bosing.`;
     const userId = ctx.from.id.toString();
     const userState = this.userOrderState.get(userId);
 
+    console.log(`🔍 Order confirmation: userId=${userId}, state=${userState?.state || 'undefined'}`);
+
     if (!userState) {
+      console.log(`❌ No userState found for ${userId}`);
       await ctx.answerCbQuery('❌ Buyurtma topilmadi');
       return;
     }
 
     // DOUBLE-SUBMIT PREVENTION: Agar allaqachon "processing" bo'lsa
     if (userState.state === 'processing') {
+      console.log(`⏳ Double-submit detected for ${userId}`);
       await ctx.answerCbQuery('⏳ Buyurtma yaratilmoqda, iltimos kuting...', { show_alert: true });
       return;
     }
 
     // Agar state to'g'ri bo'lmasa
     if (userState.state !== 'awaiting_confirmation') {
+      console.log(`❌ Wrong state for ${userId}: ${userState.state}`);
       await ctx.answerCbQuery('❌ Buyurtma topilmadi');
       return;
     }
+
+    console.log(`✅ Creating order for ${userId}...`);
+
 
     // State'ni "processing" ga o'zgartirish - qayta bosishni oldini olish
     userState.state = 'processing';
