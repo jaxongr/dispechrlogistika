@@ -1,29 +1,49 @@
 # 🆘 KOD TIKLASH QO'LLANMA
 
-## ⭐ ISHLAYDIGAN VERSIYA - 2025-11-01
+## ⭐ ISHLAYDIGAN VERSIYA - V2.6-STABLE
 
-Agar kod buzilsa yoki muammo bo'lsa, **WORKING-PERFECTLY-2025-11-01** tag'iga qaytish kerak!
+Agar kod buzilsa yoki muammo bo'lsa, **v2.6-stable** tag'iga qaytish kerak!
+
+**Database backup:** `db_V2.6-STABLE_FINAL_20251101_223611.json` (20 MB)
 
 ---
 
-## 📌 SHU TAG'DA NIMA ISHLAYDI:
+## 📌 V2.6-STABLE DA NIMA ISHLAYDI:
 
-✅ **Buyurtma yaratish** - birinchi marta ham to'g'ri ishlaydi
-✅ **30 daqiqalik spam prevention** - ikki marta buyurtma yaratish bloklangan
-✅ **Double-submit prevention** - bir necha marta "Tasdiqlash" bosilmaydi
-✅ **State reset** - /start va /menu orqali reset qilish
-✅ **Telefon extraction** - 20, 33, 50, 55, 88, 90-99 operatorlar
-✅ **Debug logging** - muammolarni tez topish uchun
-✅ **Auto-expire** - 3 daqiqada guruhga yuborish
-✅ **"Olindi" tugmasi** - boshqa userlardan o'chirish
+✅ **Asosiy funksiyalar:**
+  • Monitoring: 136 guruh
+  • Filter system: Dispatcher detection, phone blocking
+  • Target guruhga avtomatik yuborish
+  • Bot buyurtma yaratish (30min rate limit)
+  • Haydovchi oldindan bron qilish
+  • SMS integratsiya
+
+✅ **Broadcast tizimi:**
+  • Auto-reply session: ULANGAN ✅
+  • Single session broadcast: ISHLAYDI ✅
+  • Multi-session broadcast: TAYYOR
+  • Rate limiting: 3s interval (20 msg/min)
+  • Concurrency prevention: FIXED ✅
+
+✅ **Database system:**
+  • Auto-backup: Har 6 soatda
+  • GitHub Actions: Kunlik backup
+  • 3-joyda saqlash
+
+✅ **Barqarorlik:**
+  • PM2 auto-restart
+  • Error logging
+  • Session management
+  • Flood protection
 
 ---
 
 ## 🔢 VERSIYA TARIXI:
 
-- **v2.5-stable** ← HOZIRGI VERSIYA (2025-11-01) - Spam prevention fix
+- **v2.6-stable** ← HOZIRGI VERSIYA (2025-11-01) - Full production ready
+- **v2.5-stable** - Spam prevention fix
 - **v2.4-stable** - Avvalgi versiya
-- **WORKING-PERFECTLY-2025-11-01** - Shu bilan bir xil (alternative tag)
+- **WORKING-PERFECTLY-2025-11-01** - Alternative tag
 
 ---
 
@@ -35,7 +55,7 @@ Agar kod buzilsa yoki muammo bo'lsa, **WORKING-PERFECTLY-2025-11-01** tag'iga qa
 ```bash
 cd "C:\Users\Pro\Desktop\Dispechrlar uchun logistika"
 git fetch --tags
-git checkout WORKING-PERFECTLY-2025-11-01
+git checkout v2.6-stable
 ```
 
 **Serverda:**
@@ -43,7 +63,7 @@ git checkout WORKING-PERFECTLY-2025-11-01
 ssh root@5.189.141.151
 cd /var/www/dispatchr-logistics
 git fetch --tags
-git checkout WORKING-PERFECTLY-2025-11-01
+git checkout v2.6-stable
 pm2 restart dispatchr-logistics
 ```
 
@@ -53,12 +73,12 @@ pm2 restart dispatchr-logistics
 
 **Lokal:**
 ```bash
-git checkout WORKING-PERFECTLY-2025-11-01 -- backend/
+git checkout v2.6-stable -- backend/
 ```
 
 **Serverda:**
 ```bash
-ssh root@5.189.141.151 "cd /var/www/dispatchr-logistics && git fetch --tags && git checkout WORKING-PERFECTLY-2025-11-01 -- backend/ && pm2 restart dispatchr-logistics"
+ssh root@5.189.141.151 "cd /var/www/dispatchr-logistics && git fetch --tags && git checkout v2.6-stable -- backend/ && pm2 restart dispatchr-logistics"
 ```
 
 ---
@@ -67,12 +87,13 @@ ssh root@5.189.141.151 "cd /var/www/dispatchr-logistics && git fetch --tags && g
 
 **Agar faqat bot-order.js buzilgan bo'lsa:**
 ```bash
-git checkout WORKING-PERFECTLY-2025-11-01 -- backend/src/services/bot-order.js
+git checkout v2.6-stable -- backend/src/services/bot-order.js
 ```
 
-**Agar telegram-bot.js buzilgan bo'lsa:**
+**Agar broadcast tizimi buzilgan bo'lsa:**
 ```bash
-git checkout WORKING-PERFECTLY-2025-11-01 -- backend/src/services/telegram-bot.js
+git checkout v2.6-stable -- backend/src/services/autoReplySession.js
+git checkout v2.6-stable -- backend/src/models/BroadcastSession.js
 ```
 
 ---
@@ -88,12 +109,12 @@ git checkout main
 
 ## 📊 VERSIYALAR RO'YXATI
 
-| Tag nomi | Tavsif | Commit |
-|----------|--------|--------|
-| **v2.5-stable** | ⭐ To'liq ishlaydigan versiya (HOZIRGI) | 45daa0b |
-| **WORKING-PERFECTLY-2025-11-01** | Alternative nom (shu bilan bir xil) | 45daa0b |
-| v2.4-stable | Avvalgi stable versiya | a9ce6fe |
-| v2.3-stable | Eski versiya | ... |
+| Tag nomi | Tavsif | Commit | Database Backup |
+|----------|--------|--------|-----------------|
+| **v2.6-stable** | ⭐ PRODUCTION READY (HOZIRGI) | 67e67a7 | db_V2.6-STABLE_FINAL_20251101_223611.json |
+| **v2.5-stable** | Spam prevention fix | 45daa0b | - |
+| v2.4-stable | Avvalgi stable versiya | a9ce6fe | - |
+| **WORKING-PERFECTLY-2025-11-01** | Alternative tag | 45daa0b | - |
 
 ---
 
@@ -183,26 +204,41 @@ Tiklaganingizdan keyin quyidagi testlarni o'tkazing:
 
 ### **Database Tiklash:**
 
-**Server'dan tiklash:**
+**V2.6-STABLE Database'ni tiklash:**
 ```bash
+# Serverda
 ssh root@5.189.141.151
-cd /var/www/dispatchr-logistics
-node -e "const backup = require('./backend/src/services/database-backup'); backup.restoreFromBackup('db_backup_YYYY-MM-DD_HH-MM-SS.json')"
+cd /var/www/dispatchr-logistics/database
+cp db_V2.6-STABLE_FINAL_20251101_223611.json db.json
+cd ..
 pm2 restart dispatchr-logistics
 ```
 
-**GitHub'dan tiklash:**
+**Yoki backups papkasidan:**
 ```bash
-git pull origin main
-# Oxirgi backup database/backups/ da bo'ladi
-# Manual tiklash kerak bo'lsa, faylni serverga yuklash
-scp database/backups/db_backup_*.json root@5.189.141.151:/var/www/dispatchr-logistics/database/db.json
-ssh root@5.189.141.151 "pm2 restart dispatchr-logistics"
+ssh root@5.189.141.151
+cd /var/www/dispatchr-logistics/database
+cp backups/db_V2.6-STABLE_FINAL_20251101_223611.json db.json
+cd ..
+pm2 restart dispatchr-logistics
+```
+
+**Oxirgi avtomatik backup'dan tiklash:**
+```bash
+ssh root@5.189.141.151
+cd /var/www/dispatchr-logistics/database
+# Eng yangi backup'ni topish
+ls -lt backups/db_backup_*.json | head -1
+# Tiklash
+cp backups/db_backup_YYYY-MM-DD_HH-MM-SS.json db.json
+cd ..
+pm2 restart dispatchr-logistics
 ```
 
 ---
 
 **Yaratilgan:** 2025-11-01
-**Oxirgi yangilanish:** 2025-11-01
+**Oxirgi yangilanish:** 2025-11-01 22:40 (V2.6-STABLE)
 **Status:** ✅ PRODUCTION READY
 **Backup:** ✅ 3 JOYDA AVTOMATIK
+**Hozirgi versiya:** v2.6-stable (commit: 67e67a7)
