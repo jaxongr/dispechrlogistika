@@ -44,13 +44,14 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://telegram.org", "https://unpkg.com"],
       scriptSrcAttr: ["'unsafe-inline'"], // CRITICAL: Allow inline onclick handlers
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
       fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
       connectSrc: ["'self'", "https://cdn.jsdelivr.net"],
       imgSrc: ["'self'", "data:", "https:"],
       formAction: ["'self'"],
+      frameAncestors: ["https://web.telegram.org"], // Allow Telegram to embed webapp
       upgradeInsecureRequests: null,
     },
   },

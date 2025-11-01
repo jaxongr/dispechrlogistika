@@ -28,7 +28,12 @@
       "Bash(journalctl:*)",
       "Read(//c/**)",
       "Bash(python3:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(pm2 restart:*)",
+      "Bash(git describe:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
