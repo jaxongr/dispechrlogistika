@@ -362,6 +362,37 @@
                             <strong>Muhim!</strong> Bu sozlamalar .env faylida saqlanadi va server restart talab qiladi.
                         </div>
 
+                        <!-- Card Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="mb-3"><i class="bi bi-credit-card"></i> Karta Ma'lumotlari</h6>
+                                <p class="text-muted">Userlar bu karta raqamiga to'lov qilishadi</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Karta Raqam</label>
+                                    <input type="text" class="form-control" id="cardNumber" placeholder="8600 1234 5678 9012" maxlength="19">
+                                    <small class="text-muted">16 raqamli karta</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Karta Egasi</label>
+                                    <input type="text" class="form-control" id="cardHolderName" placeholder="ESHMATOV TOSHMAT">
+                                    <small class="text-muted">Karta egasining ismi</small>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">To'lov Ko'rsatmasi</label>
+                                    <textarea class="form-control" id="paymentInstructions" rows="2" placeholder="Karta raqamiga to'lov qiling va chekni bot orqali yuboring."></textarea>
+                                    <small class="text-muted">Userga ko'rsatiladigan ko'rsatma</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
                         <!-- Subscription Prices -->
                         <div class="row mb-4">
                             <div class="col-12">
@@ -494,5 +525,77 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/settings.js"></script>
+    <script>
+        // Load Payment Settings
+        async function loadPaymentSettings() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/payment-settings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success && data.settings) {
+                    document.getElementById('cardNumber').value = data.settings.card_number || '';
+                    document.getElementById('cardHolderName').value = data.settings.card_holder_name || '';
+                    document.getElementById('weeklyPrice').value = data.settings.weekly_price || 30000;
+                    document.getElementById('monthlyPrice').value = data.settings.monthly_price || 70000;
+                    document.getElementById('paymentInstructions').value = data.settings.payment_instructions || '';
+                }
+            } catch (error) {
+                console.error('Load payment settings error:', error);
+            }
+        }
+
+        // Save Payment Settings
+        document.getElementById('savePaymentSettings').addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+            const cardNumber = document.getElementById('cardNumber').value;
+            const cardHolderName = document.getElementById('cardHolderName').value;
+            const weeklyPrice = document.getElementById('weeklyPrice').value;
+            const monthlyPrice = document.getElementById('monthlyPrice').value;
+            const paymentInstructions = document.getElementById('paymentInstructions').value;
+
+            try {
+                const response = await fetch('/api/payment-settings', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        card_number: cardNumber,
+                        card_holder_name: cardHolderName,
+                        weekly_price: parseInt(weeklyPrice),
+                        monthly_price: parseInt(monthlyPrice),
+                        payment_instructions: paymentInstructions
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ To\'lov sozlamalari saqlandi!');
+                } else {
+                    alert('❌ Xatolik: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Save payment settings error:', error);
+                alert('❌ Xatolik yuz berdi');
+            }
+        });
+
+        // Auto-format card number (add spaces)
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Load settings on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPaymentSettings();
+        });
+    </script>
 </body>
 </html>
